@@ -97,7 +97,7 @@ role_id      = "<role_id_name>"
 title        = "<title_name>"
 description  = "<description>"
 permissions  = ["iam.contentwarehouse.documentSchemas.create", "iam.contentwarehouse.documentSchemas.delete", "iam.contentwarehouse.documentSchemas.get", "iam.contentwarehouse.documentSchemas.list", "iam.contentwarehouse.documentSchemas.update", "iam.contentwarehouse.documents.create", "iam.contentwarehouse.documents.delete", "iam.contentwarehouse.documents.get", "iam.contentwarehouse.documents.getIamPolicy", "iam.contentwarehouse.documents.update", "iam.contentwarehouse.locations.initialize", "iam.contentwarehouse.operations.get", "iam.contentwarehouse.rawDocuments.download", "iam.contentwarehouse.rawDocuments.upload", "iam.contentwarehouse.synonymSets.get", "iam.contentwarehouse.synonymSets.list", "iam.contentwarehouse.synonymSets.update"]
-members      = ["serviceAccount:<service_account"]
+members      = ["serviceAccount:<service_account>"]
 
 /* cloud function */
 cloud_function_name = "<cloud_function_name>"
