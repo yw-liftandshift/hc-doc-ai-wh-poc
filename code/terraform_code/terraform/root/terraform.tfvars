@@ -113,3 +113,15 @@ doci_name      = "<name>"
 
 /* Api And services */
 gcp_service_list = ["contentwarehouse.googleapis.com", "documentai.googleapis.com", "cloudfunctions.googleapis.com", "cloudbuild.googleapis.com"]
+
+/* service_account */
+names        = ["service_account1", "service_account2"]
+display_name = "<service account display name>"
+descriptions = ["description1", "description2"]
+
+/* project */
+project_name    = "<project_name>"
+org_id          = "<org_id>"
+billing_account = "<billing_account>"
+activate_apis   = ["cloudresourcemanager.googleapis.com", "serviceusage.googleapis.com"]
+

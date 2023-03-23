@@ -126,3 +126,46 @@ variable "gcp_service_list" {
   type        = list(string)
 
 }
+
+
+/* Service account */
+
+variable "names" {
+  description = "Names of the service accounts to create"
+  type        = list(string)
+}
+
+variable "display_name" {
+  description = "Display names of the created service accounts"
+  type        = string
+}
+
+variable "descriptions" {
+  description = "Display names of the created service accounts"
+  type        = list(string)
+}
+
+/* project */
+variable "org_id" {
+  description = "The organization ID."
+  type        = string
+
+}
+
+variable "project_name" {
+  description = "The name of the project to be created"
+  type        = string
+
+}
+
+variable "billing_account" {
+  description = "The ID of the billing account to associate this project with"
+  type        = string
+
+}
+
+variable "activate_apis" {
+  description = "The list of api's to be activated for the host project"
+  type        = list(string)
+}
+
