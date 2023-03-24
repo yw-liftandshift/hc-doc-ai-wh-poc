@@ -1,87 +1,70 @@
-module "project" {
-  source          = "../modules/project"
-  project_name    = var.project_name
-  org_id          = var.org_id
-  billing_account = var.billing_account
-  activate_apis   = var.activate_apis
-
-}
 
 /* cloud stoarege */
 module "gcs" {
-  source = "../modules/cloud_storage"
-  name   = var.name
-  #project_id=module.project.project_id       # use this if project create from terraform and remove project_id from root/variables.tf and root/terraform.tfvars
-  project_id = var.project_id #remove this if you create project from terraform 
+  source     = "../modules/cloud_storage"
+  name       = var.name
+  project_id = var.project_id
   location   = var.location
-  depends_on = [module.project]
 }
 
 /* IAM */
 module "IAM" {
-  source = "../modules/IAM"
-  #projects=[module.project.project_id]        # use this if project create from terraform and remove project_id from root/variables.tf and root/terraform.tfvars
-  projects   = var.projects #remove this if you create project from terraform 
-  mode       = var.mode
-  bindings   = var.bindings
-  depends_on = [module.project]
+  source   = "../modules/IAM"
+  projects = var.projects
+  mode     = var.mode
+  bindings = var.bindings
 }
 
 /* custom role */
 module "custom-role" {
   source       = "../modules/custom_role"
   target_level = var.target_level
-  #project_id=module.project.project_id       # use this if project create from terraform and remove project_id from root/variables.tf and root/terraform.tfvars
-  target_id   = var.project_id #remove this if you create project from terraform 
-  role_id     = var.role_id
-  title       = var.title
-  description = var.description
-  permissions = var.permissions
-  members     = var.members
-  depends_on  = [module.project]
+  target_id    = var.project_id
+  role_id      = var.role_id
+  title        = var.title
+  description  = var.description
+  permissions  = var.permissions
+  members      = var.members
 }
 
 /* cloud function */
 module "cloud_function" {
   source              = "../modules/cloud_function"
   cloud_function_name = var.cloud_function_name
-  #project_id=module.project.project_id       # use this if project create from terraform and remove project_id from root/variables.tf and root/terraform.tfvars
-  project_id          = var.project_id #remove this if you create project from terraform 
+  project_id          = var.project_id
   cloud_function_desc = var.cloud_function_desc
   runtime             = var.runtime
   region              = var.region
   timeout             = var.timeout
-  depends_on          = [module.Services, module.project]
+  depends_on          = [module.Services]
 }
 
 /* DocAi */
 module "DocAi" {
-  source         = "../modules/DocAi_Processor"
-  doci_name      = var.doci_name
-  docai_location = var.docai_location
-  processor_type = var.processor_type
-  #project_id=module.project.project_id               # use this if project create from terraform and remove project_id from root/variables.tf and root/terraform.tfvars
-  project_id = var.project_id #remove this if you create project from terraform 
-  depends_on = [module.Services, module.project]
+  source                = "../modules/DocAi_Processor"
+  first_docai_name      = var.first_docai_name
+  second_docai_name     = var.second_docai_name
+  docai_location        = var.docai_location
+  first_processor_type  = var.first_processor_type
+  second_processor_type = var.second_processor_type
+  project_id            = var.project_id
+  depends_on            = [module.Services]
 }
 
 /* Apis and services */
 module "Services" {
-  source = "../modules/Services"
-  #project_id=module.project.project_id       # use this if project create from terraform and remove project_id from root/variables.tf and root/terraform.tfvars
-  project_id       = var.project_id #remove this if you create project from terraform 
+  source           = "../modules/Services"
+  project_id       = var.project_id
   gcp_service_list = var.gcp_service_list
-  depends_on       = [module.project]
+
 }
 
 /* service account */
 module "Service_account" {
-  source = "../modules/Service_Accounts"
-  #project_id=module.project.project_id       # use this if project create from terraform and remove project_id from root/variables.tf and root/terraform.tfvars
-  project_id   = var.project_id #remove this if you create project from terraform 
+  source       = "../modules/Service_Accounts"
+  project_id   = var.project_id
   names        = var.names
   descriptions = var.descriptions
   display_name = var.display_name
-  depends_on   = [module.project]
 }
 

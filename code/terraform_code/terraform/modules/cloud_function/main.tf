@@ -1,6 +1,6 @@
 resource "google_storage_bucket" "cloud_function_code" {
   project                     = var.project_id
-  name                        = "${var.project_id}-<bucket_name>" #contain cloud function source code
+  name                        = "${var.project_id}-<bucket_name>" # contain cloud function ml source code
   location                    = "<region>"
   uniform_bucket_level_access = true
 }
@@ -14,7 +14,7 @@ resource "google_storage_bucket" "event_bucket" {
 resource "google_storage_bucket_object" "object" {
   name   = "<object_name.zip>"
   bucket = google_storage_bucket.cloud_function_code.name
-  source = "<object path>" # Add path to the zipped function source code
+  source = "<object path>" # path to the ml source code in a zip format
 
 }
 
@@ -23,7 +23,7 @@ resource "google_cloudfunctions_function" "function" {
   description           = var.cloud_function_desc
   runtime               = var.runtime
   available_memory_mb   = "<available_memory>"
-  entry_point           = "<entry point function>"
+  entry_point           = "<entry point function>" # entry function of ml source code
   source_archive_bucket = google_storage_bucket.cloud_function_code.name
   source_archive_object = google_storage_bucket_object.object.name
   region                = var.region

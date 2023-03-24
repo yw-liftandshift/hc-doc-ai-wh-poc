@@ -1,14 +1,16 @@
 /* impersonate service account */
 service_account = "<terraform service account>"
 
-/* Cloud Storage */
+/* project_id */
 project_id = "<project_id>"
-name       = "<bucket_name>"
-location   = "<bucket_region>"
+
+/* Cloud Storage */
+name     = "<bucket_name>"
+location = "<bucket_region>"
 
 /* IAM */
 mode     = "additive"
-projects = ["<project_id>", "<project_id_2>"]
+projects = ["<project_id>"]
 bindings = {
   "roles/bigquery.readSessionUser" = [
     "serviceAccount:<service account>",
@@ -93,23 +95,26 @@ bindings = {
 /* custom role */
 target_level = "project"
 target_id    = "<project_id>"
-role_id      = "<role_id_name>"
-title        = "<title_name>"
+role_id      = "warehouse_custom_role"
+title        = "doc ai warehousecustom custom role "
 description  = "<description>"
 permissions  = ["iam.contentwarehouse.documentSchemas.create", "iam.contentwarehouse.documentSchemas.delete", "iam.contentwarehouse.documentSchemas.get", "iam.contentwarehouse.documentSchemas.list", "iam.contentwarehouse.documentSchemas.update", "iam.contentwarehouse.documents.create", "iam.contentwarehouse.documents.delete", "iam.contentwarehouse.documents.get", "iam.contentwarehouse.documents.getIamPolicy", "iam.contentwarehouse.documents.update", "iam.contentwarehouse.locations.initialize", "iam.contentwarehouse.operations.get", "iam.contentwarehouse.rawDocuments.download", "iam.contentwarehouse.rawDocuments.upload", "iam.contentwarehouse.synonymSets.get", "iam.contentwarehouse.synonymSets.list", "iam.contentwarehouse.synonymSets.update"]
 members      = ["serviceAccount:<service_account>"]
 
 /* cloud function */
-cloud_function_name = "<cloud_function_name>"
+cloud_function_name = "HC_cloud_fuction"
 cloud_function_desc = "<description>"
-runtime             = "<runtime>"
-region              = "<region>"
-timeout             = "<timeout in sec>"
+runtime             = "python310"
+region              = "us-central-1"
+timeout             = 540
 
 /* DocAi */
-docai_location = "us"
-processor_type = "<processor type>"
-doci_name      = "<name>"
+docai_location        = "us"
+first_processor_type  = "OCR_PROCESSOR"
+second_processor_type = "CUSTOM_EXTRACTION_PROCESSOR"
+first_docai_name      = "ocr_processor"
+second_docai_name     = "cde_processor"
+
 
 /* Api And services */
 gcp_service_list = ["contentwarehouse.googleapis.com", "documentai.googleapis.com", "cloudfunctions.googleapis.com", "cloudbuild.googleapis.com"]
@@ -118,10 +123,4 @@ gcp_service_list = ["contentwarehouse.googleapis.com", "documentai.googleapis.co
 names        = ["service_account1", "service_account2"]
 display_name = "<service account display name>"
 descriptions = ["description1", "description2"]
-
-/* project */
-project_name    = "<project_name>"
-org_id          = "<org_id>"
-billing_account = "<billing_account>"
-activate_apis   = ["cloudresourcemanager.googleapis.com", "serviceusage.googleapis.com"]
 

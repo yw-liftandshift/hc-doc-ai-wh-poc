@@ -3,7 +3,23 @@ variable "project_id" {
   type        = string
 }
 
-variable "processor_type" {
+variable "first_docai_name" {
+  description = "name for Docai processor"
+  type        = string
+
+}
+
+variable "second_docai_name" {
+  description = "name for Docai processor"
+  type        = string
+
+}
+
+variable "first_processor_type" {
+  description = "The type of processor"
+  type        = string
+}
+variable "second_processor_type" {
   description = "The type of processor"
   type        = string
 }
@@ -11,10 +27,8 @@ variable "processor_type" {
 variable "docai_location" {
   description = "location for Docai processor"
   type        = string
-}
-
-variable "doci_name" {
-  description = "name for Docai processor"
-  type        = string
 
 }
+
+
+

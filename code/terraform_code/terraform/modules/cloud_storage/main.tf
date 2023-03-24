@@ -1,6 +1,6 @@
 
-resource "google_storage_bucket" "cloud_function_code" {
+resource "google_storage_bucket" "cloud_storage" {
   project  = var.project_id
-  name     = "${var.project_id}-<bucket_name>"
+  name     = "${var.project_id}-${var.name}"
   location = var.location
 }
