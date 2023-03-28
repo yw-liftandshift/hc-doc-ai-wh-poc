@@ -29,3 +29,33 @@ variable "timeout" {
   type        = string
 }
 
+variable "cloud_function_code_bucket" {
+  description = "bucket contain ml source code"
+  type        = string
+}
+
+variable "cloud_function_event_bucket" {
+  description = "event bucket trigger cloud function"
+  type        = string
+
+}
+
+variable "source_code_name" {
+  description = "source code name"
+  type        = string
+}
+
+variable "source_code_path" {
+  description = "source code path"
+  type        = string
+}
+
+variable "entry_point_function" {
+  description = "entry point function name"
+  type        = string
+}
+
+variable "memory" {
+  description = "function memory"
+  type        = string
+}

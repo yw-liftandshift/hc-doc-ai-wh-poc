@@ -29,14 +29,20 @@ module "custom-role" {
 
 /* cloud function */
 module "cloud_function" {
-  source              = "../modules/cloud_function"
-  cloud_function_name = var.cloud_function_name
-  project_id          = var.project_id
-  cloud_function_desc = var.cloud_function_desc
-  runtime             = var.runtime
-  region              = var.region
-  timeout             = var.timeout
-  depends_on          = [module.Services]
+  source                      = "../modules/cloud_function"
+  cloud_function_name         = var.cloud_function_name
+  project_id                  = var.project_id
+  cloud_function_desc         = var.cloud_function_desc
+  runtime                     = var.runtime
+  region                      = var.region
+  timeout                     = var.timeout
+  cloud_function_code_bucket  = var.cloud_function_code_bucket
+  cloud_function_event_bucket = var.cloud_function_event_bucket
+  source_code_name            = var.source_code_name
+  source_code_path            = var.source_code_path
+  entry_point_function        = var.entry_point_function
+  memory                      = var.memory
+  depends_on                  = [module.Services]
 }
 
 /* DocAi */

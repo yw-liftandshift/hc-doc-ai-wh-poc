@@ -102,11 +102,18 @@ permissions  = ["iam.contentwarehouse.documentSchemas.create", "iam.contentwareh
 members      = ["serviceAccount:<service_account>"]
 
 /* cloud function */
-cloud_function_name = "HC_cloud_fuction"
-cloud_function_desc = "<description>"
-runtime             = "python310"
-region              = "us-central-1"
-timeout             = 540
+cloud_function_name         = "HC_cloud_fuction"
+cloud_function_desc         = "HC_cloud_function for Ml code"
+runtime                     = "python310"
+region                      = "us-central-1"
+timeout                     = 540
+cloud_function_code_bucket  = "cloud_function_code_bucket"
+cloud_function_event_bucket = "cf-event-bucket"
+source_code_name            = "ml_code.zip"
+source_code_path            = "./ml_code.zip"
+entry_point_function        = "hello_get"
+memory                      = 512
+
 
 /* DocAi */
 docai_location        = "us"
