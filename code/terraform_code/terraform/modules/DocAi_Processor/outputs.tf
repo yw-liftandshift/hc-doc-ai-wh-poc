@@ -1,11 +1,11 @@
-output "first_processor_id" {
+output "ocr_processor_id" {
   description = "Iam roles"
-  value       = module.first_processor.processor.id
+  value       = google_document_ai_processor.first_processor.id
 }
 
-output "second_processor_id" {
+output "cde_processor_id" {
   description = "Iam roles"
-  value       = module.second_processor.processor.id
+  value       = google_document_ai_processor.second_processor.id
 }
 
 

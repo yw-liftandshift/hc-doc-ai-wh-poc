@@ -1,4 +1,4 @@
-output "members" {
+output "IAM_Members" {
   description = "names of members"
   value       = module.project-iam-bindings.members
 }
