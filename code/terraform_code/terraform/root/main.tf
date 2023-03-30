@@ -65,12 +65,5 @@ module "Services" {
 
 }
 
-/* service account */
-module "Service_account" {
-  source       = "../modules/Service_Accounts"
-  project_id   = var.project_id
-  names        = var.names
-  descriptions = var.descriptions
-  display_name = var.display_name
-}
+
 

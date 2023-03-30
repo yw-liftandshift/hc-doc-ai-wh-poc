@@ -20,11 +20,6 @@ output "custom_role_id" {
   value       = module.custom-role.custom_role_id
 }
 
-output "service-account-emails" {
-  description = "ID of the project"
-  value       = module.Service_account.service-account-emails
-}
-
 
 output "IAM_Members" {
   description = "names of members"

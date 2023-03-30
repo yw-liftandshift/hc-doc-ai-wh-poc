@@ -1,11 +1,11 @@
 /* impersonate service account */
-service_account = "<terraform_service_account>"
+service_account = "<terraform service account>"
 
 /* project_id */
 project_id = "<project_id>"
 
 /* Cloud Storage */
-name     = "<project_id>-test"
+name     = "testing"
 location = "us-central1"
 
 /* IAM */
@@ -13,51 +13,51 @@ mode     = "additive"
 projects = ["<project_id>"]
 bindings = {
   "roles/bigquery.readSessionUser" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
   ]
   "roles/bigquery.user" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
   ]
   "roles/contentwarehouse.admin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
     "user:<user_id>",
   ]
   "roles/contentwarehouse.documentAdmin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
     "user:<user_id>",
   ]
   "roles/contentwarehouse.documentCreator" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
     "user:<user_id>",
   ]
   "roles/contentwarehouse.serviceAgent" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
   ]
   "roles/contentwarehouse.documentViewer" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
   ]
   "roles/documentai.admin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
     "user:<user_id>"
   ]
   "roles/contentwarehouse.documentAdmin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
   ]
   "roles/secretmanager.secretAccessor" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
   ]
   "roles/iam.serviceAccountTokenCreator" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
   ]
   "roles/storage.admin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
     "user:<user_id>"
   ]
   "roles/storage.objectViewer" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
   ]
   "roles/aiplatform.admin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<service account>",
     "user:<user_id>",
   ]
   "roles/bigquery.admin" = [
@@ -97,9 +97,9 @@ target_level = "project"
 target_id    = "<project_id>"
 role_id      = "warehouse_custom_role"
 title        = "doc ai warehousecustom custom role "
-description  = "doc ai test instance"
-permissions  = ["contentwarehouse.documentSchemas.create", "contentwarehouse.documentSchemas.delete", "contentwarehouse.documentSchemas.get", "contentwarehouse.documentSchemas.list", "contentwarehouse.documentSchemas.update", "contentwarehouse.documents.create", "contentwarehouse.documents.delete", "contentwarehouse.documents.get", "contentwarehouse.documents.getIamPolicy", "contentwarehouse.documents.update", "contentwarehouse.locations.initialize", "contentwarehouse.operations.get", "contentwarehouse.rawDocuments.download", "contentwarehouse.synonymSets.get", "contentwarehouse.synonymSets.list", "contentwarehouse.synonymSets.update"]
-members      = ["serviceAccount:<service_account>", "user:<user_id>"]
+description  = "custom role for doc ai warehouse"
+permissions  = ["contentwarehouse.documentSchemas.create", "contentwarehouse.documentSchemas.delete", "contentwarehouse.documentSchemas.get", "contentwarehouse.documentSchemas.list", "contentwarehouse.documentSchemas.update", "contentwarehouse.documents.create", "contentwarehouse.documents.delete", "contentwarehouse.documents.get", "contentwarehouse.documents.getIamPolicy", "contentwarehouse.documents.update", "contentwarehouse.locations.initialize", "contentwarehouse.operations.get", "contentwarehouse.rawDocuments.download", "contentwarehouse.rawDocuments.upload", "contentwarehouse.synonymSets.get", "contentwarehouse.synonymSets.list", "contentwarehouse.synonymSets.update"]
+members      = ["serviceAccount:<service account>"]
 
 /* cloud function */
 cloud_function_name         = "HC_cloud_fuction"
@@ -126,8 +126,5 @@ second_docai_name     = "cde_processor"
 /* Api And services */
 gcp_service_list = ["contentwarehouse.googleapis.com", "documentai.googleapis.com", "cloudfunctions.googleapis.com", "cloudbuild.googleapis.com"]
 
-/* service_account */
-names        = ["service-account-test1"]
-display_name = "testing service account"
-descriptions = ["this is the service "]
+
 

@@ -159,9 +159,6 @@ variable "docai_location" {
 
 }
 
-
-
-
 /* Api and Services */
 variable "gcp_service_list" {
   description = "The list of apis necessary for the project"
@@ -169,23 +166,6 @@ variable "gcp_service_list" {
 
 }
 
-
-/* Service account */
-
-variable "names" {
-  description = "Names of the service accounts to create"
-  type        = list(string)
-}
-
-variable "display_name" {
-  description = "Display names of the created service accounts"
-  type        = string
-}
-
-variable "descriptions" {
-  description = "Display names of the created service accounts"
-  type        = list(string)
-}
 
 
 
