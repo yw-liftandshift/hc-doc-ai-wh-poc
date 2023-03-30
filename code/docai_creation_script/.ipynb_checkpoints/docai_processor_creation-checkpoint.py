@@ -100,7 +100,7 @@ def train_processor_version(document_schema: docai_v1beta3.types.DocumentSchema,
 try:
     dest_processor_number = create_processor(DEST_WORKBENCH_PROCESSOR_NAME,"CUSTOM_EXTRACTION_PROCESSOR",PROJECT_ID, API_LOCATION)
     if dest_processor_number != None:
-        train_processor_version(schema, VERSION_NAME,dest_processor_number,PROJECT_NUMBER)
+        train_processor_version(schema, "ver1",dest_processor_number,project_number)
 except Exception as e:
     print("Error in processor training")
     print(e)
