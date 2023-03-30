@@ -1,0 +1,130 @@
+/* impersonate service account */
+service_account = "<terraform service account>"
+
+/* project_id */
+project_id = "<project_id>"
+
+/* Cloud Storage */
+name     = "testing"
+location = "us-central1"
+
+/* IAM */
+mode     = "additive"
+projects = ["<project_id>"]
+bindings = {
+  "roles/bigquery.readSessionUser" = [
+    "serviceAccount:<service account>",
+  ]
+  "roles/bigquery.user" = [
+    "serviceAccount:<service account>",
+  ]
+  "roles/contentwarehouse.admin" = [
+    "serviceAccount:<service account>",
+    "user:<user_id>",
+  ]
+  "roles/contentwarehouse.documentAdmin" = [
+    "serviceAccount:<service account>",
+    "user:<user_id>",
+  ]
+  "roles/contentwarehouse.documentCreator" = [
+    "serviceAccount:<service account>",
+    "user:<user_id>",
+  ]
+  "roles/contentwarehouse.serviceAgent" = [
+    "serviceAccount:<service account>",
+  ]
+  "roles/contentwarehouse.documentViewer" = [
+    "serviceAccount:<service account>",
+  ]
+  "roles/documentai.admin" = [
+    "serviceAccount:<service account>",
+    "user:<user_id>"
+  ]
+  "roles/contentwarehouse.documentAdmin" = [
+    "serviceAccount:<service account>",
+  ]
+  "roles/secretmanager.secretAccessor" = [
+    "serviceAccount:<service account>",
+  ]
+  "roles/iam.serviceAccountTokenCreator" = [
+    "serviceAccount:<service account>",
+  ]
+  "roles/storage.admin" = [
+    "serviceAccount:<service account>",
+    "user:<user_id>"
+  ]
+  "roles/storage.objectViewer" = [
+    "serviceAccount:<service account>",
+  ]
+  "roles/aiplatform.admin" = [
+    "serviceAccount:<service account>",
+    "user:<user_id>",
+  ]
+  "roles/bigquery.admin" = [
+    "user:<user_id>",
+  ]
+  "roles/bigquery.dataEditor" = [
+    "user:<user_id>",
+  ]
+  "roles/errorreporting.admin" = [
+    "user:<user_id>",
+  ]
+  "roles/logging.admin" = [
+    "user:<user_id>",
+  ]
+  "roles/notebooks.admin" = [
+    "user:<user_id>",
+  ]
+  "roles/notebooks.viewer" = [
+    "user:<user_id>",
+  ]
+  "roles/iam.serviceAccountUser" = [
+    "user:<user_id>",
+  ]
+  "roles/contentwarehouse.documentAdmin" = [
+    "user:<user_id>",
+  ]
+  "roles/storage.admin" = [
+    "user:<user_id>"
+  ]
+  "roles/storage.objectAdmin" = [
+    "user:<user_id>",
+  ]
+}
+
+/* custom role */
+target_level = "project"
+target_id    = "<project_id>"
+role_id      = "warehouse_custom_role"
+title        = "doc ai warehousecustom custom role "
+description  = "custom role for doc ai warehouse"
+permissions  = ["contentwarehouse.documentSchemas.create", "contentwarehouse.documentSchemas.delete", "contentwarehouse.documentSchemas.get", "contentwarehouse.documentSchemas.list", "contentwarehouse.documentSchemas.update", "contentwarehouse.documents.create", "contentwarehouse.documents.delete", "contentwarehouse.documents.get", "contentwarehouse.documents.getIamPolicy", "contentwarehouse.documents.update", "contentwarehouse.locations.initialize", "contentwarehouse.operations.get", "contentwarehouse.rawDocuments.download", "contentwarehouse.rawDocuments.upload", "contentwarehouse.synonymSets.get", "contentwarehouse.synonymSets.list", "contentwarehouse.synonymSets.update"]
+members      = ["serviceAccount:<service account>"]
+
+/* cloud function */
+cloud_function_name         = "HC_cloud_fuction"
+cloud_function_desc         = "HC_cloud_function for Ml code"
+runtime                     = "python310"
+region                      = "us-central1"
+timeout                     = 540
+cloud_function_code_bucket  = "cloud_function_code_bucket"
+cloud_function_event_bucket = "cf-event-bucket"
+source_code_name            = "helloworld.zip"
+source_code_path            = "../helloworld.zip"
+entry_point_function        = "hello_get"
+memory                      = 512
+
+
+/* DocAi */
+docai_location        = "us"
+first_processor_type  = "OCR_PROCESSOR"
+second_processor_type = "CUSTOM_EXTRACTION_PROCESSOR"
+first_docai_name      = "ocr_processor"
+second_docai_name     = "cde_processor"
+
+
+/* Api And services */
+gcp_service_list = ["contentwarehouse.googleapis.com", "documentai.googleapis.com", "cloudfunctions.googleapis.com", "cloudbuild.googleapis.com"]
+
+
+
