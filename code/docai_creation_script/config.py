@@ -1,6 +1,6 @@
 import pathlib
 
-DEST_WORKBENCH_PROCESSOR_NAME = 'auto_processor2'
+DEST_WORKBENCH_PROCESSOR_NAME = 'auto_processor'
 GCS_PATH_FOR_LABELLED_DATA_TEST = 'gs://hcwarehouse-pdf-storage/exported-cde-tagged-data/test/'
 GCS_PATH_FOR_LABELLED_DATA_TRAIN = 'gs://hcwarehouse-pdf-storage/exported-cde-tagged-data/train/'
 PROJECT_ID = "q-gcp-10940-hcwarehouse-23-02"

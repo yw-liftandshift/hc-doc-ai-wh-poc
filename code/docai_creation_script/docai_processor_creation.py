@@ -16,15 +16,18 @@ from config import *
 
 #Get Processor ServiceClient details
 def get_client() :
+    """ Get client details """
     client_options = ClientOptions(
         api_endpoint=f"{API_LOCATION}-documentai.googleapis.com"
     )
     return docai_v1beta3.DocumentProcessorServiceClient(client_options=client_options)
 
 def get_parent(client: docai_v1beta3.DocumentProcessorServiceClient):
+    """ Get parent details """
     return client.common_location_path(PROJECT_ID, API_LOCATION)
 
 def get_client_and_parent() :
+    """ Get parent and client details """
     client = get_client()
     parent = get_parent(client)
     return client, parent
