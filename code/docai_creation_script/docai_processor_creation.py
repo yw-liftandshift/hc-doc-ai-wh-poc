@@ -1,39 +1,39 @@
-import os
 import argparse
 import json
+import os
 import traceback
 import requests
 import time
+import logging
 import google.auth
 import google.auth.transport.requests
+import google.cloud.logging
 import google.cloud.documentai_v1beta3 as docai_v1beta3
-from tabulate import tabulate
 from google.api_core.client_options import ClientOptions
+from tabulate import tabulate
 from google.cloud import documentai
-from config import *
+from config import parameter_dict,schema_json
 
-#Get Processor ServiceClient details
-def get_client() :
-    """ Get client details """
-    client_options = ClientOptions(
-        api_endpoint=f"{API_LOCATION}-documentai.googleapis.com"
-    )
-    return docai_v1beta3.DocumentProcessorServiceClient(client_options=client_options)
 
-def get_parent(client: docai_v1beta3.DocumentProcessorServiceClient):
-    """ Get parent details """
-    return client.common_location_path(PROJECT_ID, API_LOCATION)
+#Setting up logging
+#Instantiates a client
+client = google.cloud.logging.Client()
+client.setup_logging()
+logging.basicConfig(level=logging.DEBUG)
 
-def get_client_and_parent() :
+print(parameter_dict)
+#Get client and parent details
+def get_client_and_parent(project_id: str, location: str):
     """ Get parent and client details """
-    client = get_client()
-    parent = get_parent(client)
+    client_options = ClientOptions(api_endpoint=f"{API_LOCATION}-documentai.googleapis.com")
+    client = docai_v1beta3.DocumentProcessorServiceClient(client_options=client_options)
+    parent = client.common_location_path(project_id, location)
     return client, parent
 
 def list_processors_sample(project_id: str, location: str):
     """ Returns the List of the processor's name"""
-    processor_name_list=[]
-    opts = ClientOptions(api_endpoint=f"{location}-documentai.googleapis.com")
+    processor_name_list = []
+    opts = ClientOptions(api_endpoint = f"{location}-documentai.googleapis.com")
     client = documentai.DocumentProcessorServiceClient(client_options=opts)
     parent = client.common_location_path(project_id, location)
     # Make ListProcessors request
@@ -48,19 +48,19 @@ def list_processors_sample(project_id: str, location: str):
 def create_processor(display_name: str, type: str,project_id: str ,location: str) -> docai_v1beta3.Processor:
     try:
         client, parent = get_client_and_parent()
-        processor_name_list=processor_list=list_processors_sample(project_id, location)
+        processor_name_list = list_processors_sample(project_id, location)
         if display_name in processor_name_list:
-            print(f"A Processor with the name {display_name} already exists.")
+            logging.info(f"A Processor with the name {display_name} already exists.")
         else:
             processor = docai_v1beta3.Processor(display_name=display_name, type_=type)
             # Print the processor information
-            print(f"Processor Display Name: {processor.display_name}")
-            print(f"Processor Type: {processor.type_}")    
-            print(f"Processor Created")            
-            processor_id=client.create_processor(parent=parent, processor=processor)
+            logging.info(f"Processor Display Name: {processor.display_name}")
+            logging.info(f"Processor Type: {processor.type_}")    
+            logging.info(f"Processor Created")            
+            processor_id = client.create_processor(parent=parent, processor=processor)
             return processor_id.name.split("/")[-1]
     except Exception as e:
-        print(f"Processor with the name {display_name} already exist.")
+        logging.error(e.message)
 
 #Defining the schema using the schema json
 schema = docai_v1beta3.types.DocumentSchema.from_json(schema_json)
@@ -75,11 +75,9 @@ def train_processor_version(document_schema: docai_v1beta3.types.DocumentSchema,
     processor_parent = f"projects/{project_number}/locations/us/processors/{processor_number}"
     processor_version = docai_v1beta3.ProcessorVersion(display_name = version_name)  
     training_documents_input_config = docai_v1beta3.BatchDocumentsInputConfig(
-    gcs_prefix=docai_v1beta3.types.GcsPrefix(gcs_uri_prefix = GCS_PATH_FOR_LABELLED_DATA_TRAIN)
-    )  
+    gcs_prefix = docai_v1beta3.types.GcsPrefix(gcs_uri_prefix = GCS_PATH_FOR_LABELLED_DATA_TRAIN))  
     test_documents_input_config = docai_v1beta3.BatchDocumentsInputConfig(
-    gcs_prefix=docai_v1beta3.types.GcsPrefix(gcs_uri_prefix = GCS_PATH_FOR_LABELLED_DATA_TEST)
-    )
+    gcs_prefix = docai_v1beta3.types.GcsPrefix(gcs_uri_prefix = GCS_PATH_FOR_LABELLED_DATA_TEST))
     
     input_data = docai_v1beta3.types.TrainProcessorVersionRequest.InputData(
         training_documents =  training_documents_input_config, 
@@ -92,15 +90,19 @@ def train_processor_version(document_schema: docai_v1beta3.types.DocumentSchema,
         document_schema  = document_schema
     )
     operation = client.train_processor_version(request=request)
-    print("Training of processor has initiated")
-    # Print operation details
-    print(f"Operation id:{operation.operation.name}")  
+    logging.info("Training of processor has initiated")    
+    logging.info(f"Operation id:{operation.operation.name}")  
 
-    
-try:
-    dest_processor_number = create_processor(DEST_WORKBENCH_PROCESSOR_NAME,"CUSTOM_EXTRACTION_PROCESSOR",PROJECT_ID, API_LOCATION)
-    if dest_processor_number != None:
-        train_processor_version(schema, VERSION_NAME,dest_processor_number,PROJECT_NUMBER)
-except Exception as e:
-    print("Error in processor training")
-    print(e)
+def main():  
+    try:
+        dest_processor_number = create_processor(parameter_dict['DEST_WORKBENCH_PROCESSOR_NAME'],
+                                                 "CUSTOM_EXTRACTION_PROCESSOR",
+                                                 parameter_dict['PROJECT_ID'], 
+                                                 parameter_dict['API_LOCATION'])
+        if dest_processor_number != None:
+            train_processor_version(schema, 
+                                    parameter_dict['VERSION_NAME'],
+                                    dest_processor_number,
+                                    parameter_dict['PROJECT_NUMBER'])
+    except Exception as e:
+        logging.error(f"Error in processor training : {e}")
