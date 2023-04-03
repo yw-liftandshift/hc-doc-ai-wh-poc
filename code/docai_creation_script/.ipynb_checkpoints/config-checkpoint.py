@@ -1,11 +1,11 @@
 # This file is for holding variables and schema
-#Importing Library
+
 import pathlib
 
 #Defining the variables
 parameter_dict = {'DEST_WORKBENCH_PROCESSOR_NAME': '<Add Processor display name>',
-                'GCS_PATH_FOR_LABELLED_DATA_TEST':'gs://hcwarehouse-pdf-storage/exported-cde-tagged-data/test/',
-                'GCS_PATH_FOR_LABELLED_DATA_TRAIN ': 'gs://hcwarehouse-pdf-storage/exported-cde-tagged-data/train/',
+                'GCS_PATH_FOR_LABELLED_DATA_TEST':'<Add GCS PATH for TEST_DATA>',
+                'GCS_PATH_FOR_LABELLED_DATA_TRAIN ': '<Add Project ID>',
                 'PROJECT_ID': '<Add Project ID>',
                 'API_LOCATION' : '<Add Location>',
                 'PROJECT_NUMBER' : '<Add project number>',
