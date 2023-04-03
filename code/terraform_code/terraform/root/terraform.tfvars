@@ -1,11 +1,11 @@
-/* impersonate service account */
-service_account = "<terraform service account>"
+/* impersonate terraform service account */
+service_account = "<service_account>"
 
 /* project_id */
 project_id = "<project_id>"
 
 /* Cloud Storage */
-name     = "testing"
+names    = ["test_bucket", "train_bucket"]
 location = "us-central1"
 
 /* IAM */
@@ -13,51 +13,51 @@ mode     = "additive"
 projects = ["<project_id>"]
 bindings = {
   "roles/bigquery.readSessionUser" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
   ]
   "roles/bigquery.user" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
   ]
   "roles/contentwarehouse.admin" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
     "user:<user_id>",
   ]
   "roles/contentwarehouse.documentAdmin" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
     "user:<user_id>",
   ]
   "roles/contentwarehouse.documentCreator" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
     "user:<user_id>",
   ]
   "roles/contentwarehouse.serviceAgent" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
   ]
   "roles/contentwarehouse.documentViewer" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
   ]
   "roles/documentai.admin" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
     "user:<user_id>"
   ]
   "roles/contentwarehouse.documentAdmin" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
   ]
   "roles/secretmanager.secretAccessor" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
   ]
   "roles/iam.serviceAccountTokenCreator" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
   ]
   "roles/storage.admin" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
     "user:<user_id>"
   ]
   "roles/storage.objectViewer" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
   ]
   "roles/aiplatform.admin" = [
-    "serviceAccount:<service account>",
+    "serviceAccount:<service_account>",
     "user:<user_id>",
   ]
   "roles/bigquery.admin" = [
@@ -99,7 +99,7 @@ role_id      = "warehouse_custom_role"
 title        = "doc ai warehousecustom custom role "
 description  = "custom role for doc ai warehouse"
 permissions  = ["contentwarehouse.documentSchemas.create", "contentwarehouse.documentSchemas.delete", "contentwarehouse.documentSchemas.get", "contentwarehouse.documentSchemas.list", "contentwarehouse.documentSchemas.update", "contentwarehouse.documents.create", "contentwarehouse.documents.delete", "contentwarehouse.documents.get", "contentwarehouse.documents.getIamPolicy", "contentwarehouse.documents.update", "contentwarehouse.locations.initialize", "contentwarehouse.operations.get", "contentwarehouse.rawDocuments.download", "contentwarehouse.rawDocuments.upload", "contentwarehouse.synonymSets.get", "contentwarehouse.synonymSets.list", "contentwarehouse.synonymSets.update"]
-members      = ["serviceAccount:<service account>"]
+members      = ["serviceAccount:<service_account>"]
 
 /* cloud function */
 cloud_function_name         = "HC_cloud_fuction"

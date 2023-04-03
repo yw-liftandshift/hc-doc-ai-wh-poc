@@ -11,7 +11,7 @@ output "cde_processor_id" {
 
 output "bucket_name" {
   description = "name of the bucket"
-  value       = module.gcs.bucket_name
+  value       = module.gcs.bucket_names
 }
 
 

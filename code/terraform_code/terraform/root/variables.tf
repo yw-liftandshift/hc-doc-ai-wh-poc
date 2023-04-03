@@ -14,10 +14,12 @@ variable "location" {
   type        = string
 }
 
-variable "name" {
+variable "names" {
   description = "The name of the bucket"
-  type        = string
+  type        = list(string)
 }
+
+
 
 
 /* IAM */

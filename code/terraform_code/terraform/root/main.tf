@@ -2,7 +2,7 @@
 /* cloud stoarege */
 module "gcs" {
   source     = "../modules/cloud_storage"
-  name       = var.name
+  names      = var.names
   project_id = var.project_id
   location   = var.location
 }
