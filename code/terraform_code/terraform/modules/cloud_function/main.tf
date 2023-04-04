@@ -8,9 +8,11 @@ resource "google_storage_bucket" "cloud_function_code" {
 
 # this bucket trigger cloud function
 resource "google_storage_bucket" "event_bucket" {
-  project  = var.project_id
-  name     = "${var.project_id}-${var.cloud_function_event_bucket}" # this bucket trigger cloud function
-  location = var.region
+  project                     = var.project_id
+  name                        = "${var.project_id}-${var.cloud_function_event_bucket}" # this bucket trigger cloud function
+  location                    = var.region
+  uniform_bucket_level_access = true
+  #force_destroy               = true
 }
 
 # this will upload the ml source code to cloud_function_code
@@ -32,9 +34,20 @@ resource "google_cloudfunctions_function" "function" {
   region                = var.region
   timeout               = var.timeout
   project               = var.project_id
+
   event_trigger {
     event_type = "google.storage.object.finalize"
     resource   = google_storage_bucket.event_bucket.name
+  }
+  environment_variables = {
+    project_id       = var.project_id,
+    project_number   = var.project_number,
+    location         = var.cloud_function_code_location,
+    processor_id     = var.processor_id,
+    processor_id_cde = var.cde_processor_id,
+    input_mime_type  = var.input_mime_type,
+    schema_id        = var.schema_id,
+    sa_user          = var.sa_user,
   }
   depends_on = [google_storage_bucket.cloud_function_code, google_storage_bucket_object.object, google_storage_bucket.event_bucket]
 }

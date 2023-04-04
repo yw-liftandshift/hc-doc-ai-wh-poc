@@ -1,5 +1,5 @@
 /* impersonate terraform service account */
-service_account = "<service_account>"
+service_account = "<terraform service_account"
 
 /* project_id */
 project_id = "<project_id>"
@@ -109,10 +109,16 @@ region                      = "us-central1"
 timeout                     = 540
 cloud_function_code_bucket  = "cloud_function_code_bucket"
 cloud_function_event_bucket = "cf-event-bucket"
-source_code_name            = "helloworld.zip"
-source_code_path            = "../helloworld.zip"
-entry_point_function        = "hello_get"
-memory                      = 512
+source_code_name            = "function-source.zip"
+source_code_path            = "../function-source.zip"
+entry_point_function        = "main"
+memory                      = 8192
+# environment_variables for cloud function code #
+project_number               = "<project_number>"
+cloud_function_code_location = "us"
+input_mime_type              = "application/pdf"
+schema_id                    = "<schema_id>"
+sa_user                      = "user:<doc ai warehouse service account>"
 
 
 /* DocAi */

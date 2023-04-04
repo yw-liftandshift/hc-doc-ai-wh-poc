@@ -42,7 +42,15 @@ module "cloud_function" {
   source_code_path            = var.source_code_path
   entry_point_function        = var.entry_point_function
   memory                      = var.memory
-  depends_on                  = [module.Services]
+  # environment_variables for cloud function code #
+  project_number               = var.project_number
+  cloud_function_code_location = var.cloud_function_code_location
+  processor_id                 = module.DocAi.ocr_processor_name
+  cde_processor_id             = module.DocAi.cde_processor_name
+  input_mime_type              = var.input_mime_type
+  schema_id                    = var.schema_id
+  sa_user                      = var.sa_user
+  depends_on                   = [module.Services, module.DocAi]
 }
 
 /* DocAi */

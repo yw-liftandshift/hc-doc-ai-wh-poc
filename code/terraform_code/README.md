@@ -34,7 +34,11 @@ Apply the Terraform configuration by running the following command and entering 
   * cloudresourcemanager.googleapis.com
   * serviceusage.googleapis.com
 
-* Inside the root folder there is a backend.tf file go to this file and insert the bucket name which was created manually to store terraform state file
+* Inside the root folder there is a backend.tf file go to this file you can find variable bucket 
+      ```
+        bucket = "<state bucket name>"
+      ```
+replace "<state bucket name>" with your manually created bucket for tearraform state bucket 
 
 * in the root folder there is a file terraform.tfvars  insert the value for all the variables inside the file 
 

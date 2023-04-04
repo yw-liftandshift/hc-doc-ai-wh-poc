@@ -133,6 +133,32 @@ variable "memory" {
   type        = string
 }
 
+# environment_variables for cloud function code #
+variable "project_number" {
+  description = "project no for cloud function"
+  type        = string
+}
+
+variable "cloud_function_code_location" {
+  description = "location for cloud function code"
+  type        = string
+}
+
+
+variable "input_mime_type" {
+  description = "input_mime_type for ml code"
+  type        = string
+}
+
+variable "schema_id" {
+  description = "schema_id for ml code"
+  type        = string
+}
+
+variable "sa_user" {
+  description = "service account user for ml code"
+  type        = string
+}
 /* DocAi */
 variable "first_docai_name" {
   description = "name for Docai processor"
