@@ -1,15 +1,13 @@
 # This file is for holding variables and schema
-
 import pathlib
 
 #Defining the variables
-parameter_dict = {'DEST_WORKBENCH_PROCESSOR_NAME': '<Add Processor display name>',
-                'GCS_PATH_FOR_LABELLED_DATA_TEST':'<Add GCS PATH for TEST_DATA>',
+parameter_dict = {'GCS_PATH_FOR_LABELLED_DATA_TEST':'<Add GCS PATH for TEST_DATA>',
                 'GCS_PATH_FOR_LABELLED_DATA_TRAIN ': '<Add Project ID>',
                 'PROJECT_ID': '<Add Project ID>',
                 'API_LOCATION' : '<Add Location>',
                 'PROJECT_NUMBER' : '<Add project number>',
-                 'VERSION_NAME' : '<Add Processor training version name>'}
+                'VERSION_NAME' : '<Add Processor training version name>'}
 
 #Schema for the labelled entities
 schema_json = """{
