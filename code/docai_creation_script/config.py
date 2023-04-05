@@ -4,8 +4,8 @@ import os
 
 #Defining the variables
 parameter_dict = {'DEST_PROCESSOR_NUMBER':os.environ.get["cde_processor_id"],
-                 'GCS_PATH_FOR_LABELLED_DATA_TEST':'gs://hcwarehouse-pdf-storage/exported-cde-tagged-data/test/',
-                 'GCS_PATH_FOR_LABELLED_DATA_TRAIN ':'gs://hcwarehouse-pdf-storage/exported-cde-tagged-data/train/',
+                 'GCS_PATH_FOR_LABELLED_DATA_TEST':'gs://<Add ur PROJECT_ID>_processor_trainning_bucket/exported-cde-tagged-data/test/',
+                 'GCS_PATH_FOR_LABELLED_DATA_TRAIN':'gs://<Add ur PROJECT_ID>_processor_trainning_bucket/exported-cde-tagged-data/train/',
                  'PROJECT_ID': '<Add Project ID>',
                  'API_LOCATION' : '<Add Location>',
                  'PROJECT_NUMBER' : '<Add project number>',
