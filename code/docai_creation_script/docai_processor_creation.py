@@ -10,7 +10,7 @@ import google.auth
 import google.auth.transport.requests
 import google.cloud.logging
 import google.cloud.documentai_v1beta3 as docai_v1beta3
-from google.api_core.client_options import ClientOptions as client_options
+from google.api_core.client_options import ClientOptions as clientoptions
 from tabulate import tabulate
 from google.cloud import documentai
 from config import parameter_dict,schema_json
@@ -28,7 +28,7 @@ location = parameter_dict['API_LOCATION']
 version_name = parameter_dict['VERSION_NAME']
 gcs_path_for_train_data=parameter_dict['GCS_PATH_FOR_LABELLED_DATA_TRAIN']
 gcs_path_for_test_data = parameter_dict['GCS_PATH_FOR_LABELLED_DATA_TEST']
-dest_processor_number = os.environ("processor_id", '')
+dest_processor_number = parameter_dict['DEST_PROCESSOR_NUMBER']
 
 def get_client_and_parent(project_id: str, location: str):
     '''
@@ -47,7 +47,7 @@ def get_client_and_parent(project_id: str, location: str):
     parent : str
               parent details  
     '''
-    client_options = client_options(api_endpoint=f"{API_LOCATION}-documentai.googleapis.com")
+    client_options = clientoptions(api_endpoint=f"{location}-documentai.googleapis.com")
     client = docai_v1beta3.DocumentProcessorServiceClient(client_options=client_options)
     parent = client.common_location_path(project_id, location)
     return client, parent
@@ -60,8 +60,10 @@ def train_processor_version(document_schema: docai_v1beta3.types.DocumentSchema,
                             version_name: str, 
                             processor_number:str,
                             project_number:str,
-                            gcs_path_for_train_data:str,
-                            gcs_path_for_test_data:str):
+                            project_id: str,
+                            location: str,
+                            gcs_path_for_train_data: str,
+                            gcs_path_for_test_data: str):
     '''
     This function trains the CDE processor
 
@@ -79,15 +81,14 @@ def train_processor_version(document_schema: docai_v1beta3.types.DocumentSchema,
     gcs_path_for_test_data : str
                             path of the test data
     '''
-    client,parent = get_client_and_parent()  
+    client,parent = get_client_and_parent(project_id, location)  
     processor_parent = f"projects/{project_number}/locations/us/processors/{processor_number}"
     processor_version = docai_v1beta3.ProcessorVersion(display_name=version_name)  
     training_documents_input_config = docai_v1beta3.BatchDocumentsInputConfig(
     gcs_prefix = docai_v1beta3.types.GcsPrefix(gcs_uri_prefix=gcs_path_for_train_data))  
     test_documents_input_config = docai_v1beta3.BatchDocumentsInputConfig(
     gcs_prefix = docai_v1beta3.types.GcsPrefix(gcs_uri_prefix=gcs_path_for_test_data))    
-    input_data =docai_v1beta3.types.TrainProcessorVersionRequest.InputData(training_documents=training_documents_input_config,
-                                                                           test_documents=test_documents_input_config)
+    input_data =docai_v1beta3.types.TrainProcessorVersionRequest.InputData(training_documents=training_documents_input_config,                                                                                    test_documents=test_documents_input_config)
     request = docai_v1beta3.TrainProcessorVersionRequest(parent=processor_parent,
                                                          processor_version=processor_version,
                                                          input_data=input_data,
@@ -96,15 +97,21 @@ def train_processor_version(document_schema: docai_v1beta3.types.DocumentSchema,
     logging.info("Training of processor has initiated")    
     logging.info(f"Operation id:{operation.operation.name}")  
 
-def main():  
+def main():
+    
     try:
         #Processor id to be recieved from the the terraform code
         if dest_processor_number != None:
             train_processor_version(schema, 
                                     version_name,
                                     dest_processor_number,
-                                    processor_number,
+                                    project_number,
+                                    project_id,
+                                    location,
                                     gcs_path_for_train_data,
                                     gcs_path_for_test_data)
     except Exception as e:
         logging.error(f"Error in processor training : {e}")
+
+if __name__=="__main__":
+    main()
