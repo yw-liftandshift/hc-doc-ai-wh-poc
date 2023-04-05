@@ -1,11 +1,11 @@
 /* impersonate terraform service account */
-service_account = "<terraform service_account"
+service_account = "<terraform service_account>"
 
 /* project_id */
 project_id = "<project_id>"
 
 /* Cloud Storage */
-names    = ["test_bucket", "train_bucket"]
+name     = "processor_training_bucket"
 location = "us-central1"
 
 /* IAM */
@@ -108,7 +108,7 @@ runtime                     = "python310"
 region                      = "us-central1"
 timeout                     = 540
 cloud_function_code_bucket  = "cloud_function_code_bucket"
-cloud_function_event_bucket = "cf-event-bucket"
+cloud_function_event_bucket = "input-pdf-bucket"
 source_code_name            = "function-source.zip"
 source_code_path            = "../function-source.zip"
 entry_point_function        = "main"
