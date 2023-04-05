@@ -1,12 +1,3 @@
-output "ocr_processor_id" {
-  description = "an identifier for the resource with format projects/{{project}}/locations/{{location}}/processors/{{name}}"
-  value       = module.DocAi.ocr_processor_id
-}
-
-output "cde_processor_id" {
-  description = "an identifier for the resource with format projects/{{project}}/locations/{{location}}/processors/{{name}}"
-  value       = module.DocAi.cde_processor_id
-}
 
 output "ocr_processor_name" {
   description = "The resource name of the processor."
@@ -18,14 +9,10 @@ output "cde_processor_name" {
   value       = module.DocAi.cde_processor_name
 }
 
-output "bucket_name" {
-  description = "name of the bucket"
-  value       = module.gcs.bucket_names
-}
 
-output "urls" {
+output "url" {
   description = "list of bucket urls"
-  value       = module.gcs.urls
+  value       = module.gcs.url
 }
 
 

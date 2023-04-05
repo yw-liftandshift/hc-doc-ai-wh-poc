@@ -1,9 +1,4 @@
-output "bucket_names" {
-  description = "name of the bucket"
-  value       = module.gcs_buckets.names
-}
-
-output "urls" {
+output "url" {
   description = "list of bucket urls"
-  value       = module.gcs_buckets.urls_list
+  value       = google_storage_bucket.gcs.url
 }

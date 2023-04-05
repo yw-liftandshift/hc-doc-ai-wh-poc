@@ -8,9 +8,9 @@ variable "location" {
   type        = string
 }
 
-variable "names" {
+variable "name" {
   description = "The name of the bucket"
-  type        = list(string)
+  type        = string
 }
 
 
