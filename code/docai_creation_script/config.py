@@ -1,13 +1,16 @@
 # This file is for holding variables and schema
 import pathlib
+import os
 
 #Defining the variables
-parameter_dict = {'GCS_PATH_FOR_LABELLED_DATA_TEST':'<Add GCS PATH for TEST_DATA>',
-                'GCS_PATH_FOR_LABELLED_DATA_TRAIN ': '<Add Project ID>',
-                'PROJECT_ID': '<Add Project ID>',
-                'API_LOCATION' : '<Add Location>',
-                'PROJECT_NUMBER' : '<Add project number>',
-                'VERSION_NAME' : '<Add Processor training version name>'}
+parameter_dict = {'DEST_PROCESSOR_NUMBER':os.environ.get("processor_id", ''),
+                 'GCS_PATH_FOR_LABELLED_DATA_TEST':'gs://hcwarehouse-pdf-storage/exported-cde-tagged-data/test/',
+                 'GCS_PATH_FOR_LABELLED_DATA_TRAIN ':'gs://hcwarehouse-pdf-storage/exported-cde-tagged-data/train/',
+                 'PROJECT_ID': '<Add Project ID>',
+                 'API_LOCATION' : '<Add Location>',
+                 'PROJECT_NUMBER' : '<Add project number>',
+                 'VERSION_NAME' : '<Add Processor training version name>'}
+
 
 #Schema for the labelled entities
 schema_json = """{
