@@ -1,5 +1,5 @@
 /* impersonate terraform service account */
-service_account = "<terraform service_account>"
+service_account = "<terraform runner service_account>"
 
 /* project_id */
 project_id = "<project_id>"
@@ -13,51 +13,51 @@ mode     = "additive"
 projects = ["<project_id>"]
 bindings = {
   "roles/bigquery.readSessionUser" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
   ]
   "roles/bigquery.user" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
   ]
   "roles/contentwarehouse.admin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
     "user:<user_id>",
   ]
   "roles/contentwarehouse.documentAdmin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
     "user:<user_id>",
   ]
   "roles/contentwarehouse.documentCreator" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
     "user:<user_id>",
   ]
   "roles/contentwarehouse.serviceAgent" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
   ]
   "roles/contentwarehouse.documentViewer" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
   ]
   "roles/documentai.admin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
     "user:<user_id>"
   ]
   "roles/contentwarehouse.documentAdmin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
   ]
   "roles/secretmanager.secretAccessor" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
   ]
   "roles/iam.serviceAccountTokenCreator" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
   ]
   "roles/storage.admin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
     "user:<user_id>"
   ]
   "roles/storage.objectViewer" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
   ]
   "roles/aiplatform.admin" = [
-    "serviceAccount:<service_account>",
+    "serviceAccount:<Doc Ai-service-account>",
     "user:<user_id>",
   ]
   "roles/bigquery.admin" = [
@@ -99,7 +99,7 @@ role_id      = "warehouse_custom_role"
 title        = "doc ai warehousecustom custom role "
 description  = "custom role for doc ai warehouse"
 permissions  = ["contentwarehouse.documentSchemas.create", "contentwarehouse.documentSchemas.delete", "contentwarehouse.documentSchemas.get", "contentwarehouse.documentSchemas.list", "contentwarehouse.documentSchemas.update", "contentwarehouse.documents.create", "contentwarehouse.documents.delete", "contentwarehouse.documents.get", "contentwarehouse.documents.getIamPolicy", "contentwarehouse.documents.update", "contentwarehouse.locations.initialize", "contentwarehouse.operations.get", "contentwarehouse.rawDocuments.download", "contentwarehouse.rawDocuments.upload", "contentwarehouse.synonymSets.get", "contentwarehouse.synonymSets.list", "contentwarehouse.synonymSets.update"]
-members      = ["serviceAccount:<service_account>"]
+members      = ["serviceAccount:<Doc Ai-service-account>"]
 
 /* cloud function */
 cloud_function_name         = "HC_cloud_fuction"
@@ -117,7 +117,7 @@ memory                      = 8192
 project_number               = "<project_number>"
 cloud_function_code_location = "us"
 input_mime_type              = "application/pdf"
-schema_id                    = "<schema_id>"
+schema_id                    = "<doc ai warehouse schema_id>"
 sa_user                      = "user:<doc ai warehouse service account>"
 
 
@@ -125,8 +125,8 @@ sa_user                      = "user:<doc ai warehouse service account>"
 docai_location        = "us"
 first_processor_type  = "OCR_PROCESSOR"
 second_processor_type = "CUSTOM_EXTRACTION_PROCESSOR"
-first_docai_name      = "ocr_processor"
-second_docai_name     = "cde_processor"
+first_docai_name      = "Hc-ocr_processor"
+second_docai_name     = "Hc-cde_processor"
 
 
 /* Api And services */
