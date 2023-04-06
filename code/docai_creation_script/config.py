@@ -1,9 +1,9 @@
 # This file is for holding variables and schema
 import pathlib
 import os
-
+dest_processor_number=os.environ["cde_processor_id"].replace('"','')
 #Defining the variables
-parameter_dict = {'DEST_PROCESSOR_NUMBER':os.environ.get["cde_processor_id"],
+parameter_dict = {'DEST_PROCESSOR_NUMBER':dest_processor_number,
                  'GCS_PATH_FOR_LABELLED_DATA_TEST':'gs://<Add ur PROJECT_ID>_processor_training_bucket/exported-cde-tagged-data/test/',
                  'GCS_PATH_FOR_LABELLED_DATA_TRAIN':'gs://<Add ur PROJECT_ID>_processor_training_bucket/exported-cde-tagged-data/train/',
                  'PROJECT_ID': '<Add Project ID>',

@@ -15,11 +15,7 @@ from tabulate import tabulate
 from google.cloud import documentai
 from config import parameter_dict,schema_json
 
-#Setting up logging
-#Instantiates a client
-client = google.cloud.logging.Client()
-client.setup_logging()
-logging.basicConfig(level=logging.DEBUG)
+
 
 #Variables from terraform code
 project_id = parameter_dict['PROJECT_ID']
@@ -94,8 +90,7 @@ def train_processor_version(document_schema: docai_v1beta3.types.DocumentSchema,
                                                          input_data=input_data,
                                                          document_schema=document_schema)
     operation = client.train_processor_version(request=request)
-    logging.info("Training of processor has initiated")    
-    logging.info(f"Operation id:{operation.operation.name}")  
+   
 
 def main():
     
