@@ -11,7 +11,6 @@ import google.auth.transport.requests
 import google.cloud.logging
 import google.cloud.documentai_v1beta3 as docai_v1beta3
 from google.api_core.client_options import ClientOptions as clientoptions
-from tabulate import tabulate
 from google.cloud import documentai
 from config import parameter_dict,schema_json
 
