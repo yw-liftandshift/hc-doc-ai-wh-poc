@@ -34,3 +34,13 @@ variable "dw_ui_service_account_private_key" {
   sensitive   = true
 }
 
+variable "sourcerepo_name" {
+  type        = string
+  description = "The Cloud Source Repository name."
+}
+
+variable "branch_name" {
+  type        = string
+  description = "The Cloud Source repository branch name."
+}
+

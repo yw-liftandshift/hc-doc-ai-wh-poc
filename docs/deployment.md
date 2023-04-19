@@ -19,11 +19,12 @@
 1. Run `gcloud application-default login`.
 1. `cd` into the [bootstrap folder](../infra/deployment/terraform/bootstrap).
 1. Run `cp terraform.tfvars.template terraform.tfvars` to create a [terraform.tfvars file](infra/deployment/terraform/bootstrap).
-1. Set the variables in the `terraform.tfvars` file according to your own values. Leave the `dw_ui_service_account_email` and `dw_ui_service_account_private_key` variables empty for now.
+1. Set the variables in the `terraform.tfvars` file according to your own values. Leave the `dw_ui_service_account_email`, `dw_ui_service_account_private_key`, and `sourcerepo_name` variables empty for now.
 1. Comment out the entire contents of the `backend.tf` file.
 1. Run `terraform init`.
 1. Run `terraform apply -target=module.project`.
 1. Uncomment the contents of the `backend.tf` and set the `bucket` attribute to the value of the `tfstate_bucket` output.
 1. Run `terraform init` and type `yes` to store the [terraform state](https://developer.hashicorp.com/terraform/language/state) in the [Google Cloud Storage bucket](https://developer.hashicorp.com/terraform/language/settings/backends/gcs). 
 1. Follow the `doc_ai_warehouse_provisioning_link` on your web browser to manually create a DocAI Warehouse instance. [Reference documentation](https://cloud.google.com/document-warehouse/docs/quickstart#provision-cloud-console).
-1. Fill out the `dw_ui_service_account_email` and `dw_ui_service_account_private_key` in the `terraform.tfvars` file.
+1. [Create a Cloud Source Repository](https://cloud.google.com/source-repositories/docs/creating-an-empty-repository#gcloud) in the project your just created. Then push this repository to the newly created CSR repository.
+1. Fill out the `dw_ui_service_account_email`, `dw_ui_service_account_private_key`, and the `sourcerepo_name` in the `terraform.tfvars` file.

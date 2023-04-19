@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "doc-ai-cde-processor-training"
+version = "0.1.0"
+description = ""
+authors = ["Marcus Vinicius Monteiro de Souza <marcus.souza@yoppworks.com>"]
+readme = "README.md"
+packages = [{include = "doc_ai_cde_processor_training"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.3"
+google-cloud-documentai = "^2.15.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

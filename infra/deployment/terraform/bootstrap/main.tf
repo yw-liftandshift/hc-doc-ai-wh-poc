@@ -18,8 +18,10 @@ module "iam" {
 module "doc_ai_processors" {
   source = "./modules/doc_ai_processors"
 
-  project_id = module.project.project_id
-  region     = var.region
+  project_id      = module.project.project_id
+  region          = var.region
+  sourcerepo_name = var.sourcerepo_name
+  branch_name     = var.branch_name
 }
 
 module "hc_cloud_function" {

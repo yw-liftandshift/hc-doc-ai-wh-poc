@@ -18,6 +18,6 @@ output "cde_processor_training_bucket_name" {
   value = google_storage_bucket.cde_processor_training.name
 }
 
-output "cde_processor_training_bucket_url" {
-  value = google_storage_bucket.cde_processor_training.url
+output "cde_processor_training_cloudbuild_trigger" {
+  value = google_cloudbuild_trigger.cde_processor_training.name
 }

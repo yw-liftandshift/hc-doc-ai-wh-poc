@@ -18,8 +18,8 @@ output "cde_processor_training_bucket_name" {
   value = module.doc_ai_processors.cde_processor_training_bucket_name
 }
 
-output "cde_processor_training_bucket_url" {
-  value = module.doc_ai_processors.cde_processor_training_bucket_url
+output "cde_processor_training_cloudbuild_trigger" {
+  value = module.doc_ai_processors.cde_processor_training_cloudbuild_trigger
 }
 
 output "tfstate_bucket" {
