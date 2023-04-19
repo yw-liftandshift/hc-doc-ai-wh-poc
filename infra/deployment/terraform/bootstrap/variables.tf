@@ -24,13 +24,13 @@ variable "region" {
 }
 
 variable "dw_ui_service_account_email" {
-    type = string
-    description = "Email of the Service Account used to authenticate to the Document AI Warehouse service."
+  type        = string
+  description = "Email of the Service Account used to authenticate to the Document AI Warehouse service."
 }
 
 variable "dw_ui_service_account_private_key" {
-    type = string
-    description = "Private key of the Service Account used to authenticate to the Document AI Warehouse service."
-    sensitive = true
+  type        = string
+  description = "Private key of the Service Account used to authenticate to the Document AI Warehouse service."
+  sensitive   = true
 }
 

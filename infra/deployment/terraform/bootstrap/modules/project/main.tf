@@ -1,9 +1,15 @@
 locals {
   enable_apis = [
     "appengine.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "cloudfunctions.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "contentwarehouse.googleapis.com",
+    "documentai.googleapis.com",
+    "eventarc.googleapis.com",
     "iamcredentials.googleapis.com",
+    "run.googleapis.com",
     "secretmanager.googleapis.com",
     "serviceusage.googleapis.com",
   ]
