@@ -23,6 +23,11 @@ variable "region" {
   description = "The default region in which the resources will be created."
 }
 
+variable "doc_ai_location" {
+  type        = string
+  description = "The Doc AI processors location. Valid values are 'us' and 'eu'."
+}
+
 variable "dw_ui_service_account_email" {
   type        = string
   description = "Email of the Service Account used to authenticate to the Document AI Warehouse service."

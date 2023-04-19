@@ -5,14 +5,14 @@ data "google_sourcerepo_repository" "sourcerepo" {
 
 resource "google_document_ai_processor" "ocr" {
   project      = var.project_id
-  location     = var.region
+  location     = var.doc_ai_location
   display_name = "HC OCR processor"
   type         = "OCR_PROCESSOR"
 }
 
 resource "google_document_ai_processor" "cde" {
   project      = var.project_id
-  location     = var.region
+  location     = var.doc_ai_location
   display_name = "HC CDE processor"
   type         = "CUSTOM_EXTRACTION_PROCESSOR"
 }

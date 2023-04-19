@@ -15,6 +15,12 @@ locals {
     "roles/storage.objectViewer",
   ]
 
+  cloudbuild_service_account_email = "${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+
+  cloudbuild_service_account_roles = [
+    "roles/documentai.admin"
+  ]
+
   gcs_service_account_email = "service-${data.google_project.project.number}@gs-project-accounts.iam.gserviceaccount.com"
 
   gcs_service_account_roles = [
@@ -67,6 +73,13 @@ resource "google_project_iam_member" "dw_ui_service_account_warehouse_custom_rol
   project = var.project_id
   role    = google_project_iam_custom_role.warehouse_custom_role.id
   member  = "serviceAccount:${var.dw_ui_service_account_email}"
+}
+
+resource "google_project_iam_member" "cloudbuild_service_account" {
+  for_each = toset(local.cloudbuild_service_account_roles)
+  project  = var.project_id
+  role     = each.value
+  member   = "serviceAccount:${local.cloudbuild_service_account_email}"
 }
 
 resource "google_project_iam_member" "gcs_service_account" {

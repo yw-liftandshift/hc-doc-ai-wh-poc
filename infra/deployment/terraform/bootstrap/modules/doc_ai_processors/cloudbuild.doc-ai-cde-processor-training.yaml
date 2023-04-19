@@ -1,20 +1,20 @@
 steps:
-  # - name: gcr.io/cloud-builders/gcloud
-  #   id: upload-training-data
-  #   script: |
-  #     #!/usr/bin/env bash
+  - name: gcr.io/cloud-builders/gcloud
+    id: upload-training-data
+    script: |
+      #!/usr/bin/env bash
 
-  #     set -euxo pipefail
+      set -euxo pipefail
 
-  #     cd /workspace/doc-ai-cde-processor-training
+      cd /workspace/doc-ai-cde-processor-training
 
-  #     apt-get -y update && apt-get -y install zip
+      apt-get -y update && apt-get -y install zip
 
-  #     unzip data/tagged_data.zip
+      unzip data/tagged_data.zip
 
-  #     gsutil -m cp -r tagged_data/exported-cde-tagged-data "$CDE_PROCESSOR_TRAINING_BUCKET_URI"
-  #   env:
-  #     - "CDE_PROCESSOR_TRAINING_BUCKET_URI=${_CDE_PROCESSOR_TRAINING_BUCKET_URI}"
+      gsutil -m cp -r tagged_data/exported-cde-tagged-data "$CDE_PROCESSOR_TRAINING_BUCKET_URI"
+    env:
+      - "CDE_PROCESSOR_TRAINING_BUCKET_URI=${_CDE_PROCESSOR_TRAINING_BUCKET_URI}"
   - name: python
     id: train-cde-processor
     script: |
@@ -36,3 +36,4 @@ steps:
       - "CDE_PROCESSOR_NAME=${_CDE_PROCESSOR_NAME}"
       - "CDE_PROCESSOR_VERSION_DISPLAY_NAME=${_CDE_PROCESSOR_VERSION_DISPLAY_NAME}"
       - "CDE_PROCESSOR_TRAINING_BUCKET_URI=${_CDE_PROCESSOR_TRAINING_BUCKET_URI}"
+timeout: 21600s
