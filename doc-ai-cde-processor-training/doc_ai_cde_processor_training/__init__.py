@@ -13,7 +13,7 @@ from google.api_core.client_options import ClientOptions
 def train_processor_version(
     project_id: str,
     location: str,
-    processor_id: str,
+    processor_name: str,
     processor_version_display_name: str,
     train_data_uri: str,
     test_data_uri: str,
@@ -24,8 +24,8 @@ def train_processor_version(
     client = docai_v1beta3.DocumentProcessorServiceClient(client_options=opts)
 
     # The full resource name of the processor
-    # e.g. `projects/{project_id}/locations/{location}/processors/{processor_id}
-    parent = client.processor_path(project_id, location, processor_id)
+    # e.g. `projects/{project_id}/locations/{location}/processors/{processor_name}
+    parent = client.processor_path(project_id, location, processor_name)
 
     processor_version = docai_v1beta3.ProcessorVersion(
         display_name=processor_version_display_name
