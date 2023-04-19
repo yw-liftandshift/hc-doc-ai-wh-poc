@@ -31,7 +31,8 @@
 1. Uncomment the contents of the `backend.tf` and set the `bucket` attribute to the value of the `tfstate_bucket` output.
 1. Run `terraform init` and type `yes` to store the [terraform state](https://developer.hashicorp.com/terraform/language/state) in the [Google Cloud Storage bucket](https://developer.hashicorp.com/terraform/language/settings/backends/gcs). 
 1. Follow the `doc_ai_warehouse_provisioning_link` on your web browser to manually create a DocAI Warehouse instance. [Reference documentation](https://cloud.google.com/document-warehouse/docs/quickstart#provision-cloud-console).
-1. Create a [document schema](https://cloud.google.com/document-warehouse/docs/manage-document-schemas) using the [schema_creation.json](./data/schema_creation.json) file as the `json` input. Take note of the generated `schema_id`.
+1. Go to Document AI Warehouse UI -> Admin -> Schema, and create a [document schema](https://cloud.google.com/document-warehouse/docs/manage-document-schemas) using the [schema_creation.json](./data/schema_creation.json) file as the `json` input. Take note of the generated `schema_id`.
+1. Go to the Document AI Warehouse UI -> Admin -> Access and add the `dw_ui_service_account_email` as a `Document Admin`.
 1. [Create a Cloud Source Repository](https://cloud.google.com/source-repositories/docs/creating-an-empty-repository#gcloud) in the project your just created. Then push this repository to the newly created CSR repository.
 1. Fill out the remaining empty variables in the `terraform.tfvars` file.
 1. Go to Cloud Storage -> Settings and check that the `Cloud Storage Service Account` was created.

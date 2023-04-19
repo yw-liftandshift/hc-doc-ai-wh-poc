@@ -1,6 +1,8 @@
 locals {
   dw_ui_service_account_roles = [
     "roles/aiplatform.admin",
+    "roles/bigquery.admin",
+    "roles/bigquery.dataEditor",
     "roles/bigquery.readSessionUser",
     "roles/bigquery.user",
     "roles/contentwarehouse.admin",
@@ -9,9 +11,15 @@ locals {
     "roles/contentwarehouse.serviceAgent",
     "roles/contentwarehouse.documentViewer",
     "roles/documentai.admin",
+    "roles/errorreporting.admin",
+    "roles/logging.admin",
+    "roles/notebooks.admin",
+    "roles/notebooks.viewer",
     "roles/secretmanager.secretAccessor",
+    "roles/iam.serviceAccountUser",
     "roles/iam.serviceAccountTokenCreator",
     "roles/storage.admin",
+    "roles/storage.objectAdmin",
     "roles/storage.objectViewer",
   ]
 

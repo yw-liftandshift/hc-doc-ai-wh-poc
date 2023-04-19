@@ -10,6 +10,10 @@ output "cde_processor_id" {
   value = module.doc_ai_processors.cde_processor_id
 }
 
+output "cde_processor_name" {
+  value = module.doc_ai_processors.cde_processor_name
+}
+
 output "cde_processor_display_name" {
   value = module.doc_ai_processors.cde_processor_display_name
 }

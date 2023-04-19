@@ -2,8 +2,16 @@ output "ocr_processor_id" {
   value = google_document_ai_processor.ocr.id
 }
 
+output "ocr_processor_name" {
+  value = google_document_ai_processor.ocr.name
+}
+
 output "cde_processor_id" {
   value = google_document_ai_processor.cde.id
+}
+
+output "cde_processor_name" {
+  value = google_document_ai_processor.cde.name
 }
 
 output "cde_processor_location" {

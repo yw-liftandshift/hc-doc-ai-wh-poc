@@ -33,8 +33,8 @@ module "hc_cloud_function" {
   dw_ui_service_account_email = var.dw_ui_service_account_email
   schema_id                   = var.schema_id
   doc_ai_location             = var.doc_ai_location
-  ocr_processor_id            = module.doc_ai_processors.ocr_processor_id
-  cde_processor_id            = module.doc_ai_processors.cde_processor_id
+  ocr_processor_name          = module.doc_ai_processors.ocr_processor_name
+  cde_processor_name          = module.doc_ai_processors.cde_processor_name
 }
 
 # Store tfvars in Secret Manager

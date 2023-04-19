@@ -93,10 +93,10 @@ def main(event, context):
     else:
         try:
             doc = process_document_ocr(env_var["project_id"], env_var["location"], env_var["processor_id"], local_path, env_var["input_mime_type"])
-        except Exception as e:
+        except:
+            raise
+        finally:
             pdfFileObj.close()
-            logging.error(e.message)
-            return {"error": "DocOCR call failed"}
         
     logging.info("doc creation completed")
 
@@ -109,10 +109,10 @@ def main(event, context):
                 first_page_path,
                 env_var["input_mime_type"]
         )
-    except Exception as e:
+    except:
+        raise
+    finally:
         pdfFileObj.close()
-        logging.error(e.message)
-        return {"error": "CDE API call failed"}
 
     json_string = proto.Message.to_json(doc_cde)
     doc_cde_json = json.loads(json_string)
@@ -130,10 +130,10 @@ def main(event, context):
             gcs_input_uri,
             key_val_dict 
         )
-    except Exception as e:
+    except:
+        raise
+    finally:
         pdfFileObj.close()
-        logging.error(e.message)
-        return {"error": "Warehouse Document Creation failed"}
 
     pdfFileObj.close()
     os.remove(local_path)

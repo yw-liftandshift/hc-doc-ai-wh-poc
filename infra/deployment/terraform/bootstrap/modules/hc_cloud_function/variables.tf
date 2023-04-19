@@ -23,12 +23,12 @@ variable "doc_ai_location" {
   description = "The Doc AI processors location. Valid values are 'us' and 'eu'."
 }
 
-variable "ocr_processor_id" {
+variable "ocr_processor_name" {
   type        = string
   description = "The HC OCR processor id."
 }
 
-variable "cde_processor_id" {
+variable "cde_processor_name" {
   type        = string
-  description = "The HC CDE processor id."
+  description = "The HC CDE processor name."
 }
