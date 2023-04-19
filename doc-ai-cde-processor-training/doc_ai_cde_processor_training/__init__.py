@@ -21,8 +21,10 @@ def train_processor_version(
     processor_version_display_name: str,
     train_data_uri: str,
     test_data_uri: str,
-    timeout: int,
+    timeout: str,
 ):
+    timeout_int = int(timeout)
+
     # You must set the api_endpoint if you use a location other than 'us', e.g.:
     opts = ClientOptions(api_endpoint=f"{location}-documentai.googleapis.com")
 
@@ -99,7 +101,7 @@ def train_processor_version(
     print(operation.operation.name)
     # Wait for operation to complete
     response = docai_v1beta3.TrainProcessorVersionResponse(
-        operation.result(timeout=timeout)
+        operation.result(timeout=timeout_int)
     )
 
     metadata = docai_v1beta3.TrainProcessorVersionMetadata(operation.metadata)
