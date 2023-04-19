@@ -13,6 +13,11 @@ variable "dw_ui_service_account_email" {
   description = "Email of the Service Account used to authenticate to the Document AI Warehouse service."
 }
 
+variable "schema_id" {
+  type        = string
+  description = "The ID of the Document schema to be used in the HC Cloud Function."
+}
+
 variable "doc_ai_location" {
   type        = string
   description = "The Doc AI processors location. Valid values are 'us' and 'eu'."

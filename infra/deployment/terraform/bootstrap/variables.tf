@@ -39,6 +39,11 @@ variable "dw_ui_service_account_private_key" {
   sensitive   = true
 }
 
+variable "schema_id" {
+  type        = string
+  description = "The ID of the Document schema to be used in the HC Cloud Function."
+}
+
 variable "sourcerepo_name" {
   type        = string
   description = "The Cloud Source Repository name."

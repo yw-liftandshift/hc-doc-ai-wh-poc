@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "terribly-lively-tender-lacewing"
+    # bucket = ""
     prefix = "bootstrap"
   }
 }

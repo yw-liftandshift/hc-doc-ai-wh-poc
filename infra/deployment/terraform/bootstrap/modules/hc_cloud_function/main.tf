@@ -72,10 +72,11 @@ resource "google_cloudfunctions2_function" "hc" {
     environment_variables = {
       project_id       = var.project_id
       project_number   = data.google_project.project.number
-      location         = var.region
+      location         = var.doc_ai_location
       processor_id     = var.ocr_processor_id
       processor_id_cde = var.cde_processor_id
       input_mime_type  = "application/pdf"
+      schema_id        = var.schema_id
       sa_user          = "serviceAccount:${var.dw_ui_service_account_email}"
     }
   }

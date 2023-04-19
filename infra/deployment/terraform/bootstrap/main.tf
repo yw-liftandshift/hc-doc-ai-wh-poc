@@ -31,6 +31,7 @@ module "hc_cloud_function" {
   project_id                  = module.project.project_id
   region                      = var.region
   dw_ui_service_account_email = var.dw_ui_service_account_email
+  schema_id                   = var.schema_id
   doc_ai_location             = var.doc_ai_location
   ocr_processor_id            = module.doc_ai_processors.ocr_processor_id
   cde_processor_id            = module.doc_ai_processors.cde_processor_id
