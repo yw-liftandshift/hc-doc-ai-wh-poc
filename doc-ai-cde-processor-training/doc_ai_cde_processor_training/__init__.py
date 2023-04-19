@@ -10,6 +10,10 @@ from google.api_core.client_options import ClientOptions
 @click.option("--processor-version-display-name", help="The display name.")
 @click.option("--train-data-uri", help="The train data GCS URI.")
 @click.option("--test-data-uri", help="The train data GCS URI.")
+@click.option(
+    "--timeout",
+    help="Timeout in seconds for getting the result of the processor training operation.",
+)
 def train_processor_version(
     project_id: str,
     location: str,
@@ -17,6 +21,7 @@ def train_processor_version(
     processor_version_display_name: str,
     train_data_uri: str,
     test_data_uri: str,
+    timeout: int,
 ):
     # You must set the api_endpoint if you use a location other than 'us', e.g.:
     opts = ClientOptions(api_endpoint=f"{location}-documentai.googleapis.com")
@@ -93,7 +98,9 @@ def train_processor_version(
     # Print operation details
     print(operation.operation.name)
     # Wait for operation to complete
-    response = docai_v1beta3.TrainProcessorVersionResponse(operation.result())
+    response = docai_v1beta3.TrainProcessorVersionResponse(
+        operation.result(timeout=timeout)
+    )
 
     metadata = docai_v1beta3.TrainProcessorVersionMetadata(operation.metadata)
 

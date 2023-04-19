@@ -29,7 +29,7 @@ steps:
 
       pip install -r requirements.txt
 
-      python -m doc_ai_cde_processor_training --project-id "$PROJECT_ID" --location "$CDE_PROCESSOR_LOCATION" --processor-name "$CDE_PROCESSOR_NAME" --processor-version-display-name "$CDE_PROCESSOR_VERSION_DISPLAY_NAME" --train-data-uri "$train_data_uri" --test-data-uri "$test_data_uri" 
+      python -m doc_ai_cde_processor_training --project-id "$PROJECT_ID" --location "$CDE_PROCESSOR_LOCATION" --processor-name "$CDE_PROCESSOR_NAME" --processor-version-display-name "$CDE_PROCESSOR_VERSION_DISPLAY_NAME" --train-data-uri "$train_data_uri" --test-data-uri "$test_data_uri" --timeout 21600 
     env:
       - "PROJECT_ID=${PROJECT_ID}"
       - "CDE_PROCESSOR_LOCATION=${_CDE_PROCESSOR_LOCATION}"
