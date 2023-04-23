@@ -1,9 +1,6 @@
 module "project" {
   source = "./modules/project"
 
-  billing_account = var.billing_account
-  folder_id       = var.folder_id
-  project_name    = var.project_name
   project_id      = var.project_id
   region          = var.region
 }

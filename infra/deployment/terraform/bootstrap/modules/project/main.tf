@@ -16,12 +16,8 @@ locals {
   ]
 }
 
-resource "google_project" "project" {
-  name                = var.project_name
-  project_id          = var.project_id
-  billing_account     = var.billing_account
-  folder_id           = var.folder_id
-  auto_create_network = false
+data "google_project" "project" {
+  project_id = var.project_id
 }
 
 # Terraform state bucket
@@ -30,7 +26,7 @@ resource "random_pet" "tfstate_bucket" {
 }
 
 resource "google_storage_bucket" "tfstate" {
-  project       = google_project.project.project_id
+  project       = var.project_id
   name          = random_pet.tfstate_bucket.id
   location      = var.region
   force_destroy = true
@@ -45,7 +41,7 @@ resource "google_storage_bucket" "tfstate" {
 # Enable APIs
 resource "google_project_service" "enable_apis" {
   for_each                   = toset(local.enable_apis)
-  project                    = google_project.project.project_id
+  project                    = var.project_id
   service                    = each.value
   disable_dependent_services = true
 }
