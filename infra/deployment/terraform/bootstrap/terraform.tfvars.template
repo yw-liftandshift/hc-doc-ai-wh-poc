@@ -1,0 +1,8 @@
+project_id                        = "my-project-id"
+region                            = "northamerica-northeast1"
+doc_ai_location                   = "us"
+dw_ui_service_account_email       = ""
+dw_ui_service_account_private_key = ""
+schema_id                         = ""
+sourcerepo_name                   = ""
+branch_name                       = "main"
