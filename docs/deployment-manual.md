@@ -1,4 +1,4 @@
-# Deployment
+# DocAI Warehouse POC - Deployment Manual
 
 ## Pre-Requisites
 
