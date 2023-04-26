@@ -1,4 +1,4 @@
-# DocAI Warehouse POC - Deployment Manual
+# Health Canada DocAI Warehouse POC - Deployment Manual
 
 ## Pre-Requisites
 
@@ -6,6 +6,7 @@
 1. Install [terraform](https://developer.hashicorp.com/terraform/downloads).
 1. Install the [gcloud CLI](https://cloud.google.com/sdk/docs/install).
 1. Join the [DW-UI-preview Group](https://groups.google.com/g/dw-ui-preview) to be able to access the Document AI Warehouse UI in your project.
+![DW-UI Preview Group](./images/dw-ui-preview-group.png "DW-UI Preview Group")
 1. Have a [Google Cloud Organization](https://cloud.google.com/resource-manager/docs/creating-managing-organization).
 1. Have a [Billing Account](https://cloud.google.com/billing/docs/how-to/manage-billing-account).
 1. [Create a Project](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project) to host the POC, linking it to a Billing Account.
