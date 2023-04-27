@@ -18,4 +18,4 @@ The DocAI Warehouse POC provides a document management solution to store, index,
 
 ## Deployment
 
-See [deployment manual](./docs/deployment.md)
+See [deployment manual](./docs/deployment-manual.md)
