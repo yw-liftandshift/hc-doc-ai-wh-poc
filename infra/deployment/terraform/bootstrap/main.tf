@@ -1,8 +1,8 @@
 module "project" {
   source = "./modules/project"
 
-  project_id      = var.project_id
-  region          = var.region
+  project_id = var.project_id
+  region     = var.region
 }
 
 module "iam" {

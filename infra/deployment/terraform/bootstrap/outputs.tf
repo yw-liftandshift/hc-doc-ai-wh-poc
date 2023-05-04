@@ -26,6 +26,10 @@ output "cde_processor_training_cloudbuild_trigger" {
   value = module.doc_ai_processors.cde_processor_training_cloudbuild_trigger
 }
 
+output "input_pdf_bucket" {
+  value = module.hc_cloud_function.input_pdf_bucket
+}
+
 output "tfstate_bucket" {
   value = module.project.tfstate_bucket
 }
