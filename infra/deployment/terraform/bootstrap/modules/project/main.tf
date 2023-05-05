@@ -8,6 +8,7 @@ locals {
     "contentwarehouse.googleapis.com",
     "documentai.googleapis.com",
     "eventarc.googleapis.com",
+    "iam.googleapis.com",
     "iamcredentials.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
