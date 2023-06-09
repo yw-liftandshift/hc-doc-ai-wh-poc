@@ -75,6 +75,11 @@ def train_processor_version(
                 "occurrenceType": 1
             },
             {
+                "name": "file_title",
+                "valueType": "string",
+                "occurrenceType": 1
+            },
+            {
                 "name": "org_code",
                 "valueType": "string",
                 "occurrenceType": 1

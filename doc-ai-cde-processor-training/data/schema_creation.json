@@ -46,6 +46,17 @@
       "schema_sources": []
     },
     {
+      "name": "file_title",
+      "display_name": "file_title",
+      "is_repeatable": false,
+      "is_filterable": true,
+      "is_searchable": true,
+      "is_metadata": true,
+      "is_required": false,
+      "text_type_options": {},
+      "schema_sources": []
+    },
+    {
       "name": "org_code",
       "display_name": "org_code",
       "is_repeatable": false,
