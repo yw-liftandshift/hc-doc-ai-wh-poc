@@ -27,13 +27,9 @@ data "archive_file" "cloud_function_code" {
 }
 
 resource "google_storage_bucket_object" "cloud_function_code" {
-  name   = "hc-cloud-function.${filemd5(local.hc_cloud_function_zip_path)}.zip"
+  name   = "hc-cloud-function.${filemd5(data.archive_file.cloud_function_code.output_path)}.zip"
   bucket = google_storage_bucket.cloud_function_code.name
   source = local.hc_cloud_function_zip_path
-
-  depends_on = [
-    data.archive_file.cloud_function_code
-  ]
 }
 
 resource "google_cloudfunctions_function" "hc" {
