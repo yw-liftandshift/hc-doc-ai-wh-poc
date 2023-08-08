@@ -1,7 +1,3 @@
-output "project_number" {
-  value = module.project.project_number
-}
-
 output "doc_ai_warehouse_provisioning_link" {
   value = "https://console.cloud.google.com/ai/docai-warehouse?project=${var.project_id}"
 }

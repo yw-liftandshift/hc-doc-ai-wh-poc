@@ -1,32 +1,31 @@
+data "google_project" "project" {
+}
+
 data "google_sourcerepo_repository" "sourcerepo" {
-  project = var.project_id
+  project = data.google_project.project.project_id
   name    = var.sourcerepo_name
 }
 
 resource "google_document_ai_processor" "ocr" {
-  project      = var.project_id
   location     = var.doc_ai_location
   display_name = "HC OCR processor"
   type         = "OCR_PROCESSOR"
 }
 
 resource "google_document_ai_processor" "cde" {
-  project      = var.project_id
   location     = var.doc_ai_location
   display_name = "HC CDE processor"
   type         = "CUSTOM_EXTRACTION_PROCESSOR"
 }
 
 resource "google_storage_bucket" "cde_processor_training" {
-  name                        = "${var.project_id}-cde-processor-training-bucket"
+  name                        = "${data.google_project.project.project_id}-cde-processor-training-bucket"
   location                    = var.region
-  project                     = var.project_id
-  force_destroy               = true
+  project                     = data.google_project.project.project_id
   uniform_bucket_level_access = true
 }
 
 resource "google_cloudbuild_trigger" "cde_processor_training" {
-  project     = var.project_id
   name        = "cde-processor-training"
   description = "Trains the ${google_document_ai_processor.cde.display_name} using the data at ${google_storage_bucket.cde_processor_training.name}."
 

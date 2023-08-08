@@ -1,9 +1,13 @@
-output "project_id" {
-  value = data.google_project.project.project_id
+output "application_key" {
+  value = google_kms_crypto_key.application.id
 }
 
-output "project_number" {
-  value = data.google_project.project.number
+output "tfvars_secret_key" {
+  value = google_kms_crypto_key.tfvars.id
+}
+
+output "tfstate_bucket_key" {
+  value = google_kms_crypto_key.tfstate_bucket.id
 }
 
 output "tfstate_bucket" {
