@@ -12,40 +12,6 @@ resource "google_monitoring_notification_channel" "alerting_emails" {
   force_delete = true
 }
 
-resource "google_monitoring_alert_policy" "cloudbuild_success" {
-  display_name = "Cloud Build success"
-  combiner     = "OR"
-  conditions {
-    display_name = "Cloud Build success"
-    condition_matched_log {
-      filter = "resource.type=\"build\" textPayload=~\"^DONE\""
-    }
-  }
-  alert_strategy {
-    notification_rate_limit {
-      period = local.notification_rate_limit_period
-    }
-  }
-  notification_channels = google_monitoring_notification_channel.alerting_emails.*.id
-}
-
-resource "google_monitoring_alert_policy" "cloudbuild_error" {
-  display_name = "Cloud Build error"
-  combiner     = "OR"
-  conditions {
-    display_name = "Cloud Build error"
-    condition_matched_log {
-      filter = "resource.type=\"build\" textPayload=~\"^ERROR:\""
-    }
-  }
-  alert_strategy {
-    notification_rate_limit {
-      period = local.notification_rate_limit_period
-    }
-  }
-  notification_channels = google_monitoring_notification_channel.alerting_emails.*.id
-}
-
 resource "google_monitoring_alert_policy" "bucket_accessible_to_public" {
   display_name = "Google Cloud Storage Bucket accessible to public"
   documentation {

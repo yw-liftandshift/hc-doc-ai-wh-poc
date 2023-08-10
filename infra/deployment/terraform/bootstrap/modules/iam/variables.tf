@@ -1,14 +1,19 @@
-variable "application_key" {
+variable "application_kms_crypto_key" {
   type        = string
   description = "The application KMS key ID."
 }
 
-variable "tfvars_secret_key" {
+variable "doc_ai_kms_crypto_key" {
+  type        = string
+  description = "The Doc AI KMS key ID."
+}
+
+variable "tfvars_secret_kms_crypto_key" {
   type        = string
   description = "The terraform tfvars secret KMS key ID."
 }
 
-variable "tfstate_bucket_key" {
+variable "tfstate_bucket_kms_crypto_key" {
   type        = string
   description = "The terraform state GCS bucket KMS key ID."
 }

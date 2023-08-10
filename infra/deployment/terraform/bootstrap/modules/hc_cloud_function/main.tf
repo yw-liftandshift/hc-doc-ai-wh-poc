@@ -15,21 +15,7 @@ resource "google_storage_bucket" "cloud_function_code" {
   }
 
   encryption {
-    default_kms_key_name = var.application_key
-  }
-}
-
-resource "google_storage_bucket" "input_pdf" {
-  name                        = "${data.google_project.project.project_id}-input-pdf"
-  location                    = var.region
-  uniform_bucket_level_access = true
-
-  versioning {
-    enabled = true
-  }
-
-  encryption {
-    default_kms_key_name = var.application_key
+    default_kms_key_name = var.application_kms_crypto_key
   }
 }
 
@@ -50,10 +36,13 @@ resource "google_cloudfunctions_function" "hc" {
   name                  = "hc"
   description           = "HC Cloud Function"
   runtime               = "python310"
-  available_memory_mb   = 8192
   entry_point           = "main"
+  service_account_email = var.hc_cloud_function_service_account_email
+  docker_repository     = google_artifact_registry_repository.hc.id
+  kms_key_name          = var.application_kms_crypto_key
   source_archive_bucket = google_storage_bucket.cloud_function_code.name
   source_archive_object = google_storage_bucket_object.cloud_function_code.name
+  available_memory_mb   = 8192
   timeout               = 540
 
   event_trigger {

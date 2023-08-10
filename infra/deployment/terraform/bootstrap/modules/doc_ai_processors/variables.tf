@@ -8,6 +8,16 @@ variable "doc_ai_location" {
   description = "The Doc AI processors location. Valid values are 'us' and 'eu'."
 }
 
+variable "doc_ai_kms_keyring_location" {
+  type        = string
+  description = "The location of the Doc AI KMS keyring."
+}
+
+variable "doc_ai_kms_crypto_key" {
+  type        = string
+  description = "The Doc AI KMS key ID."
+}
+
 variable "sourcerepo_name" {
   type        = string
   description = "The Cloud Source Repository name."
