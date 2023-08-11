@@ -17,13 +17,3 @@ variable "doc_ai_kms_crypto_key" {
   type        = string
   description = "The Doc AI KMS key ID."
 }
-
-variable "sourcerepo_name" {
-  type        = string
-  description = "The Cloud Source Repository name."
-}
-
-variable "branch_name" {
-  type        = string
-  description = "The Cloud Source repository branch name."
-}

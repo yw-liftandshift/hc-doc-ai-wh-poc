@@ -40,8 +40,6 @@ module "doc_ai_processors" {
   doc_ai_location             = var.doc_ai_location
   doc_ai_kms_keyring_location = module.project.doc_ai_kms_keyring_location
   doc_ai_kms_crypto_key       = module.project.doc_ai_kms_crypto_key
-  sourcerepo_name             = var.sourcerepo_name
-  branch_name                 = var.branch_name
 
   depends_on = [
     module.iam

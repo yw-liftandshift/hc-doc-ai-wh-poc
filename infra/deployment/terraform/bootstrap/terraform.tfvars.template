@@ -6,6 +6,6 @@ dw_ui_service_account_private_key = ""
 schema_id                         = ""
 admins_group_email                = ""
 users_group_email                 = ""
-sourcerepo_name                   = ""
 alerting_emails                   = []
+sourcerepo_name                   = ""
 branch_name                       = "main"

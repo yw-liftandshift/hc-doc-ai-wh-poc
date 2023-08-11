@@ -1,10 +1,6 @@
 data "google_project" "project" {
 }
 
-data "google_sourcerepo_repository" "sourcerepo" {
-  name = var.sourcerepo_name
-}
-
 resource "google_document_ai_processor" "ocr" {
   location     = var.doc_ai_location
   display_name = "HC OCR processor"
