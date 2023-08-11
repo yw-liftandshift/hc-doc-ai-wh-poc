@@ -369,5 +369,5 @@ poetry.toml
 pyrightconfig.json
 
 # data
-!doc-ai-cde-processor-training/data/tagged_data.zip
-doc-ai-cde-processor-training/data/tagged_data
+!data/hc-cde-processor/tagged_data.zip
+data/hc-cde-processor/tagged_data

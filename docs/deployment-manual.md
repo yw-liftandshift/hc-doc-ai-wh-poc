@@ -15,6 +15,9 @@
 ![Allow US Location 1](./images/org-policy-allow-us-1.png "Allow US Location 1")
 ![Allow US Location 2](./images/org-policy-allow-us-2.png "Allow US Location 2")
 ![Allow US Location 3](./images/org-policy-allow-us-3.png "Allow US Location 3")
+1. Create two [Google Cloud groups](https://cloud.google.com/iam/docs/groups-in-cloud-console):
+* Admins
+* Users
 
 
 ## Bootstrap

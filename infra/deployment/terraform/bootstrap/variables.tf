@@ -29,6 +29,21 @@ variable "schema_id" {
   description = "The ID of the Document schema to be used in the HC Cloud Function."
 }
 
+variable "admins_group_email" {
+  type        = string
+  description = "Email of the Google Cloud Group containing the system's administrators."
+}
+
+variable "users_group_email" {
+  type        = string
+  description = "Email of the Google Cloud Group containing the system's users."
+}
+
+variable "alerting_emails" {
+  type        = list(string)
+  description = "Email addresses that will receive monitoring alerts."
+}
+
 variable "sourcerepo_name" {
   type        = string
   description = "The Cloud Source Repository name."
