@@ -33,7 +33,7 @@ variable "ocr_processor_name" {
   description = "The HC OCR processor id."
 }
 
-variable "cde_processor_name" {
+variable "cde_lrs_type_processor_name" {
   type        = string
   description = "The HC CDE processor name."
 }

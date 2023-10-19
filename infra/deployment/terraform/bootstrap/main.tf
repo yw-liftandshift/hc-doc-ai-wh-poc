@@ -56,7 +56,7 @@ module "hc_cloud_function" {
   schema_id                               = var.schema_id
   doc_ai_location                         = var.doc_ai_location
   ocr_processor_name                      = module.doc_ai_processors.ocr_processor_name
-  cde_processor_name                      = module.doc_ai_processors.cde_processor_name
+  cde_lrs_type_processor_name             = module.doc_ai_processors.cde_lrs_type_processor_name
   monitoring_notification_channel_ids     = module.monitoring.monitoring_notification_alerting_emails.*.id
 }
 
