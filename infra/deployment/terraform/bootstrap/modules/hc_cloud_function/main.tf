@@ -55,7 +55,7 @@ resource "google_cloudfunctions_function" "hc" {
     project_number   = data.google_project.project.number
     location         = var.doc_ai_location
     processor_id     = var.ocr_processor_name
-    processor_id_cde = var.cde_processor_name
+    processor_id_cde = var.cde_lrs_type_processor_name
     input_mime_type  = "application/pdf"
     schema_id        = "projects/${data.google_project.project.number}/locations/${var.doc_ai_location}/documentSchemas/${var.schema_id}"
     sa_user          = "user:${var.dw_ui_service_account_email}"
