@@ -30,12 +30,22 @@ variable "doc_ai_location" {
 
 variable "ocr_processor_name" {
   type        = string
-  description = "The HC OCR processor id."
+  description = "The HC OCR processor name."
 }
 
-variable "cde_processor_name" {
+variable "cde_lrs_type_processor_name" {
   type        = string
-  description = "The HC CDE processor name."
+  description = "The HC CDE lrs type processor name."
+}
+
+variable "cde_general_type_processor_name" {
+  type        = string
+  description = "The HC CDE general type processor name."
+}
+
+variable "cde_classifier_type_processor_name" {
+  type        = string
+  description = "The HC CDE classifier type processor name."
 }
 
 variable "monitoring_notification_channel_ids" {

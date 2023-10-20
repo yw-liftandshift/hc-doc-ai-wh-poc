@@ -15,7 +15,7 @@ env_var = {"project_id" : os.environ.get("project_id", ""),
            "project_number" : os.environ.get("project_number", ""),
            "location" : os.environ.get("location", ""),
            "processor_id" : os.environ.get("processor_id", ""),
-           "processor_id_cde" : os.environ.get("processor_id_cde", ""),
+           "processor_id_cde_lrs_type" : os.environ.get("processor_id_cde_lrs_type", ""),
            "input_mime_type" : os.environ.get("input_mime_type", ""),
            "schema_id" : os.environ.get("schema_id", ""),
            "sa_user" : os.environ.get("sa_user", "")}

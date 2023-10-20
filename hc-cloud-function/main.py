@@ -105,7 +105,7 @@ def main(event, context):
         doc_cde = process_document_sample_cde(
                 env_var["project_id"],
                 env_var["location"],
-                env_var["processor_id_cde"],
+                env_var["processor_id_cde_lrs_type"],
                 first_page_path,
                 env_var["input_mime_type"]
         )
