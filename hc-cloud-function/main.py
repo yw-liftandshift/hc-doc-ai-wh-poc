@@ -4,7 +4,6 @@ ocr extraction -> entity extraction -> result upload to DocAI Warehouse.
 '''
 #importing libraries
 import logging
-from math import log
 import os
 import PyPDF2
 import google.cloud.contentwarehouse_v1.types
