@@ -1,7 +1,9 @@
+from enum import Enum, auto
+
 '''
 This file is responsible to perform post-processing on top of API responses.
 '''
-def ocr_postprocess(doc_cde_json):
+def build_dictionary_from_entities(entities):
     '''
     This function post process the CDE response and
     creates a key value pair dictionary out of it
@@ -14,10 +16,19 @@ def ocr_postprocess(doc_cde_json):
     key_val_dict : dict
                    key value pair dictionary 
     '''
+    # TODO: we have dependency on different schema, pass it from variables or make schemas compatible
+    schema_map = {"file_no": "file_number",
+                  "full_title": "file_title",
+                  "printed_date": "date"}
+
     key_val_dict = {}
-    for entity in doc_cde_json["entities"]:
-        key, value = entity["type"], entity["mentionText"]
-        key_val_dict[key] = value
+    # #Post-Process the cde response
+    # key_val_dict = ocr_postprocess(doc_cde_json)
+    for item in entities.pb:
+        print(item.type_)
+        print(item.mention_text)
+        schema_key = schema_map.get(item.type_) if schema_map.get(item.type_) else item.type_
+        key_val_dict[schema_key] = item.mention_text
         
     return key_val_dict
 
@@ -53,3 +64,14 @@ def update_text_anchors(doc, doc_next, text_length):
     doc.pages.extend(doc_next.pages)
     doc.text = doc.text + "\n" + doc_next.text
     return doc
+
+class DocumentType(Enum):
+    LRS_DOCUMENTS_TYPE = auto()
+    GENERAL_DOCUMENTS_TYPE = auto()
+
+def get_document_type(doc_type_str):
+    try:
+        return DocumentType[doc_type_str.upper()]
+    except KeyError:
+        # Handle the case where the string doesn't match any enum member
+        return None

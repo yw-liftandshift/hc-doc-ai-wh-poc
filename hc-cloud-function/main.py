@@ -3,28 +3,22 @@ Triggered by a change in a storage bucket to perform
 ocr extraction -> entity extraction -> result upload to DocAI Warehouse.
 '''
 #importing libraries
-import json
 import logging
+from math import log
 import os
-import proto
 import PyPDF2
 import google.cloud.contentwarehouse_v1.types
 import google.cloud.logging
-from PyPDF2 import PdfFileWriter
-from PyPDF2 import PdfFileReader
 from gcs_utils import GCSStorage
-from cf_config import split_pdf_cde
 from cf_config import split_pdf_ocr_sync
-from cf_config import property_set
 from cf_config import env_var
 from api_call_utils import process_document_ocr
 from api_call_utils import doc_warehouse_creation
-from api_call_utils import process_document_sample_cde
-from postprocessing import ocr_postprocess
+from api_call_utils import process_document_and_extract_entities
+from postprocessing import build_dictionary_from_entities
 from postprocessing import update_text_anchors
-from google.cloud import contentwarehouse
-from google.api_core.client_options import ClientOptions
-from google.cloud import documentai_v1 as documentai
+from postprocessing import get_document_type
+from postprocessing import DocumentType
 
 #Setting up logging
 #Instantiates a client
@@ -45,6 +39,9 @@ def main(event, context):
                     https://cloud.google.com/storage/docs/json_api/v1/objects#resource
     context (google.cloud.functions.Context): Metadata of triggering event.
     '''
+    logging.info(event)
+    logging.info(context)
+    logging.info("process started")
     gcs_obj = GCSStorage()
     # downloading the file from bucket
     gcs_input_uri = f"gs://{event['bucket']}/{event['name']}"
@@ -57,9 +54,6 @@ def main(event, context):
     pdfFileObj = open(local_path, 'rb')
     pdfReader = PyPDF2.PdfReader(pdfFileObj)
 
-    #split and fetch the 1st page only
-    output_file_loc = f"/tmp"
-    first_page_path = split_pdf_cde(pdfReader, local_path, blob_name, output_file_loc)
     output_files = []    
 
     #Calling multiple ocr sync req
@@ -84,7 +78,6 @@ def main(event, context):
                     pdfFileObj.close()
                     logging.error(e.message)
                     return {"error": "DocOCR call failed"}
-                page_count_old = page_count
                 for page in doc_next.pages:
                     page.page_number = page_count + 1
                     page_count = page_count + 1
@@ -100,24 +93,23 @@ def main(event, context):
         
     logging.info("doc creation completed")
 
-    #Sending request to CDE processor
+    #Sending request to classifier and choose proper document processor
     try:
-        doc_cde = process_document_sample_cde(
-                env_var["project_id"],
-                env_var["location"],
-                env_var["processor_id_cde"],
-                first_page_path,
-                env_var["input_mime_type"]
-        )
+        extract_file_type_from_entities = lambda entities: get_document_type(sorted(entities, key=lambda x: x.confidence, reverse=True)[0].type_)
+
+        document_class = extract_file_type_from_entities(process_document_and_extract_entities(env_var["project_id"], env_var["location"], env_var["processor_id_cde_classifier_type_type"], local_path))
+
+        logging.info(document_class)
+
+        entities_extractor_processor_id = env_var["processor_id_cde_lrs_type"] if document_class == DocumentType.LRS_DOCUMENTS_TYPE else env_var["processor_id_cde_general_type_type"]
+
+        entities = process_document_and_extract_entities(env_var["project_id"], env_var["location"], entities_extractor_processor_id, local_path)
+
     except:
         raise
-    finally:
-        pdfFileObj.close()
 
-    json_string = proto.Message.to_json(doc_cde)
-    doc_cde_json = json.loads(json_string)
     #Post-Process the cde response
-    key_val_dict = ocr_postprocess(doc_cde_json)
+    key_val_dict = build_dictionary_from_entities(entities)
 
     #Send the value_dict to warehouse api call to display the properties
     display_name = blob_name
@@ -132,12 +124,8 @@ def main(event, context):
         )
     except:
         raise
-    finally:
-        pdfFileObj.close()
 
-    pdfFileObj.close()
     os.remove(local_path)
-    os.remove(first_page_path)
     if output_files:
         for output_pdf in output_files:
             os.remove(output_pdf)
