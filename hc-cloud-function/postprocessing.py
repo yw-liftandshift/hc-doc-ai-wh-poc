@@ -3,18 +3,24 @@ from enum import Enum, auto
 '''
 This file is responsible to perform post-processing on top of API responses.
 '''
-def build_dictionary_from_entities(entities):
+def build_dictionary_and_filename_from_entities(entities, blob_name):
     '''
     This function post process the CDE response and
-    creates a key value pair dictionary out of it
+    creates a key value pair dictionary and chose provide file name based on confidence score
 
     Args:
     doc_cde_json : json
                    Contains the CDE output response
 
+    blob_name : string
+                Contains the blob name
+
     Returns:
-    key_val_dict : dict
-                   key value pair dictionary 
+    key_val_dict : dictionary
+                   Contains the key value pair dictionary
+
+    display_name : string
+                   Contains the file name
     '''
     # TODO: we have dependency on different schema, pass it from variables or make schemas compatible
     schema_map = {"file_no": "file_number",
@@ -22,13 +28,17 @@ def build_dictionary_from_entities(entities):
                   "printed_date": "date"}
 
     key_val_dict = {}
-    # #Post-Process the cde response
-    # key_val_dict = ocr_postprocess(doc_cde_json)
+    file_number_confidence_score = 0
+    #Post-Process the cde response
     for item in entities.pb:
-        schema_key = schema_map.get(item.type_) if schema_map.get(item.type_) else item.type_
+        schema_key = schema_map[item.type_] if item.type_ in schema_map else item.type_
         key_val_dict[schema_key] = item.mention_text
-        
-    return key_val_dict
+        if schema_key == "file_number":
+            file_number_confidence_score = item.confidence
+       
+    display_name = key_val_dict["file_number"] if "file_number" in key_val_dict and file_number_confidence_score > 0.7 else blob_name
+
+    return [key_val_dict, display_name]
 
 def update_text_anchors(doc, doc_next, text_length):
     '''

@@ -15,7 +15,7 @@ from cf_config import env_var
 from api_call_utils import process_document_ocr
 from api_call_utils import doc_warehouse_creation
 from api_call_utils import process_document_and_extract_entities
-from postprocessing import build_dictionary_from_entities
+from postprocessing import build_dictionary_and_filename_from_entities
 from postprocessing import update_text_anchors
 from postprocessing import get_document_type
 from postprocessing import DocumentType
@@ -99,7 +99,7 @@ def main(event, context):
 
         document_class = extract_file_type_from_entities(process_document_and_extract_entities(env_var["project_id"], env_var["location"], env_var["processor_id_cde_classifier_type_type"], local_path))
 
-        logging.info(document_class)
+        logging.debug(document_class)
 
         entities_extractor_processor_id = env_var["processor_id_cde_lrs_type"] if document_class == DocumentType.LRS_DOCUMENTS_TYPE else env_var["processor_id_cde_general_type_type"]
 
@@ -109,10 +109,9 @@ def main(event, context):
         raise
 
     #Post-Process the cde response
-    key_val_dict = build_dictionary_from_entities(entities)
+    key_val_dict, display_name = build_dictionary_and_filename_from_entities(entities, blob_name)
 
     #Send the value_dict to warehouse api call to display the properties
-    display_name = blob_name
     try:
         doc_warehouse_creation(env_var["project_number"],
             env_var["location"],

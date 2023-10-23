@@ -88,7 +88,7 @@ def doc_warehouse_creation(project_number,
     document = contentwarehouse.Document()
     document.display_name = display_name
     document.reference_id = display_name
-    document.title = document.display_name
+    document.title = display_name
     document.document_schema_name = schema_id 
     document.raw_document_file_type = contentwarehouse.RawDocumentFileType.RAW_DOCUMENT_FILE_TYPE_PDF
     document.raw_document_path = gcs_input_uri
