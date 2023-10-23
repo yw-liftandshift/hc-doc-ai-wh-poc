@@ -38,9 +38,6 @@ def main(event, context):
                     https://cloud.google.com/storage/docs/json_api/v1/objects#resource
     context (google.cloud.functions.Context): Metadata of triggering event.
     '''
-    logging.info(event)
-    logging.info(context)
-    logging.info("process started")
     gcs_obj = GCSStorage()
     # downloading the file from bucket
     gcs_input_uri = f"gs://{event['bucket']}/{event['name']}"
