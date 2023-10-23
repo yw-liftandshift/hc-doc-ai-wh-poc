@@ -25,8 +25,6 @@ def build_dictionary_from_entities(entities):
     # #Post-Process the cde response
     # key_val_dict = ocr_postprocess(doc_cde_json)
     for item in entities.pb:
-        print(item.type_)
-        print(item.mention_text)
         schema_key = schema_map.get(item.type_) if schema_map.get(item.type_) else item.type_
         key_val_dict[schema_key] = item.mention_text
         
