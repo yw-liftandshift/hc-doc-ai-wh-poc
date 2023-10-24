@@ -3,7 +3,7 @@ from enum import Enum, auto
 '''
 This file is responsible to perform post-processing on top of API responses.
 '''
-def build_dictionary_and_filename_from_entities(entities, blob_name):
+def build_dictionary_and_filename_from_entities(entities, blob_name, file_number_confidence_threshold):
     '''
     This function post process the CDE response and
     creates a key value pair dictionary and chose provide file name based on confidence score
@@ -36,7 +36,7 @@ def build_dictionary_and_filename_from_entities(entities, blob_name):
         if schema_key == "file_number":
             file_number_confidence_score = item.confidence
        
-    display_name = key_val_dict["file_number"] if "file_number" in key_val_dict and file_number_confidence_score > 0.7 else blob_name
+    display_name = key_val_dict["file_number"] if "file_number" in key_val_dict and file_number_confidence_score > file_number_confidence_threshold else blob_name
 
     return [key_val_dict, display_name]
 

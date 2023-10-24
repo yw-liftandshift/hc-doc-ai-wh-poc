@@ -79,6 +79,7 @@ def main(event, context):
                     page_count = page_count + 1
                 text_length = len(doc.text) + 1
                 doc = update_text_anchors(doc, doc_next, text_length)
+        pdfFileObj.close()
     else:
         try:
             doc = process_document_ocr(env_var["project_id"], env_var["location"], env_var["processor_id"], local_path, env_var["input_mime_type"])
@@ -105,7 +106,7 @@ def main(event, context):
         raise
 
     #Post-Process the cde response
-    key_val_dict, display_name = build_dictionary_and_filename_from_entities(entities, blob_name)
+    key_val_dict, display_name = build_dictionary_and_filename_from_entities(entities, blob_name, float(env_var["file_number_confidence_threshold"]))
 
     #Send the value_dict to warehouse api call to display the properties
     try:

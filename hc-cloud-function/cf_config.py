@@ -5,8 +5,6 @@ properties of DocAI Warehouse.
 '''
 #importing libraries
 import os
-import pathlib
-import PyPDF2
 from PyPDF2 import PdfWriter, PdfFileReader
 from google.cloud import contentwarehouse
 
@@ -18,11 +16,12 @@ env_var = {"project_id" : os.environ.get("project_id", ""),
            "processor_id_cde_lrs_type" : os.environ.get("processor_id_cde_lrs_type", ""),
            "processor_id_cde_classifier_type_type" : os.environ.get("processor_id_cde_classifier_type_type", ""),
            "processor_id_cde_general_type_type" : os.environ.get("processor_id_cde_general_type_type", ""),
+           "file_number_confidence_threshold" : os.environ.get("file_number_confidence_threshold", "0.7"),
            "input_mime_type" : os.environ.get("input_mime_type", ""),
            "schema_id" : os.environ.get("schema_id", ""),
            "sa_user" : os.environ.get("sa_user", "")}
 
-def split_pdf_cde(pdfReader, file_loc, blob_name, output_file_loc):
+def split_pdf_cde(pdfReader, blob_name, output_file_loc):
     '''
     This function extracts only the first page out the pdf
 
@@ -44,7 +43,6 @@ def split_pdf_cde(pdfReader, file_loc, blob_name, output_file_loc):
     '''
     if pdfReader.is_encrypted:
         pdfReader.decrypt('')
-    number_of_pages = pdfReader.pages
     output = PdfWriter()
     output.add_page(pdfReader.pages[0])
     output_file_name = output_file_loc + "/" + blob_name + f"first_page_1.pdf"
