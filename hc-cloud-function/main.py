@@ -101,7 +101,6 @@ def main(event, context):
         entities_extractor_processor_id = env_var["processor_id_cde_lrs_type"] if document_class == DocumentType.LRS_DOCUMENTS_TYPE else env_var["processor_id_cde_general_type_type"]
 
         entities = process_document_and_extract_entities(env_var["project_id"], env_var["location"], entities_extractor_processor_id, local_path)
-
     except:
         raise
 
