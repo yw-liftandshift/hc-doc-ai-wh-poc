@@ -7,8 +7,6 @@ from cf_config import property_set
 from cf_config import env_var
 from google.cloud import documentai_v1 as documentai
 from google.cloud import contentwarehouse
-from google.cloud import storage
-import google.cloud.contentwarehouse_v1.types
 from google.api_core.client_options import ClientOptions
 
 def process_document_ocr(
@@ -90,7 +88,7 @@ def doc_warehouse_creation(project_number,
     document = contentwarehouse.Document()
     document.display_name = display_name
     document.reference_id = display_name
-    document.title = document.display_name
+    document.title = display_name
     document.document_schema_name = schema_id 
     document.raw_document_file_type = contentwarehouse.RawDocumentFileType.RAW_DOCUMENT_FILE_TYPE_PDF
     document.raw_document_path = gcs_input_uri
@@ -106,18 +104,16 @@ def doc_warehouse_creation(project_number,
     request_metadata.user_info.id = env_var["sa_user"]
     load_request.request_metadata = request_metadata
     document_client = contentwarehouse.DocumentServiceClient()
-    load_resp = document_client.create_document(request=load_request)
-    
-def process_document_sample_cde(
-        project_id: str,
-        location: str,
-        processor_id: str,
-        file_path: str,
-        mime_type: str,
-        field_mask: str = None,
-):
+    document_client.create_document(request=load_request)
+
+def process_document_and_extract_entities(
+    project_id: str,
+    location: str,
+    processor_id: str,
+    file_path: str
+    ):
     '''
-    This function is used to invoke the CDE processor.
+    This function is used to invoke the CDE processor and return entities.
 
     Args:
     project_id : str
@@ -132,34 +128,43 @@ def process_document_sample_cde(
     file_path : str
                 Contains the local file path of the file
 
-    mime_type : str
-                Contains the mime type of file(for pdf - application/pdf)
-
     Returns:
     document : Document proto object
                Contains the CDE response
     '''
-    # You must set the api_endpoint if you use a location other than 'us', e.g.:
+    # You must set the `api_endpoint`if you use a location other than "us".
     opts = ClientOptions(api_endpoint=f"{location}-documentai.googleapis.com")
+
     client = documentai.DocumentProcessorServiceClient(client_options=opts)
-    # The full resource name of the processor, e.g.:
-    # projects/{project_id}/locations/{location}/processors/{processor_id}
+
     name = client.processor_path(project_id, location, processor_id)
 
     # Read the file into memory
     with open(file_path, "rb") as image:
         image_content = image.read()
 
-    # Load Binary Data into Document AI RawDocument Object
-    raw_document = documentai.RawDocument(content=image_content, mime_type=mime_type)
+    # Load binary data
+    raw_document = documentai.RawDocument(
+        content=image_content,
+        mime_type="application/pdf",  # Refer to https://cloud.google.com/document-ai/docs/file-types for supported file types
+    )
+
+    process_options = documentai.ProcessOptions(
+        # Process only specific pages
+        individual_page_selector=documentai.ProcessOptions.IndividualPageSelector(
+            pages=[1]
+        )
+    )
 
     # Configure the process request
     request = documentai.ProcessRequest(
-        name=name, raw_document=raw_document, field_mask=field_mask
+        name=name,
+        raw_document=raw_document,
+        field_mask="entities",
+        process_options=process_options,
     )
 
     result = client.process_document(request=request)
-    document = result.document
 
-    # Read the text recognition output from the processor
-    return document
+    # We are interested only in entities
+    return result.document.entities

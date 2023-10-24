@@ -58,6 +58,7 @@ resource "google_cloudfunctions_function" "hc" {
     processor_id_cde_lrs_type             = var.cde_lrs_type_processor_name
     processor_id_cde_general_type_type    = var.cde_general_type_processor_name
     processor_id_cde_classifier_type_type = var.cde_classifier_type_processor_name
+    file_number_confidence_threshold      = var.file_number_confidence_threshold
     input_mime_type                       = "application/pdf"
     schema_id                             = "projects/${data.google_project.project.number}/locations/${var.doc_ai_location}/documentSchemas/${var.schema_id}"
     sa_user                               = "user:${var.dw_ui_service_account_email}"
