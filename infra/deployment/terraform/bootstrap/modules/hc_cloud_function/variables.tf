@@ -52,9 +52,3 @@ variable "monitoring_notification_channel_ids" {
   type        = list(string)
   description = "Monitoring Notification Channel ids."
 }
-
-variable "file_number_confidence_threshold" {
-  type        = number
-  description = "File number confidence threshold."
-  default     = 0.7
-}

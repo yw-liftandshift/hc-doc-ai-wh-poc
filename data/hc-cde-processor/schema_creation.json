@@ -77,17 +77,6 @@
       "is_required": false,
       "text_type_options": {},
       "schema_sources": []
-    },
-    {
-      "name": "date",
-      "display_name": "date",
-      "is_repeatable": false,
-      "is_filterable": true,
-      "is_searchable": true,
-      "is_metadata": true,
-      "is_required": false,
-      "text_type_options": {},
-      "schema_sources": []
     }
   ],
   "document_is_folder": false,

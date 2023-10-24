@@ -1,44 +1,25 @@
-from enum import Enum, auto
-
 '''
 This file is responsible to perform post-processing on top of API responses.
 '''
-def build_dictionary_and_filename_from_entities(entities, blob_name, file_number_confidence_threshold):
+def ocr_postprocess(doc_cde_json):
     '''
     This function post process the CDE response and
-    creates a key value pair dictionary and chose provide file name based on confidence score
+    creates a key value pair dictionary out of it
 
     Args:
     doc_cde_json : json
                    Contains the CDE output response
 
-    blob_name : string
-                Contains the blob name
-
     Returns:
-    key_val_dict : dictionary
-                   Contains the key value pair dictionary
-
-    display_name : string
-                   Contains the file name
+    key_val_dict : dict
+                   key value pair dictionary 
     '''
-    # TODO: we have dependency on different schema, pass it from variables or make schemas compatible
-    schema_map = {"file_no": "file_number",
-                  "full_title": "file_title",
-                  "printed_date": "date"}
-
     key_val_dict = {}
-    file_number_confidence_score = 0
-    #Post-Process the cde response
-    for item in entities.pb:
-        schema_key = schema_map[item.type_] if item.type_ in schema_map else item.type_
-        key_val_dict[schema_key] = item.mention_text
-        if schema_key == "file_number":
-            file_number_confidence_score = item.confidence
-       
-    display_name = key_val_dict["file_number"] if "file_number" in key_val_dict and file_number_confidence_score > file_number_confidence_threshold else blob_name
-
-    return [key_val_dict, display_name]
+    for entity in doc_cde_json["entities"]:
+        key, value = entity["type"], entity["mentionText"]
+        key_val_dict[key] = value
+        
+    return key_val_dict
 
 def update_text_anchors(doc, doc_next, text_length):
     '''
@@ -72,14 +53,3 @@ def update_text_anchors(doc, doc_next, text_length):
     doc.pages.extend(doc_next.pages)
     doc.text = doc.text + "\n" + doc_next.text
     return doc
-
-class DocumentType(Enum):
-    LRS_DOCUMENTS_TYPE = auto()
-    GENERAL_DOCUMENTS_TYPE = auto()
-
-def get_document_type(doc_type_str):
-    try:
-        return DocumentType[doc_type_str.upper()]
-    except KeyError:
-        # Handle the case where the string doesn't match any enum member
-        return None
