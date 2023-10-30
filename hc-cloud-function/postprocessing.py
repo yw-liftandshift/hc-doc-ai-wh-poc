@@ -1,5 +1,4 @@
 from enum import Enum, auto
-import re
 
 '''
 This file is responsible to perform post-processing on top of API responses.
