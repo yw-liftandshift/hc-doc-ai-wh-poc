@@ -6,6 +6,7 @@ ocr extraction -> entity extraction -> result upload to DocAI Warehouse.
 import logging
 import os
 import PyPDF2
+import re
 import google.cloud.contentwarehouse_v1.types
 import google.cloud.logging
 from gcs_utils import GCSStorage
@@ -106,7 +107,10 @@ def main(event, context):
 
     #Post-Process the cde response
     key_val_dict, display_name = build_dictionary_and_filename_from_entities(entities, blob_name, float(env_var["file_number_confidence_threshold"]))
-
+    # if it no lrs then we take file_number and volume and concatenate them apply this to file_number
+    if (document_class == DocumentType.GENERAL_DOCUMENTS_TYPE):
+        if ('volume' in key_val_dict):
+            display_name = key_val_dict['file_number'] +'_'+ re.sub(r"\s", "", key_val_dict['volume']).lower()
     #Send the value_dict to warehouse api call to display the properties
     try:
         doc_warehouse_creation(env_var["project_number"],
