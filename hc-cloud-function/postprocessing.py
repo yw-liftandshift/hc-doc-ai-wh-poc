@@ -23,14 +23,21 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
                    Contains the file name
     '''
     # TODO: we have dependency on different schema, pass it from variables or make schemas compatible
-    schema_map = {"file_no": "file_number",
+
+   
+    schema_map = {"file-no": "file_number",
+                  "file_no":"file_number",
                   "full_title": "file_title",
-                  "printed_date": "date"}
+                  "printed_date": "date",}
 
     key_val_dict = {}
     file_number_confidence_score = 0
     
     #Post-Process the cde response
+    company_index = [obj.type_ for obj in entities.pb].index("company_name")
+    name_of_company = entities.pb[company_index].mention_text
+    entities.pb.pop(company_index)
+
     for item in entities.pb:
         schema_key = schema_map[item.type_] if item.type_ in schema_map else item.type_
         key_val_dict[schema_key] = item.mention_text
@@ -40,6 +47,11 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
             key_val_dict["date"] = date
         if schema_key == "file_number":
             file_number_confidence_score = item.confidence
+        if schema_key == "file_title":
+            if name_of_company not in item.mention_text:
+                item.mention_text += ' ' + name_of_company
+        key_val_dict[schema_key] = item.mention_text
+
        
     display_name = key_val_dict["file_number"] if "file_number" in key_val_dict and file_number_confidence_score > file_number_confidence_threshold else blob_name
 
