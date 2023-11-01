@@ -26,7 +26,7 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
 
    
     schema_map = {"file-no": "file_number",
-                  "file_no":"file_number",
+                  "file_no": "file_number",
                   "full_title": "file_title",
                   "printed_date": "date",}
 
