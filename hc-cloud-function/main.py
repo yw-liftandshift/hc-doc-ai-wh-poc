@@ -15,6 +15,7 @@ from api_call_utils import process_document_ocr
 from api_call_utils import doc_warehouse_creation
 from api_call_utils import process_document_and_extract_entities
 from postprocessing import build_dictionary_and_filename_from_entities
+from postprocessing import get_file_numbers_from_entities
 from postprocessing import update_text_anchors
 from postprocessing import get_document_type
 from postprocessing import DocumentType
@@ -105,18 +106,30 @@ def main(event, context):
         raise
 
     #Post-Process the cde response
-    key_val_dict, display_name = build_dictionary_and_filename_from_entities(entities, blob_name, float(env_var["file_number_confidence_threshold"]))
+
+
+    file_numbers = get_file_numbers_from_entities(entities, float(env_var["file_number_confidence_threshold"]))
+    files = []
+
+    for number in file_numbers:
+
+        number = number.replace(" " or ".", "-")
+        
+        entities[[obj.type_ for obj in entities.pb].index("file-no")].mention_text = number
+        key_val_dict, display_name = build_dictionary_and_filename_from_entities(entities, blob_name, float(env_var["file_number_confidence_threshold"]))
+        files += key_val_dict,display_name
+
+    # print(files)
 
     #Send the value_dict to warehouse api call to display the properties
     try:
         doc_warehouse_creation(env_var["project_number"],
-            env_var["location"],
-            doc,
-            env_var["schema_id"],
-            display_name,
-            gcs_input_uri,
-            key_val_dict 
-        )
+        env_var["location"],
+        doc,
+        env_var["schema_id"],
+        display_name,
+        gcs_input_uri,
+        key_val_dict)
     except:
         raise
 

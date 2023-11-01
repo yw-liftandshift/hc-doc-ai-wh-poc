@@ -1,4 +1,5 @@
 from enum import Enum, auto
+import re
 
 '''
 This file is responsible to perform post-processing on top of API responses.
@@ -31,7 +32,6 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
                   "printed_date": "date",}
 
     key_val_dict = {}
-    file_number_confidence_score = 0
     
     #Post-Process the cde response
     company_index = [obj.type_ for obj in entities.pb].index("company_name")
@@ -45,17 +45,27 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
         if schema_key == "date":
             date = item.normalized_value.text
             key_val_dict["date"] = date
-        if schema_key == "file_number":
-            file_number_confidence_score = item.confidence
         if schema_key == "file_title":
             if name_of_company not in item.mention_text:
                 item.mention_text += ' ' + name_of_company
         key_val_dict[schema_key] = item.mention_text
 
+    
        
-    display_name = key_val_dict["file_number"] if "file_number" in key_val_dict and file_number_confidence_score > file_number_confidence_threshold else blob_name
+    display_name = key_val_dict["file_number"] if "file_number" in key_val_dict else blob_name
 
     return [key_val_dict, display_name]
+
+def get_file_numbers_from_entities(entities, file_number_confidence_threshold):
+    file_numbers = [obj.mention_text for obj in entities 
+            if obj.type_ == 'file-no' and obj.confidence > file_number_confidence_threshold and re.match( r'[\w\d]+[\s.-]+[\w\d/]+[\s.-]\d+',obj.mention_text) 
+            or obj.type_ == 'file_no' and obj.confidence > file_number_confidence_threshold and re.match( r'[\w\d]+[\s.-]+[\w\d/]+[\s.-]\d+',obj.mention_text)]
+    
+    for index, num in enumerate(file_numbers):
+            file_numbers[index] = num.replace('.', "-")
+
+    return file_numbers
+
 
 def update_text_anchors(doc, doc_next, text_length):
     '''
@@ -89,7 +99,6 @@ def update_text_anchors(doc, doc_next, text_length):
     doc.pages.extend(doc_next.pages)
     doc.text = doc.text + "\n" + doc_next.text
     return doc
-
 class DocumentType(Enum):
     LRS_DOCUMENTS_TYPE = auto()
     GENERAL_DOCUMENTS_TYPE = auto()
