@@ -29,10 +29,15 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
 
     key_val_dict = {}
     file_number_confidence_score = 0
+    
     #Post-Process the cde response
     for item in entities.pb:
         schema_key = schema_map[item.type_] if item.type_ in schema_map else item.type_
         key_val_dict[schema_key] = item.mention_text
+        # if date is formated as (July 1973) then change it to (1973-07-0) otherwise do nothing
+        if schema_key == "date":
+            date = item.normalized_value.text
+            key_val_dict["date"] = date
         if schema_key == "file_number":
             file_number_confidence_score = item.confidence
        
