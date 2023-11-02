@@ -1,4 +1,5 @@
 from enum import Enum, auto
+import re
 
 '''
 This file is responsible to perform post-processing on top of API responses.
@@ -37,6 +38,7 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
             file_number_confidence_score = item.confidence
        
     display_name = key_val_dict["file_number"] if "file_number" in key_val_dict and file_number_confidence_score > file_number_confidence_threshold else blob_name
+    display_name = key_val_dict["file_number"] +'_'+ re.sub(r"\s", "", key_val_dict['volume']).lower() if "volume" in key_val_dict and DocumentType.GENERAL_DOCUMENTS_TYPE else key_val_dict["file_number"]
 
     return [key_val_dict, display_name]
 
