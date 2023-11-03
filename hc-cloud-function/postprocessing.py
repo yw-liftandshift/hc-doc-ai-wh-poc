@@ -25,20 +25,34 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
     '''
     # TODO: we have dependency on different schema, pass it from variables or make schemas compatible
     schema_map = {"file_no": "file_number",
+                  "file-no": "file_number",
                   "full_title": "file_title",
                   "printed_date": "date"}
 
     key_val_dict = {}
     file_number_confidence_score = 0
+    
     #Post-Process the cde response
+    for item in entities.pb:
+        if item.type_ == "company_name":
+            company_name = item.mention_text
+            entities.pb.remove(item)
+
     for item in entities.pb:
         schema_key = schema_map[item.type_] if item.type_ in schema_map else item.type_
         key_val_dict[schema_key] = item.mention_text
         if schema_key == "file_number":
             file_number_confidence_score = item.confidence
-       
-    display_name = key_val_dict["file_number"] if "file_number" in key_val_dict and file_number_confidence_score > file_number_confidence_threshold else blob_name
-    display_name = key_val_dict["file_number"] +'_'+ re.sub(r"\s", "", key_val_dict['volume']).lower() if "volume" in key_val_dict and DocumentType.GENERAL_DOCUMENTS_TYPE else key_val_dict["file_number"]
+    
+    # if file_number exists and confidence score is above 0.7 then display_name will be the file_number,
+    # if volume exists then display_name will be file_number concatenated with the volume.
+    # otherwise display_name will be the file_name (blob_name)
+    if ("file_number" in key_val_dict and file_number_confidence_score > file_number_confidence_threshold):
+        display_name = key_val_dict["file_number"]
+        if ("volume" in key_val_dict):
+            display_name = key_val_dict["file_number"] +'_'+ re.sub(r"\s", "", key_val_dict['volume']).lower()
+    else:
+        display_name = blob_name
 
     return [key_val_dict, display_name]
 
