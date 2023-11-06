@@ -1,4 +1,5 @@
 from enum import Enum, auto
+import re
 
 '''
 This file is responsible to perform post-processing on top of API responses.
@@ -40,8 +41,16 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
             key_val_dict["date"] = date
         if schema_key == "file_number":
             file_number_confidence_score = item.confidence
-       
-    display_name = key_val_dict["file_number"] if "file_number" in key_val_dict and file_number_confidence_score > file_number_confidence_threshold else blob_name
+    
+    # if file_number exists and confidence score is above 0.7 then display_name will be the file_number,
+    # if volume exists then display_name will be file_number concatenated with the volume.
+    # otherwise display_name will be the file_name (blob_name)
+    if ("file_number" in key_val_dict and file_number_confidence_score > file_number_confidence_threshold):
+        display_name = key_val_dict["file_number"]
+        if ("volume" in key_val_dict):
+            display_name = key_val_dict["file_number"] +'_'+ re.sub(r"\s", "", key_val_dict['volume']).lower()
+    else:
+        display_name = blob_name
 
     return [key_val_dict, display_name]
 
