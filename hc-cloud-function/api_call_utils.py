@@ -3,11 +3,11 @@ This file has all the necessary api calls code which are required during
 the complete process
 '''
 #importing libraries
-from cf_config import property_set
 from cf_config import env_var
 from google.cloud import documentai_v1 as documentai
 from google.cloud import contentwarehouse
 from google.api_core.client_options import ClientOptions
+from cf_config import DocumentProperties
 
 def process_document_ocr(
     project_id: str, location: str, processor_id: str, file_path: str, mime_type: str
@@ -62,9 +62,8 @@ def doc_warehouse_creation(project_number,
     location,
     doc,
     schema_id,
-    display_name,
     gcs_input_uri,
-    key_val_dict 
+    documentProperties: DocumentProperties
     ):
     '''
     This function is used to initialize and set properties for DocAI Warehouse.
@@ -86,16 +85,17 @@ def doc_warehouse_creation(project_number,
                    Contains the key value dictionary    
     '''
     document = contentwarehouse.Document()
-    document.display_name = display_name
-    document.reference_id = display_name
-    document.title = display_name
+    document.display_name = documentProperties.display_name
+    document.reference_id = documentProperties.display_name
+    document.title = documentProperties.display_name
     document.document_schema_name = schema_id 
     document.raw_document_file_type = contentwarehouse.RawDocumentFileType.RAW_DOCUMENT_FILE_TYPE_PDF
     document.raw_document_path = gcs_input_uri
     document.text_extraction_disabled = False
     document.plain_text= doc.text
     document.cloud_ai_document = doc._pb
-    document = property_set(document, key_val_dict)
+    for prop in documentProperties.to_documentai_property():
+        document.properties.append(prop)
     load_request = contentwarehouse.CreateDocumentRequest()
     load_request.parent = f"projects/{project_number}/locations/{location}"
     load_request.document = document
@@ -110,7 +110,8 @@ def process_document_and_extract_entities(
     project_id: str,
     location: str,
     processor_id: str,
-    file_path: str
+    file_path: str,
+   # processorVersions: str = None
     ):
     '''
     This function is used to invoke the CDE processor and return entities.
@@ -137,7 +138,7 @@ def process_document_and_extract_entities(
 
     client = documentai.DocumentProcessorServiceClient(client_options=opts)
 
-    name = client.processor_path(project_id, location, processor_id)
+    name = client.processor_path(project_id, location, processor_id) #if processorVersions is None else client.processor_version_path(project_id, location, processor_id, processorVersions)
 
     # Read the file into memory
     with open(file_path, "rb") as image:
