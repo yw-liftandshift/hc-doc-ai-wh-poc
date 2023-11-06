@@ -25,19 +25,12 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
     '''
     # TODO: we have dependency on different schema, pass it from variables or make schemas compatible
     schema_map = {"file_no": "file_number",
-                  "file-no": "file_number",
                   "full_title": "file_title",
                   "printed_date": "date"}
 
     key_val_dict = {}
     file_number_confidence_score = 0
-    
     #Post-Process the cde response
-    for item in entities.pb:
-        if item.type_ == "company_name":
-            company_name = item.mention_text
-            entities.pb.remove(item)
-
     for item in entities.pb:
         schema_key = schema_map[item.type_] if item.type_ in schema_map else item.type_
         key_val_dict[schema_key] = item.mention_text
