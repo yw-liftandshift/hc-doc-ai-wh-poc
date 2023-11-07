@@ -29,6 +29,8 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
 
     documentWithoutFileNumber = DocumentWarehouseProperties()
     
+    company_name = None
+    
     #Post-Process the cde response
     for item in entities.pb:
         if (item.type_ == "file-no" or item.type_ == "file_number"):
@@ -55,6 +57,19 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
         if (item.type_ == "printed_date"):
             documentWithoutFileNumber.date = item.normalized_value.text if item.normalized_value is not None else item.mention_text
             continue
+        if (item.type_ == "company_name"):
+            company_name = item.mention_text
+
+    # add company_name to title if not already part of the title
+    def update_file_title_with_company_name (document_file_title, company_name):
+        if (company_name is not None):
+            if (company_name not in document_file_title):
+                new_file_title = company_name + " - " + document_file_title
+        else:
+            new_file_title = document_file_title
+        return new_file_title
+    
+    documentWithoutFileNumber.file_title = update_file_title_with_company_name(documentWithoutFileNumber.file_title, company_name)
     
     # if file_number exists and confidence score is above 0.7 then display_name will be the file_number,
     # if volume exists then display_name will be file_number concatenated with the volume.
