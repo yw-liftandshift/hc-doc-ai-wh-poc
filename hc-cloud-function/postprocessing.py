@@ -1,13 +1,14 @@
 from enum import Enum, auto
-import re
+import copy
+from cf_config import DocumentWarehouseProperties
 
 '''
 This file is responsible to perform post-processing on top of API responses.
 '''
-def build_dictionary_and_filename_from_entities(entities, blob_name, file_number_confidence_threshold):
+def build_documents_warehouse_properties_from_entities(entities, blob_name, file_number_confidence_threshold):
     '''
     This function post process the CDE response and
-    creates a key value pair dictionary and chose provide file name based on confidence score
+    creates a list of documents
 
     Args:
     doc_cde_json : json
@@ -16,43 +17,64 @@ def build_dictionary_and_filename_from_entities(entities, blob_name, file_number
     blob_name : string
                 Contains the blob name
 
+    file_number_confidence_threshold : float
+                Contains the confidence threshold for file number
+
     Returns:
-    key_val_dict : dictionary
-                   Contains the key value pair dictionary
+    documents : list
+                Contains the list of documents
 
-    display_name : string
-                   Contains the file name
     '''
-    # TODO: we have dependency on different schema, pass it from variables or make schemas compatible
-    schema_map = {"file_no": "file_number",
-                  "full_title": "file_title",
-                  "printed_date": "date"}
+    file_number_confidence_score_dict = {}
 
-    key_val_dict = {}
-    file_number_confidence_score = 0
+    documentWithoutFileNumber = DocumentWarehouseProperties()
     
     #Post-Process the cde response
     for item in entities.pb:
-        schema_key = schema_map[item.type_] if item.type_ in schema_map else item.type_
-        key_val_dict[schema_key] = item.mention_text
-        # if date is formated as (July 1973) then change it to (1973-07-0) otherwise do nothing
-        if schema_key == "date":
-            date = item.normalized_value.text
-            key_val_dict["date"] = date
-        if schema_key == "file_number":
-            file_number_confidence_score = item.confidence
+        if (item.type_ == "file-no" or item.type_ == "file_number"):
+            file_number_confidence_score_dict[item.mention_text] = item.confidence
+            continue
+        if (item.type_ == "barcode_number"):
+            documentWithoutFileNumber.barcode_number = item.mention_text
+            continue        
+        if (item.type_ == "classification_code"):
+            documentWithoutFileNumber.classification_code = item.mention_text
+            continue
+        if (item.type_ == "classification_level"):
+            documentWithoutFileNumber.classification_level = item.mention_text
+            continue
+        if (item.type_ == "file_title" or item.type_ == "full_title"):
+            documentWithoutFileNumber.file_title = item.mention_text
+            continue
+        if (item.type_ == "volume"):
+            documentWithoutFileNumber.volume = item.mention_text
+            continue
+        if (item.type_ == "org_code"):
+            documentWithoutFileNumber.org_code = item.mention_text
+            continue
+        if (item.type_ == "printed_date"):
+            documentWithoutFileNumber.date = item.normalized_value.text if item.normalized_value is not None else item.mention_text
+            continue
     
     # if file_number exists and confidence score is above 0.7 then display_name will be the file_number,
     # if volume exists then display_name will be file_number concatenated with the volume.
     # otherwise display_name will be the file_name (blob_name)
-    if ("file_number" in key_val_dict and file_number_confidence_score > file_number_confidence_threshold):
-        display_name = key_val_dict["file_number"]
-        if ("volume" in key_val_dict):
-            display_name = key_val_dict["file_number"] +'_'+ re.sub(r"\s", "", key_val_dict['volume']).lower()
-    else:
-        display_name = blob_name
+    documents = []
+    for file_number, confidence_score in file_number_confidence_score_dict.items():
+        document = copy.deepcopy(documentWithoutFileNumber)
+        document.file_number = file_number
+        if (confidence_score > file_number_confidence_threshold):
+            document.display_name = file_number if document.volume is None else file_number + '_' + document.volume.replace(" ", "").lower()
+        else:
+            document.display_name = blob_name + file_number
+        documents.append(document)
 
-    return [key_val_dict, display_name]
+    # special case if we did not recognize any file_number
+    if (len(documents) == 0):
+        documentWithoutFileNumber.display_name = blob_name
+        documents.append(documentWithoutFileNumber)
+
+    return documents
 
 def update_text_anchors(doc, doc_next, text_length):
     '''

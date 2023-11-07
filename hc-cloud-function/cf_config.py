@@ -8,6 +8,39 @@ import os
 from PyPDF2 import PdfWriter, PdfFileReader
 from google.cloud import contentwarehouse
 
+
+
+class DocumentWarehouseProperties:
+    '''
+    This class contains the properties of DocAI Warehouse
+    '''
+    def __init__(self, file_title = None, file_number = None, barcode_number = None, org_code=None, date=None, classification_code=None, classification_level=None, volume=None):
+        
+        self.barcode_number = barcode_number
+        self.classification_code = classification_code
+        self.classification_level = classification_level
+        self.file_number = file_number
+        self.file_title = file_title
+        self.org_code = org_code
+        self.volume = volume
+        self.date = date
+        self.display_name = None #not a part of DocumentWarehouse schema, contains display name
+    
+    '''
+    Returns:
+    props : list
+            List of properties to be set in DocumentWarehouse
+    '''
+    def to_documentai_property(self):
+        props = []
+        for field, value in vars(self).items():
+            if value is not None and field != 'display_name':
+                prop = contentwarehouse.Property()
+                prop.name = field
+                prop.text_values.values = [value]
+                props.append(prop)
+        return props
+
 '''Defining variables which will be initialized from terraform script'''
 env_var = {"project_id" : os.environ.get("project_id", ""),
            "project_number" : os.environ.get("project_number", ""),
@@ -103,23 +136,3 @@ def split_pdf_ocr_sync(pdfReader, file_loc, pdf_file_name, output_file_loc, chun
             end = len(pdfReader.pages)
     
     return output_files
-
-def property_set(document, key_val_dict):
-    '''
-    This function sets the property of attributes of Docai Warehouse
-
-    Args:
-    document : contentwarehouse document object
-
-    key_val_dict : dict
-                   Dictionary of key-value pairs
-    
-    Returns:
-    document : contentwarehouse document object with appended properties
-    '''
-    for prop_name,prop_value in key_val_dict.items():
-        prop = contentwarehouse.Property()
-        prop.name = prop_name
-        prop.text_values.values = [prop_value]
-        document.properties.append(prop)
-    return document
