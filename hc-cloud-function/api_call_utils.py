@@ -7,7 +7,7 @@ from cf_config import env_var
 from google.cloud import documentai_v1 as documentai
 from google.cloud import contentwarehouse
 from google.api_core.client_options import ClientOptions
-from cf_config import DocumentProperties
+from cf_config import DocumentWarehouseProperties
 
 def process_document_ocr(
     project_id: str, location: str, processor_id: str, file_path: str, mime_type: str
@@ -63,7 +63,7 @@ def doc_warehouse_creation(project_number,
     doc,
     schema_id,
     gcs_input_uri,
-    documentProperties: DocumentProperties
+    documentProperties: DocumentWarehouseProperties
     ):
     '''
     This function is used to initialize and set properties for DocAI Warehouse.

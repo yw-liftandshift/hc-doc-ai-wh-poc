@@ -1,11 +1,11 @@
 from enum import Enum, auto
 import copy
-from cf_config import DocumentProperties
+from cf_config import DocumentWarehouseProperties
 
 '''
 This file is responsible to perform post-processing on top of API responses.
 '''
-def build_documents_properties_from_entities(entities, blob_name, file_number_confidence_threshold):
+def build_documents_warehouse_properties_from_entities(entities, blob_name, file_number_confidence_threshold):
     '''
     This function post process the CDE response and
     creates a list of documents
@@ -27,7 +27,7 @@ def build_documents_properties_from_entities(entities, blob_name, file_number_co
     '''
     file_number_confidence_score_dict = {}
 
-    documentWithoutFileNumber = DocumentProperties()
+    documentWithoutFileNumber = DocumentWarehouseProperties()
     
     #Post-Process the cde response
     for item in entities.pb:
@@ -42,9 +42,6 @@ def build_documents_properties_from_entities(entities, blob_name, file_number_co
             continue
         if (item.type_ == "classification_level"):
             documentWithoutFileNumber.classification_level = item.mention_text
-            continue
-        if (item.type_ == "file_number"):
-            documentWithoutFileNumber.file_number = item.mention_text
             continue
         if (item.type_ == "file_title" or item.type_ == "full_title"):
             documentWithoutFileNumber.file_title = item.mention_text

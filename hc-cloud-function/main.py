@@ -14,7 +14,7 @@ from cf_config import env_var
 from api_call_utils import process_document_ocr
 from api_call_utils import doc_warehouse_creation
 from api_call_utils import process_document_and_extract_entities
-from postprocessing import build_documents_properties_from_entities
+from postprocessing import build_documents_warehouse_properties_from_entities
 from postprocessing import update_text_anchors
 from postprocessing import get_document_type
 from postprocessing import DocumentType
@@ -105,17 +105,17 @@ def main(event, context):
         raise
 
     #Post-Process the cde response
-    documents_properties = build_documents_properties_from_entities(entities, blob_name, float(env_var["file_number_confidence_threshold"]))
+    documents_warehouse_properties = build_documents_warehouse_properties_from_entities(entities, blob_name, float(env_var["file_number_confidence_threshold"]))
 
     #Send the value_dict to warehouse api call to display the properties
     try:
-        for document_properties in documents_properties:
+        for document_warehouse_properties in documents_warehouse_properties:
             doc_warehouse_creation(env_var["project_number"],
                 env_var["location"],
                 doc,
                 env_var["schema_id"],
                 gcs_input_uri,
-                document_properties
+                document_warehouse_properties
         )
     except:
         raise

@@ -10,7 +10,7 @@ from google.cloud import contentwarehouse
 
 
 
-class DocumentProperties:
+class DocumentWarehouseProperties:
     '''
     This class contains the properties of DocAI Warehouse
     '''
