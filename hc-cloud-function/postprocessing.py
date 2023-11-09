@@ -33,7 +33,7 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
     
     #Post-Process the cde response
     for item in entities.pb:
-        if (item.type_ == "file-no" or item.type_ == "file_number"):
+        if (item.type_ == "file_no" or item.type_ == "file_number"):
             file_number_confidence_score_dict[item.mention_text] = item.confidence
             continue
         if (item.type_ == "barcode_number"):
