@@ -27,14 +27,19 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
     '''
     file_number_confidence_score_dict = {}
 
+    nds_no_set = set()
+
     documentWithoutFileNumber = DocumentWarehouseProperties()
     
     company_name = None
     
     #Post-Process the cde response
     for item in entities.pb:
-        if (item.type_ == "file-no" or item.type_ == "file_number"):
-            file_number_confidence_score_dict[item.mention_text] = item.confidence
+        #TODO: split LRS and General doc handling, keep it simple! - https://yoppworks.atlassian.net/browse/DAWP-51
+        if ((item.type_ == "file_no_1" or item.type_ == "file_no_2") or item.type_ == "file_number"):
+            confidence = file_number_confidence_score_dict.get(item.mention_text, 0)
+            if item.mention_text not in file_number_confidence_score_dict or confidence > file_number_confidence_score_dict[item.mention_text]:
+                file_number_confidence_score_dict[item.mention_text] = item.confidence
             continue
         if (item.type_ == "barcode_number"):
             documentWithoutFileNumber.barcode_number = item.mention_text
@@ -59,12 +64,22 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
             continue
         if (item.type_ == "company_name"):
             company_name = item.mention_text
+            continue
+        if (item.type_ == "nds_no"):
+            nds_no_set.add(item.mention_text)
+            continue
+
+    # clean up nds_no if they are in file_no_1 or file_no_2
+    for nds_no in nds_no_set:
+        file_number_confidence_score_dict.pop(nds_no, None)
 
     # add company_name to title if not already part of the title
     def update_file_title_with_company_name (document_file_title, company_name):
+        if (document_file_title is None):
+            document_file_title = ""
         if (company_name is not None):
             if (company_name not in document_file_title):
-                new_file_title = company_name + " - " + document_file_title
+                new_file_title = document_file_title + " - " + company_name
         else:
             new_file_title = document_file_title
         return new_file_title
