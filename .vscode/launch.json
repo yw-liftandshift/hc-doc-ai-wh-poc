@@ -1,0 +1,36 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: function_fw",
+            "type": "python",
+            "request": "launch",
+            "module": "functions_framework",
+            "args": [
+                "--target",
+                "main",
+                "--debug",
+                "--signature-type",
+                "event"
+            ],
+            "env": {
+                "input_mime_type": "application/pdf",
+                "location": "us",
+                "processor_id": "c650e31088a61481",
+                "processor_id_cde_classifier_type_type": "9d6c96db1ea5508d",
+                "processor_id_cde_general_type_type": "7af81cec6e840bcd",
+                "processor_id_cde_lrs_type": "4a571881c5b81eba",
+                "project_id": "hc-docai-warehouse-poc-003",
+                "project_number": "826217361546",
+                "file_number_confidence_threshold": "0.7",
+                "sa_user": "user:docai-warehouse-ui-sa@hc-docai-warehouse-poc-003.iam.gserviceaccount.com",
+                "schema_id": "projects/826217361546/locations/us/documentSchemas/3bppb3s726j6o"
+            },
+            "cwd": "${workspaceFolder}/hc-cloud-function"
+            // "justMyCode": true
+        }
+    ]
+}
