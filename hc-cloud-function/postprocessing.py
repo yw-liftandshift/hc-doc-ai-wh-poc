@@ -32,6 +32,7 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
     documentWithoutFileNumber = DocumentWarehouseProperties()
     
     company_name = None
+    address = None
     
     #Post-Process the cde response
     for item in entities.pb:
@@ -68,6 +69,9 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
         if (item.type_ == "nds_no"):
             nds_no_set.add(item.mention_text)
             continue
+        if (item.type_ == "address"):
+            address = item.mention_text
+            continue
 
     # When we send generic docs to the processor not only we recieve file_numbers that we want which are formatted 
     # as (9427-g38-8753) we also get some unwanted numbers formatted as (HN-7654 or DS-8773). 
@@ -79,17 +83,21 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
         file_number_confidence_score_dict.pop(nds_no, None)
 
     # add company_name to title if not already part of the title
-    def update_file_title_with_company_name (document_file_title, company_name):
+    def update_file_title_with_company_name_and_address (document_file_title, company_name, address):
         if (document_file_title is None):
             document_file_title = ""
-        if (company_name is not None):
-            if (company_name not in document_file_title):
-                new_file_title = document_file_title + " - " + company_name
+
+        if (company_name is not None and company_name not in document_file_title):
+            new_file_title = document_file_title + " - " + company_name
         else:
             new_file_title = document_file_title
+
+        if (address is not None and address not in document_file_title):
+            new_file_title = new_file_title + " - " + address
+        
         return new_file_title
     
-    documentWithoutFileNumber.file_title = update_file_title_with_company_name(documentWithoutFileNumber.file_title, company_name)
+    documentWithoutFileNumber.file_title = update_file_title_with_company_name_and_address(documentWithoutFileNumber.file_title, company_name, address)
     
     # if file_number exists and confidence score is above 0.7 then display_name will be the file_number,
     # if volume exists then display_name will be file_number concatenated with the volume.
