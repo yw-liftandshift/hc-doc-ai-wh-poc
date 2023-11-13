@@ -69,7 +69,12 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
             nds_no_set.add(item.mention_text)
             continue
 
-    # clean up nds_no if they are in file_no_1 or file_no_2
+    # When we send generic docs to the processor not only we recieve file_numbers that we want which are formatted 
+    # as (9427-g38-8753) we also get some unwanted numbers formatted as (HN-7654 or DS-8773). 
+    # In order to distinguish between the real file numbers and the unwanted numbers we have trained
+    # the processor with WANTED labels (file_no_1 and file_no_2) and unwanted label of (nds_no). 
+    # As a result we tell the processor that these numbers are not wanted and categorize them under a different label. 
+    # Then during post-processing we detect the unwanted numbers and delete them, thus only getting the true file numbers.
     for nds_no in nds_no_set:
         file_number_confidence_score_dict.pop(nds_no, None)
 
