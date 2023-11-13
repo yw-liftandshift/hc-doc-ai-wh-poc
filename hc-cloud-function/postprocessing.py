@@ -96,7 +96,7 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
         if (confidence_score > file_number_confidence_threshold):
             document.display_name = file_number if document.volume is None else file_number + '_' + document.volume.replace(" ", "").lower()
         else:
-            document.display_name = blob_name + file_number
+            document.display_name = blob_name
         documents.append(document)
 
     # special case if we did not recognize any file_number
