@@ -27,14 +27,19 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
     '''
     file_number_confidence_score_dict = {}
 
+    nds_no_set = set()
+
     documentWithoutFileNumber = DocumentWarehouseProperties()
     
     company_name = None
     
     #Post-Process the cde response
     for item in entities.pb:
-        if (item.type_ == "file_no" or item.type_ == "file_number"):
-            file_number_confidence_score_dict[item.mention_text] = item.confidence
+        #TODO: split LRS and General doc handling, keep it simple! - https://yoppworks.atlassian.net/browse/DAWP-51
+        if ((item.type_ == "file_no_1" or item.type_ == "file_no_2") or item.type_ == "file_number"):
+            confidence = file_number_confidence_score_dict.get(item.mention_text, 0)
+            if item.mention_text not in file_number_confidence_score_dict or confidence > file_number_confidence_score_dict[item.mention_text]:
+                file_number_confidence_score_dict[item.mention_text] = item.confidence
             continue
         if (item.type_ == "barcode_number"):
             documentWithoutFileNumber.barcode_number = item.mention_text
@@ -59,12 +64,27 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
             continue
         if (item.type_ == "company_name"):
             company_name = item.mention_text
+            continue
+        if (item.type_ == "nds_no"):
+            nds_no_set.add(item.mention_text)
+            continue
+
+    # When we send generic docs to the processor not only we recieve file_numbers that we want which are formatted 
+    # as (9427-g38-8753) we also get some unwanted numbers formatted as (HN-7654 or DS-8773). 
+    # In order to distinguish between the real file numbers and the unwanted numbers we have trained
+    # the processor with WANTED labels (file_no_1 and file_no_2) and unwanted label of (nds_no). 
+    # As a result we tell the processor that these numbers are not wanted and categorize them under a different label. 
+    # Then during post-processing we detect the unwanted numbers and delete them, thus only getting the true file numbers.
+    for nds_no in nds_no_set:
+        file_number_confidence_score_dict.pop(nds_no, None)
 
     # add company_name to title if not already part of the title
     def update_file_title_with_company_name (document_file_title, company_name):
+        if (document_file_title is None):
+            document_file_title = ""
         if (company_name is not None):
             if (company_name not in document_file_title):
-                new_file_title = company_name + " - " + document_file_title
+                new_file_title = document_file_title + " - " + company_name
         else:
             new_file_title = document_file_title
         return new_file_title
@@ -81,7 +101,7 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
         if (confidence_score > file_number_confidence_threshold):
             document.display_name = file_number if document.volume is None else file_number + '_' + document.volume.replace(" ", "").lower()
         else:
-            document.display_name = blob_name + file_number
+            document.display_name = blob_name
         documents.append(document)
 
     # special case if we did not recognize any file_number
