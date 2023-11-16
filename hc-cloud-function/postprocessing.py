@@ -2,10 +2,21 @@ from enum import Enum, auto
 import copy
 from cf_config import DocumentWarehouseProperties
 
+class DocumentType(Enum):
+    LRS_DOCUMENTS_TYPE = auto()
+    GENERAL_DOCUMENTS_TYPE = auto()
+
+def get_document_type(doc_type_str):
+    try:
+        return DocumentType[doc_type_str.upper()]
+    except KeyError:
+        # Handle the case where the string doesn't match any enum member
+        return None
+    
 '''
 This file is responsible to perform post-processing on top of API responses.
 '''
-def build_documents_warehouse_properties_from_entities(entities, blob_name, file_number_confidence_threshold):
+def build_documents_warehouse_properties_from_entities(entities, blob_name, file_number_confidence_threshold, documentType: DocumentType):
     '''
     This function post process the CDE response and
     creates a list of documents
@@ -25,6 +36,35 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
                 Contains the list of documents
 
     '''
+    return process_lrs_documents(entities, blob_name) if documentType == DocumentType.LRS_DOCUMENTS_TYPE else process_general_documents(entities, blob_name, file_number_confidence_threshold)
+    
+def process_lrs_documents(entities, blob_name):
+    documentWarehouseProperties = DocumentWarehouseProperties()
+    for item in entities.pb:
+        if (item.type_ == "file_number"):
+            documentWarehouseProperties.file_number = item.mention_text
+        elif (item.type_ == "barcode_number"):
+            documentWarehouseProperties.barcode_number = item.mention_text
+        elif (item.type_ == "classification_code"):
+            documentWarehouseProperties.classification_code = item.mention_text
+        elif (item.type_ == "classification_level"):
+            documentWarehouseProperties.classification_level = item.mention_text
+        elif (item.type_ == "file_title"):
+            documentWarehouseProperties.file_title = item.mention_text
+        elif (item.type_ == "volume"):
+            documentWarehouseProperties.volume = item.mention_text
+        elif (item.type_ == "org_code"):
+            documentWarehouseProperties.org_code = item.mention_text
+
+    documentWarehouseProperties.display_name = (blob_name 
+                                                if documentWarehouseProperties.volume is None or documentWarehouseProperties.file_number is None
+                                                else documentWarehouseProperties.file_number + '_' + documentWarehouseProperties.volume.replace(" ", "").lower())
+
+    documents = []
+    documents.append(documentWarehouseProperties)
+    return documents
+
+def process_general_documents(entities, blob_name, file_number_confidence_threshold):
     file_number_confidence_score_dict = {}
 
     nds_no_set = set()
@@ -33,47 +73,25 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
     
     company_name = None
     address = None
-    
-    #Post-Process the cde response
     for item in entities.pb:
-        #TODO: split LRS and General doc handling, keep it simple! - https://yoppworks.atlassian.net/browse/DAWP-51
-        if ((item.type_ == "file_no_1" or item.type_ == "file_no_2") or item.type_ == "file_number"):
+        if (item.type_ == "file_no_1" or item.type_ == "file_no_2"):
             confidence = file_number_confidence_score_dict.get(item.mention_text, 0)
             if item.mention_text not in file_number_confidence_score_dict or confidence > file_number_confidence_score_dict[item.mention_text]:
                 file_number_confidence_score_dict[item.mention_text] = item.confidence
-            continue
-        if (item.type_ == "barcode_number"):
-            documentWithoutFileNumber.barcode_number = item.mention_text
-            continue        
-        if (item.type_ == "classification_code"):
-            documentWithoutFileNumber.classification_code = item.mention_text
-            continue
-        if (item.type_ == "classification_level"):
-            documentWithoutFileNumber.classification_level = item.mention_text
-            continue
-        if (item.type_ == "file_title" or item.type_ == "full_title"):
+        elif (item.type_ == "full_title"):
             documentWithoutFileNumber.file_title = item.mention_text
-            continue
-        if (item.type_ == "volume"):
+        elif (item.type_ == "volume"):
             documentWithoutFileNumber.volume = item.mention_text
-            continue
-        if (item.type_ == "org_code"):
-            documentWithoutFileNumber.org_code = item.mention_text
-            continue
-        if (item.type_ == "printed_date"):
+        elif (item.type_ == "printed_date"):
             documentWithoutFileNumber.date = item.normalized_value.text if item.normalized_value is not None else item.mention_text
-            continue
-        if (item.type_ == "company_name"):
+        elif (item.type_ == "company_name"):
             company_name = item.mention_text
-            continue
-        if (item.type_ == "nds_no"):
+        elif (item.type_ == "nds_no"): #bunch of numbers in documents often have nds before the actual number, its not file number
             nds_no_set.add(item.mention_text)
-            continue
-        if (item.type_ == "address"):
+        elif (item.type_ == "address"):
             address = item.mention_text
-            continue
 
-    # When we send generic docs to the processor not only we recieve file_numbers that we want which are formatted 
+    # When we send generic docs to the processor not only we receive file_numbers that we want which are formatted 
     # as (9427-g38-8753) we also get some unwanted numbers formatted as (HN-7654 or DS-8773). 
     # In order to distinguish between the real file numbers and the unwanted numbers we have trained
     # the processor with WANTED labels (file_no_1 and file_no_2) and unwanted label of (nds_no). 
@@ -96,7 +114,7 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
             new_file_title = new_file_title + " - " + address
         
         return new_file_title
-    
+
     documentWithoutFileNumber.file_title = update_file_title_with_company_name_and_address(documentWithoutFileNumber.file_title, company_name, address)
     
     # if file_number exists and confidence score is above 0.7 then display_name will be the file_number,
@@ -107,7 +125,9 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
         document = copy.deepcopy(documentWithoutFileNumber)
         document.file_number = file_number
         if (confidence_score > file_number_confidence_threshold):
-            document.display_name = file_number if document.volume is None else file_number + '_' + document.volume.replace(" ", "").lower()
+            document.display_name = (file_number 
+                                     if document.volume is None 
+                                     else file_number + '_' + document.volume.replace(" ", "").lower())
         else:
             document.display_name = blob_name
         documents.append(document)
@@ -151,14 +171,3 @@ def update_text_anchors(doc, doc_next, text_length):
     doc.pages.extend(doc_next.pages)
     doc.text = doc.text + "\n" + doc_next.text
     return doc
-
-class DocumentType(Enum):
-    LRS_DOCUMENTS_TYPE = auto()
-    GENERAL_DOCUMENTS_TYPE = auto()
-
-def get_document_type(doc_type_str):
-    try:
-        return DocumentType[doc_type_str.upper()]
-    except KeyError:
-        # Handle the case where the string doesn't match any enum member
-        return None

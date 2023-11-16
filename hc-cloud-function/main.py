@@ -105,7 +105,7 @@ def main(event, context):
         raise
 
     #Post-Process the cde response
-    documents_warehouse_properties = build_documents_warehouse_properties_from_entities(entities, blob_name, float(env_var["file_number_confidence_threshold"]))
+    documents_warehouse_properties = build_documents_warehouse_properties_from_entities(entities, blob_name, float(env_var["file_number_confidence_threshold"]), document_class)
 
     #Send the value_dict to warehouse api call to display the properties
     try:
