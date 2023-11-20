@@ -83,7 +83,7 @@ def process_general_documents(entities, blob_name, file_number_confidence_thresh
         elif (item.type_ == "full_title"):
             documentWithoutFileNumber.file_title = item.mention_text
         elif (item.type_ == "volume"):
-            documentWithoutFileNumber.volume = item.mention_text.upper()
+            documentWithoutFileNumber.volume = item.mention_text
         elif (item.type_ == "printed_date"):
             documentWithoutFileNumber.date = item.normalized_value.text if item.normalized_value is not None else item.mention_text
         elif (item.type_ == "company_name"):
