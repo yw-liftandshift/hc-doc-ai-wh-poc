@@ -1,3 +1,4 @@
+import re
 from enum import Enum, auto
 import copy
 from cf_config import DocumentWarehouseProperties
@@ -115,6 +116,19 @@ def process_general_documents(entities, blob_name, file_number_confidence_thresh
                 return roman_to_arabic(parts[0])
             
     documentWithoutFileNumber.volume = process_roman_numbers_for_volume(documentWithoutFileNumber.volume)
+
+    def process_date(date):
+        if re.match(r'^\d{4}$', date):
+            # If the text matches the pattern (YYYY), do something
+            return date + "-00-00"
+        elif re.match(r'^\d{4}-\d{2}$', date):
+            # If the text matches the pattern (YYYY-MM), append "-0" to the end
+            return date + "-00"
+        else:
+            # If the text doesn't match the pattern, use the original text
+            return date
+        
+    documentWithoutFileNumber.date = process_date(documentWithoutFileNumber.date)
 
     # add company_name to title if not already part of the title
     def update_file_title_with_company_name_and_address (document_file_title, company_name, address):
