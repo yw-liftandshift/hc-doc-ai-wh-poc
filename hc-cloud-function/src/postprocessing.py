@@ -102,16 +102,19 @@ def process_general_documents(entities, blob_name, file_number_confidence_thresh
     for nds_no in nds_no_set:
         file_number_confidence_score_dict.pop(nds_no, None)
 
-    if documentWithoutFileNumber.volume is not None:
-        parts = [part.strip() for part in documentWithoutFileNumber.volume.split('OF')]
-        # translate to arabic if volume is represented as roman
-        if (len(parts) == 2 and 
-            is_roman_number(parts[0]) and
-            is_roman_number(parts[1])):
-            documentWithoutFileNumber.volume = roman_to_arabic(parts[0]) + 'OF' + roman_to_arabic(parts[1])
-        elif (len(parts) == 1 and 
-              is_roman_number(parts[0])):
-            documentWithoutFileNumber.volume = roman_to_arabic(parts[0])
+    def process_roman_numbers_for_volume(volume):
+        if volume is not None:
+            parts = [part.strip() for part in volume.split('OF')]
+            # translate to arabic if volume is represented as roman
+            if (len(parts) == 2 and 
+                is_roman_number(parts[0]) and
+                is_roman_number(parts[1])):
+                return roman_to_arabic(parts[0]) + ' OF ' + roman_to_arabic(parts[1])
+            elif (len(parts) == 1 and 
+                is_roman_number(parts[0])):
+                return roman_to_arabic(parts[0])
+            
+    documentWithoutFileNumber.volume = process_roman_numbers_for_volume(documentWithoutFileNumber.volume)
 
     # add company_name to title if not already part of the title
     def update_file_title_with_company_name_and_address (document_file_title, company_name, address):
