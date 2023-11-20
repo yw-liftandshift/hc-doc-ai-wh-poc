@@ -1,6 +1,7 @@
 from enum import Enum, auto
 import copy
 from cf_config import DocumentWarehouseProperties
+from roman_to_arabic import roman_to_arabic, is_roman_number
 
 class DocumentType(Enum):
     LRS_DOCUMENTS_TYPE = auto()
@@ -67,6 +68,7 @@ def process_lrs_documents(entities, blob_name):
 def process_general_documents(entities, blob_name, file_number_confidence_threshold):
     file_number_confidence_score_dict = {}
 
+    #bunch of numbers in documents often have nds before the actual number, its not file number
     nds_no_set = set()
 
     documentWithoutFileNumber = DocumentWarehouseProperties()
@@ -86,7 +88,7 @@ def process_general_documents(entities, blob_name, file_number_confidence_thresh
             documentWithoutFileNumber.date = item.normalized_value.text if item.normalized_value is not None else item.mention_text
         elif (item.type_ == "company_name"):
             company_name = item.mention_text
-        elif (item.type_ == "nds_no"): #bunch of numbers in documents often have nds before the actual number, its not file number
+        elif (item.type_ == "nds_no"):
             nds_no_set.add(item.mention_text)
         elif (item.type_ == "address"):
             address = item.mention_text
@@ -100,6 +102,20 @@ def process_general_documents(entities, blob_name, file_number_confidence_thresh
     for nds_no in nds_no_set:
         file_number_confidence_score_dict.pop(nds_no, None)
 
+    def process_roman_numbers_for_volume(volume):
+        if volume is not None:
+            parts = [part.strip() for part in volume.split('OF')]
+            # translate to arabic if volume is represented as roman
+            if (len(parts) == 2 and 
+                is_roman_number(parts[0]) and
+                is_roman_number(parts[1])):
+                return roman_to_arabic(parts[0]) + ' OF ' + roman_to_arabic(parts[1])
+            elif (len(parts) == 1 and 
+                is_roman_number(parts[0])):
+                return roman_to_arabic(parts[0])
+            
+    documentWithoutFileNumber.volume = process_roman_numbers_for_volume(documentWithoutFileNumber.volume)
+
     # add company_name to title if not already part of the title
     def update_file_title_with_company_name_and_address (document_file_title, company_name, address):
         if (document_file_title is None):
@@ -112,7 +128,7 @@ def process_general_documents(entities, blob_name, file_number_confidence_thresh
 
         if (address is not None and address not in document_file_title):
             new_file_title = new_file_title + " - " + address
-        
+
         return new_file_title
 
     documentWithoutFileNumber.file_title = update_file_title_with_company_name_and_address(documentWithoutFileNumber.file_title, company_name, address)
