@@ -114,7 +114,8 @@ def process_general_documents(entities, blob_name, file_number_confidence_thresh
             elif (len(parts) == 1 and 
                 is_roman_number(parts[0])):
                 return roman_to_arabic(parts[0])
-            
+            return volume
+
     documentWithoutFileNumber.volume = process_roman_numbers_for_volume(documentWithoutFileNumber.volume)
 
     def process_date(date):
