@@ -11,7 +11,7 @@ from cf_config import DocumentWarehouseProperties
 from google.cloud import storage
 
 
-def process_document_ocr(project_id, location, processor_id, raw_document):
+def process_document_ocr(project_id: str, location: str, processor_id: str, raw_document: documentai.RawDocument) -> documentai.Document:
     '''
     This function invoke OCR processor in online mode over all document pages multiple times
     to extract entities.
@@ -96,11 +96,11 @@ def process_document_ocr(project_id, location, processor_id, raw_document):
 
     return previous_document_object
 
-def doc_warehouse_creation(project_number,
-                           location,
-                           doc,
-                           schema_id,
-                           gcs_input_uri,
+def doc_warehouse_creation(project_number: str,
+                           location: str,
+                           doc: documentai.Document,
+                           schema_id: str,
+                           gcs_input_uri: str,
                            documentProperties: DocumentWarehouseProperties
                            ):
     '''
@@ -149,7 +149,7 @@ def process_document_and_extract_entities(
     location: str,
     processor_id: str,
     raw_document: documentai.RawDocument,
-):
+) -> documentai.Document:
     '''
     This function is used to invoke the CDE processor and return entities.
 
@@ -198,7 +198,7 @@ def process_document_and_extract_entities(
     # We are interested only in entities
     return result.document.entities
 
-def get_file_from_cloud_storage_as_raw_document(bucket_name: str, object_name: str, mime_type="application/pdf") -> RawDocument:
+def get_file_from_cloud_storage_as_raw_document(bucket_name: str, object_name: str, mime_type="application/pdf") -> documentai.RawDocument:
     '''
     This function is used to get the file from cloud returning it as RawDocument object.
 

@@ -7,7 +7,7 @@ import logging
 import google.cloud.contentwarehouse_v1.types
 import google.cloud.logging
 from cf_config import env_var
-from api_call_utils import doc_warehouse_creation, getFileFromCloudStoreAsRawDocument, process_document_ocr, process_document_and_extract_entities
+from api_call_utils import doc_warehouse_creation, get_file_from_cloud_storage_as_raw_document, process_document_ocr, process_document_and_extract_entities
 from postprocessing import build_documents_warehouse_properties_from_entities, get_document_type, DocumentType
 
 # Setting up logging
@@ -33,7 +33,7 @@ def main(event, context):
     pdf_file_name = event['name']
     blob_name = pdf_file_name.replace(".pdf", "")
 
-    raw_document = getFileFromCloudStoreAsRawDocument(
+    raw_document = get_file_from_cloud_storage_as_raw_document(
         event['bucket'], event['name'], event['contentType'])
 
     doc = process_document_ocr(
