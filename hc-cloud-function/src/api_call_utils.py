@@ -198,7 +198,7 @@ def process_document_and_extract_entities(
     # We are interested only in entities
     return result.document.entities
 
-def getFileFromCloudStoreAsRawDocument(bucket_name, object_name, mime_type="application/pdf"):
+def get_file_from_cloud_storage_as_raw_document(bucket_name: str, object_name: str, mime_type="application/pdf") -> RawDocument:
     '''
     This function is used to get the file from cloud returning it as RawDocument object.
 
