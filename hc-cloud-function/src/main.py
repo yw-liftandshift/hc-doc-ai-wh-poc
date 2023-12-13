@@ -57,19 +57,18 @@ def main(event, context):
         raise
 
     # Post-Process the cde response
-    documents_warehouse_properties = build_documents_warehouse_properties_from_entities(
+    document_warehouse_properties = build_documents_warehouse_properties_from_entities(
         entities, blob_name, float(env_var["file_number_confidence_threshold"]), document_class)
 
     # Send the value_dict to warehouse api call to display the properties
     try:
-        for document_warehouse_properties in documents_warehouse_properties:
-            doc_warehouse_creation(env_var["project_number"],
-                                   env_var["location"],
-                                   doc,
-                                   env_var["schema_id"],
-                                   gcs_input_uri,
-                                   document_warehouse_properties
-                                   )
+        doc_warehouse_creation(env_var["project_number"],
+                                env_var["location"],
+                                doc,
+                                env_var["schema_id"],
+                                gcs_input_uri,
+                                document_warehouse_properties
+                                )
     except:
         raise
 

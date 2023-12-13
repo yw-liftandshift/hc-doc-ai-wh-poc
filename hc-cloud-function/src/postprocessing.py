@@ -10,6 +10,9 @@ class DocumentType(Enum):
     GENERAL_DOCUMENTS_TYPE = auto()
 
 
+class FilenameFlags(Enum):
+    ATT_FN = "ATT_FN_"
+
 def get_document_type(doc_type_str):
     try:
         return DocumentType[doc_type_str.upper()]
@@ -74,42 +77,26 @@ def process_lrs_documents(entities, blob_name):
 
 
 def process_general_documents(entities, blob_name, file_number_confidence_threshold):
-    file_number_confidence_score_dict = {}
+    file_number_set = set()
 
-    # bunch of numbers in documents often have nds before the actual number, its not file number
-    nds_no_set = set()
-
-    documentWithoutFileNumber = DocumentWarehouseProperties()
+    document = DocumentWarehouseProperties()
 
     company_name = None
     address = None
     for item in entities.pb:
-        if (item.type_ == "file_no_1" or item.type_ == "file_no_2"):
-            confidence = file_number_confidence_score_dict.get(
-                item.mention_text, 0)
-            if item.mention_text not in file_number_confidence_score_dict or confidence > file_number_confidence_score_dict[item.mention_text]:
-                file_number_confidence_score_dict[item.mention_text] = item.confidence
+        if item.type_ == "file_no":
+            file_number_set.add(item.mention_text)
         elif (item.type_ == "full_title"):
-            documentWithoutFileNumber.file_title = item.mention_text
+            document.file_title = item.mention_text
         elif (item.type_ == "volume"):
-            documentWithoutFileNumber.volume = item.mention_text
+            document.volume = item.mention_text
         elif (item.type_ == "printed_date"):
-            documentWithoutFileNumber.date = item.normalized_value.text if item.normalized_value is not None else item.mention_text
+            document.date = item.normalized_value.text if item.normalized_value is not None else item.mention_text
         elif (item.type_ == "company_name"):
             company_name = item.mention_text
-        elif (item.type_ == "nds_no"):
-            nds_no_set.add(item.mention_text)
         elif (item.type_ == "address"):
             address = item.mention_text
 
-    # When we send generic docs to the processor not only we receive file_numbers that we want which are formatted
-    # as (9427-g38-8753) we also get some unwanted numbers formatted as (HN-7654 or DS-8773).
-    # In order to distinguish between the real file numbers and the unwanted numbers we have trained
-    # the processor with WANTED labels (file_no_1 and file_no_2) and unwanted label of (nds_no).
-    # As a result we tell the processor that these numbers are not wanted and categorize them under a different label.
-    # Then during post-processing we detect the unwanted numbers and delete them, thus only getting the true file numbers.
-    for nds_no in nds_no_set:
-        file_number_confidence_score_dict.pop(nds_no, None)
 
     def process_roman_numbers_for_volume(volume):
         if volume is not None:
@@ -124,8 +111,8 @@ def process_general_documents(entities, blob_name, file_number_confidence_thresh
                 return roman_to_arabic(parts[0])
             return volume
 
-    documentWithoutFileNumber.volume = process_roman_numbers_for_volume(
-        documentWithoutFileNumber.volume)
+    document.volume = process_roman_numbers_for_volume(
+        document.volume)
 
     def process_date(date):
         if date is not None:
@@ -139,8 +126,8 @@ def process_general_documents(entities, blob_name, file_number_confidence_thresh
                 # If the text doesn't match the pattern, use the original text
                 return date
 
-    documentWithoutFileNumber.date = process_date(
-        documentWithoutFileNumber.date)
+    document.date = process_date(
+        document.date)
 
     # add company_name to title if not already part of the title
     def update_file_title_with_company_name_and_address(document_file_title, company_name, address):
@@ -157,27 +144,16 @@ def process_general_documents(entities, blob_name, file_number_confidence_thresh
 
         return new_file_title
 
-    documentWithoutFileNumber.file_title = update_file_title_with_company_name_and_address(
-        documentWithoutFileNumber.file_title, company_name, address)
+    document.file_title = update_file_title_with_company_name_and_address(
+        document.file_title, company_name, address)
 
-    # if file_number exists and confidence score is above 0.7 then display_name will be the file_number,
-    # if volume exists then display_name will be file_number concatenated with the volume.
-    # otherwise display_name will be the file_name (blob_name)
-    documents = []
-    for file_number, confidence_score in file_number_confidence_score_dict.items():
-        document = copy.deepcopy(documentWithoutFileNumber)
-        document.file_number = file_number
-        if (confidence_score > file_number_confidence_threshold):
-            document.display_name = (file_number
-                                     if document.volume is None
-                                     else file_number + '_' + document.volume.replace(" ", "").lower())
-        else:
-            document.display_name = blob_name
-        documents.append(document)
 
-    # special case if we did not recognize any file_number
-    if (len(documents) == 0):
-        documentWithoutFileNumber.display_name = blob_name
-        documents.append(documentWithoutFileNumber)
+    document.file_number = list(file_number_set)
 
-    return documents
+    # if we have more than one file number than we have to add flag ATT_FN
+    if len(document.file_number) > 1:
+        document.display_name = FilenameFlags.ATT_FN.value + blob_name
+    else:
+        document.display_name = blob_name
+
+    return document
