@@ -36,7 +36,7 @@ class DocumentWarehouseProperties:
             if value is not None and field != 'display_name':
                 prop = contentwarehouse.Property()
                 prop.name = field
-                prop.text_values.values = [value]
+                prop.text_values.values = value if isinstance(value, list) else [value]
                 props.append(prop)
         return props
 
