@@ -1,6 +1,5 @@
 import re
 from enum import Enum, auto
-import copy
 from cf_config import DocumentWarehouseProperties
 from roman_to_arabic import roman_to_arabic, is_roman_number
 
@@ -26,10 +25,11 @@ This file is responsible to perform post-processing on top of API responses.
 '''
 
 
-def build_documents_warehouse_properties_from_entities(entities, blob_name, file_number_confidence_threshold, documentType: DocumentType):
+def build_documents_warehouse_properties_from_entities(entities, blob_name, documentType: DocumentType):
     '''
     This function post process the CDE response and
-    creates a list of documents
+    creates a list of DocumentWarehouseProperties
+
 
     Args:
     doc_cde_json : json
@@ -38,15 +38,14 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, file
     blob_name : string
                 Contains the blob name
 
-    file_number_confidence_threshold : float
-                Contains the confidence threshold for file number
+    documentType : DocumentType
+                   Contains the document type
 
     Returns:
-    documents : list
-                Contains the list of documents
+        List of DocumentWarehouseProperties
 
     '''
-    return process_lrs_documents(entities, blob_name) if documentType == DocumentType.LRS_DOCUMENTS_TYPE else process_general_documents(entities, blob_name, file_number_confidence_threshold)
+    return process_lrs_documents(entities, blob_name) if documentType == DocumentType.LRS_DOCUMENTS_TYPE else process_general_documents(entities, blob_name)
 
 
 def process_lrs_documents(entities, blob_name):
@@ -76,7 +75,7 @@ def process_lrs_documents(entities, blob_name):
     return documents
 
 
-def process_general_documents(entities, blob_name, file_number_confidence_threshold):
+def process_general_documents(entities, blob_name):
     file_number_set = set()
 
     document = DocumentWarehouseProperties()
