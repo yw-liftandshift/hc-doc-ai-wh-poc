@@ -1,5 +1,5 @@
 locals {
-  hc_cloud_function_zip_path = "${path.module}/hc-cloud-function.zip"
+  hc_cloud_function_zip_path = "${path.module}/hc_cloud_function.zip"
 }
 
 data "google_project" "project" {
@@ -21,7 +21,7 @@ resource "google_storage_bucket" "cloud_function_code" {
 
 data "archive_file" "cloud_function_code" {
   type        = "zip"
-  source_dir  = "${path.module}/../../../../../../hc-cloud-function/src"
+  source_dir  = "${path.module}/../../../../../../hc_cloud_function/src"
   output_path = local.hc_cloud_function_zip_path
 }
 
