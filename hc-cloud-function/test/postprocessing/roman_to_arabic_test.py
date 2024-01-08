@@ -1,5 +1,5 @@
 import pytest
-from src.roman_to_arabic import roman_to_arabic, is_roman_number
+from ...src.postprocessing.roman_to_arabic import roman_to_arabic, is_roman_number
 
 @pytest.mark.parametrize("roman, arabic",[("I","1"),("V","5"),("X","10"),("L","50"),("C", "100"),
                                           ("MMDCCLXXIII", "2773"), ("MMMCMXCIX", "3999"), ("IV","4"),
