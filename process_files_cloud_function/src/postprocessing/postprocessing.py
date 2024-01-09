@@ -1,16 +1,13 @@
 import re
 from enum import Enum, auto
 from cf_config import DocumentWarehouseProperties
-from roman_to_arabic import roman_to_arabic, is_roman_number
+from postprocessing.filename_flags import FilenameFlags
+from postprocessing.roman_to_arabic import roman_to_arabic, is_roman_number
 
 
 class DocumentType(Enum):
     LRS_DOCUMENTS_TYPE = auto()
     GENERAL_DOCUMENTS_TYPE = auto()
-
-
-class FilenameFlags(Enum):
-    ATT_FN = "ATT_FN_"
 
 def get_document_type(doc_type_str):
     try:
@@ -18,7 +15,6 @@ def get_document_type(doc_type_str):
     except KeyError:
         # Handle the case where the string doesn't match any enum member
         return None
-
 
 '''
 This file is responsible to perform post-processing on top of API responses.
@@ -76,6 +72,8 @@ def process_lrs_documents(entities, blob_name):
 
 
 def process_general_documents(entities, blob_name):
+    filename_flags = FilenameFlags()
+
     file_number_set = set()
 
     document = DocumentWarehouseProperties()
@@ -96,10 +94,9 @@ def process_general_documents(entities, blob_name):
         elif (item.type_ == "address"):
             address = item.mention_text
 
-
     def process_roman_numbers_for_volume(volume):
         if volume is not None:
-            parts = [part.strip() for part in volume.split('OF')]
+            parts = [part.strip() for part in volume.upper().split('OF')]
             # translate to arabic if volume is represented as roman
             if (len(parts) == 2 and
                 is_roman_number(parts[0]) and
@@ -146,13 +143,8 @@ def process_general_documents(entities, blob_name):
     document.file_title = update_file_title_with_company_name_and_address(
         document.file_title, company_name, address)
 
-
     document.file_number = list(file_number_set)
 
-    # if we have more than one file number than we have to add flag ATT_FN
-    if len(document.file_number) > 1:
-        document.display_name = FilenameFlags.ATT_FN.value + blob_name
-    else:
-        document.display_name = blob_name
+    document.display_name = filename_flags.add_necessary_flags(blob_name, document.volume, document.file_number)
 
     return document

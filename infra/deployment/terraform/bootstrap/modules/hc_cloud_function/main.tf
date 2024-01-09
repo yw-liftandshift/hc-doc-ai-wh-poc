@@ -1,14 +1,15 @@
 locals {
-  hc_cloud_function_zip_path = "${path.module}/hc-cloud-function.zip"
+  hc_cloud_function_zip_path = "${path.module}/process_files_cloud_function.zip"
 }
 
 data "google_project" "project" {
 }
 
 resource "google_storage_bucket" "cloud_function_code" {
-  name                        = "${data.google_project.project.project_id}-hc-cloud-function-code"
+  name                        = "${data.google_project.project.project_id}-process-files-function-code"
   location                    = var.region
   uniform_bucket_level_access = true
+  force_destroy = true
 
   versioning {
     enabled = true
@@ -21,12 +22,12 @@ resource "google_storage_bucket" "cloud_function_code" {
 
 data "archive_file" "cloud_function_code" {
   type        = "zip"
-  source_dir  = "${path.module}/../../../../../../hc-cloud-function/src"
+  source_dir  = "${path.module}/../../../../../../process_files_cloud_function/src"
   output_path = local.hc_cloud_function_zip_path
 }
 
 resource "google_storage_bucket_object" "cloud_function_code" {
-  name   = "hc-cloud-function.${filemd5(data.archive_file.cloud_function_code.output_path)}.zip"
+  name   = "process_files_cloud_function.${filemd5(data.archive_file.cloud_function_code.output_path)}.zip"
   bucket = google_storage_bucket.cloud_function_code.name
   source = local.hc_cloud_function_zip_path
 }

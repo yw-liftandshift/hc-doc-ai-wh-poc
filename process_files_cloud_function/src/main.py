@@ -8,7 +8,7 @@ import google.cloud.contentwarehouse_v1.types
 import google.cloud.logging
 from cf_config import env_var
 from api_call_utils import doc_warehouse_creation, get_file_from_cloud_storage_as_raw_document, process_document_ocr, process_document_and_extract_entities
-from postprocessing import build_documents_warehouse_properties_from_entities, get_document_type, DocumentType
+from postprocessing.postprocessing import build_documents_warehouse_properties_from_entities, get_document_type, DocumentType
 
 # Setting up logging
 # Instantiates a client
