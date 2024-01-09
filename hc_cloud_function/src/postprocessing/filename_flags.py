@@ -10,9 +10,12 @@ class FilenameFlags:
         V = "V_"
 
     def __add_filename_flag_to_filename_if_necessary(self, blob_name, file_number_list):
-        # if we have more than one or zero file numbers than we have to add flag ATT_FN
-        return (blob_name if len(file_number_list) == 1
-                else self.__FilenameFlagsEnum.FN.value + blob_name)
+        # if we have more than one or zero file numbers than we have to add flag ATT_FN,
+        # and if we have one file number but it has inconsistency with file name
+        if len(file_number_list) == 1 and file_number_list[0] in blob_name:
+                return blob_name
+        else:
+                return self.__FilenameFlagsEnum.FN.value + blob_name
 
     def __add_volume_flag_to_filename_if_necessary(self, blob_name, detected_volume):
         """
