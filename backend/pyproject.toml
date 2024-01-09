@@ -7,7 +7,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
+flask = {extras = ["async"], version = "^3.0.0"}
 
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.12.1"
+python-dotenv = {extras = ["cli"], version = "^1.0.0"}
 
 [build-system]
 requires = ["poetry-core"]
