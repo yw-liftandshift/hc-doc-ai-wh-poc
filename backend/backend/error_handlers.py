@@ -1,3 +1,4 @@
+import dataclasses
 import traceback
 from dataclasses import dataclass
 from enum import StrEnum
@@ -37,7 +38,9 @@ def add_error_handlers(app: Flask):
         app.logger.error(traceback.format_exc())
 
         return (
-            _ErrorResponse(code=_ErrorResponseCode.ALREADY_EXISTS, message=str(e)),
+            dataclasses.asdict(
+                _ErrorResponse(code=_ErrorResponseCode.ALREADY_EXISTS, message=str(e))
+            ),
             HTTPStatus.CONFLICT,
         )
 
@@ -47,8 +50,10 @@ def add_error_handlers(app: Flask):
         app.logger.error(traceback.format_exc())
 
         return (
-            _ErrorResponse(
-                code=_ErrorResponseCode.UNAUTHORIZED, message="Unauthorized"
+            dataclasses.asdict(
+                _ErrorResponse(
+                    code=_ErrorResponseCode.UNAUTHORIZED, message="Unauthorized"
+                )
             ),
             HTTPStatus.UNAUTHORIZED,
         )
@@ -59,7 +64,9 @@ def add_error_handlers(app: Flask):
         app.logger.error(traceback.format_exc())
 
         return (
-            _ErrorResponse(code=_ErrorResponseCode.NOT_FOUND, message=str(e)),
+            dataclasses.asdict(
+                _ErrorResponse(code=_ErrorResponseCode.NOT_FOUND, message=str(e))
+            ),
             HTTPStatus.NOT_FOUND,
         )
 
@@ -69,8 +76,10 @@ def add_error_handlers(app: Flask):
         app.logger.error(traceback.format_exc())
 
         return (
-            _ErrorResponse(
-                code=_ErrorResponseCode.UNPROCESSABLE_ENTITY, message=str(e)
+            dataclasses.asdict(
+                _ErrorResponse(
+                    code=_ErrorResponseCode.UNPROCESSABLE_ENTITY, message=str(e)
+                )
             ),
             HTTPStatus.UNPROCESSABLE_ENTITY,
         )
@@ -90,7 +99,10 @@ def add_error_handlers(app: Flask):
             else _ErrorResponseCode.GENERAL_ERROR
         )
 
-        return _ErrorResponse(code=code, message=e.description), e.code
+        return (
+            dataclasses.asdict(_ErrorResponse(code=code, message=e.description)),
+            e.code,
+        )
 
     @app.errorhandler(Exception)
     def handle_exception(e: Exception):
@@ -98,8 +110,11 @@ def add_error_handlers(app: Flask):
         app.logger.error(traceback.format_stack())
 
         return (
-            _ErrorResponse(
-                code=_ErrorResponseCode.GENERAL_ERROR, message="Internal Server Error"
+            dataclasses.asdict(
+                _ErrorResponse(
+                    code=_ErrorResponseCode.GENERAL_ERROR,
+                    message="Internal Server Error",
+                )
             ),
             HTTPStatus.INTERNAL_SERVER_ERROR,
         )

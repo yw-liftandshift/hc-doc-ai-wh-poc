@@ -1,4 +1,4 @@
-from . import app
+from backend import main
 
 if __name__ == "__main__":
-    app.run(port=app.config["PORT"], debug=True)
+    main()

@@ -1,0 +1,1 @@
+from .documents_blueprint import documents_blueprint

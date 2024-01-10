@@ -1,13 +1,19 @@
 [tool.poetry]
-name = "backend"
+name = "hc-doc-ai-wh-poc-backend"
 version = "0.1.0"
-description = ""
-authors = ["Marcus Vinicius Monteiro de Souza <marcusmonteirodesouza@gmail.com>"]
+description = "# Health Canada - DocAI Warehouse POC - Backend"
+authors = ["Marcus Vinicius Monteiro de Souza <marcus.souza@improving.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
 flask = {extras = ["async"], version = "^3.0.0"}
+flask-sqlalchemy = "^3.1.1"
+sqlalchemy = "^2.0.25"
+flask-migrate = "^4.0.5"
+stream-unzip = "^0.0.89"
+psycopg2-binary = "^2.9.9"
+google-cloud-storage = "^2.14.0"
 
 
 [tool.poetry.group.dev.dependencies]
