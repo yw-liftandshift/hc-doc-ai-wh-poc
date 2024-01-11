@@ -62,13 +62,9 @@ def process_lrs_documents(entities, blob_name):
         elif (item.type_ == "org_code"):
             documentWarehouseProperties.org_code = item.mention_text
 
-    documentWarehouseProperties.display_name = (blob_name
-                                                if documentWarehouseProperties.volume is None or documentWarehouseProperties.file_number is None
-                                                else documentWarehouseProperties.file_number + '_' + documentWarehouseProperties.volume.replace(" ", "").lower())
+    documentWarehouseProperties.display_name = blob_name
 
-    documents = []
-    documents.append(documentWarehouseProperties)
-    return documents
+    return documentWarehouseProperties
 
 
 def process_general_documents(entities, blob_name):
