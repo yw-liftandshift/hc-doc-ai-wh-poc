@@ -33,19 +33,6 @@ module "monitoring" {
   alerting_emails = var.alerting_emails
 }
 
-module "doc_ai_processors" {
-  source = "./modules/doc_ai_processors"
-
-  region                      = var.region
-  doc_ai_location             = var.doc_ai_location
-  doc_ai_kms_keyring_location = module.project.doc_ai_kms_keyring_location
-  doc_ai_kms_crypto_key       = module.project.doc_ai_kms_crypto_key
-
-  depends_on = [
-    module.iam
-  ]
-}
-
 module "hc_cloud_function" {
   source = "./modules/hc_cloud_function"
 
@@ -55,10 +42,10 @@ module "hc_cloud_function" {
   dw_ui_service_account_email             = var.dw_ui_service_account_email
   schema_id                               = var.schema_id
   doc_ai_location                         = var.doc_ai_location
-  ocr_processor_name                      = module.doc_ai_processors.ocr_processor_name
-  cde_lrs_type_processor_name             = module.doc_ai_processors.cde_lrs_type_processor_name
-  cde_general_type_processor_name         = module.doc_ai_processors.cde_general_type_processor_name
-  cde_classifier_type_processor_name      = module.doc_ai_processors.cde_classifier_type_processor_name
+  ocr_processor_name                      = var.ocr_processor_name
+  cde_lrs_type_processor_name             = var.cde_lrs_type_processor_name
+  cde_general_type_processor_name         = var.cde_general_type_processor_name
+  cde_classifier_type_processor_name      = var.cde_classifier_type_processor_name
   monitoring_notification_channel_ids     = module.monitoring.monitoring_notification_alerting_emails.*.id
 }
 
