@@ -54,3 +54,18 @@ variable "branch_name" {
   description = "The Cloud Source repository branch name."
 }
 
+variable "ocr_processor_name" {
+  type = string 
+}
+
+variable "cde_lrs_type_processor_name" {
+  type = string
+}
+
+variable "cde_general_type_processor_name" {
+  type = string
+}
+
+variable "cde_classifier_type_processor_name" {
+  type = string
+}
