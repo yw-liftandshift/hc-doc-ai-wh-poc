@@ -1,5 +1,26 @@
 version: "3.9"
 services:
+  app:
+    build:
+      context: .
+      args:
+        PORT: ${PORT}
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DEBUG=${DEBUG}
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+      - GOOGLE_CLOUD_STORAGE_BUCKET_DOCUMENTS=${GOOGLE_CLOUD_STORAGE_BUCKET_DOCUMENTS}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - PORT=${PORT}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
   postgres:
     image: "postgres:15-alpine"
     ports:

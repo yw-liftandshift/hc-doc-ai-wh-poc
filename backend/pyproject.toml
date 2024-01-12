@@ -14,6 +14,7 @@ flask-migrate = "^4.0.5"
 stream-unzip = "^0.0.89"
 psycopg2-binary = "^2.9.9"
 google-cloud-storage = "^2.14.0"
+gunicorn = "^21.2.0"
 
 
 [tool.poetry.group.dev.dependencies]

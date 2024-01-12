@@ -23,6 +23,8 @@ def create_app():
     db.init_app(app=app)
     migrate.init_app(app=app, db=db)
 
+    setup_database(app=app)
+
     storage_client = storage.Client(project=config.GOOGLE_CLOUD_PROJECT)
 
     app.documents_service = DocumentsService(storage_client=storage_client)
@@ -32,6 +34,7 @@ def create_app():
     app.register_blueprint(blueprint=documents_blueprint)
 
     add_error_handlers(app=app)
+
     return app
 
 
@@ -40,8 +43,8 @@ def setup_database(app: Flask):
         db.create_all()
 
 
-def main():
+def setup_app():
     app = create_app()
     setup_database(app=app)
 
-    app.run(port=app.config["PORT"], debug=True)
+    return app

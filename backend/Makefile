@@ -11,7 +11,10 @@ run:
 	poetry run dotenv run -- python -m backend
 
 up:
-	docker compose up --wait -d
+	docker compose up --wait -d --build
+
+up-postgres:
+	docker compose up postgres --wait -d
 
 down:
 	docker compose down

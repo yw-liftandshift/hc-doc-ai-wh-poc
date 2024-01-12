@@ -1,4 +1,5 @@
-from backend import main
+from backend import setup_app
 
 if __name__ == "__main__":
-    main()
+    app = setup_app()
+    app.run(port=app.config["PORT"], debug=True)
