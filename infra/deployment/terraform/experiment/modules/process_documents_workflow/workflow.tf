@@ -36,6 +36,7 @@ main:
                           documentOutputConfig:
                             gcsOutputConfig:
                               gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/ocr"}
+                              fieldMask: text
                           skipHumanReview: true
                       result: ocr_result
             - extract_properties:
