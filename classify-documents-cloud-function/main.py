@@ -4,7 +4,7 @@ import mimetypes
 import sys
 import functions_framework
 from google.cloud import storage
-from classify_documents_cloud_function import config
+from classify_documents import config
 
 logging.basicConfig(stream=sys.stdout, level=config.LOG_LEVEL)
 
