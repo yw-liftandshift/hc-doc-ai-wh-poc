@@ -83,6 +83,8 @@ module "postprocess_lrs_cloud_function" {
 module "process_documents_workflow" {
   source = "./modules/process_documents_workflow"
 
+  ocr_processor_id                               = var.ocr_processor_id
+  ocr_processor_location                         = var.ocr_processor_location
   documents_classifier_processor_id              = var.documents_classifier_processor_id
   documents_classifier_processor_location        = var.documents_classifier_processor_location
   lrs_documents_cde_processor_id                 = var.lrs_documents_cde_processor_id

@@ -3,6 +3,16 @@ variable "project_id" {
   description = "The project ID."
 }
 
+variable "ocr_processor_id" {
+  type        = string
+  description = "Document AI OCR processor ID."
+}
+
+variable "ocr_processor_location" {
+  type        = string
+  description = "Document AI OCR processor location."
+}
+
 variable "documents_classifier_processor_id" {
   type        = string
   description = "Documents Classifier Document AI processor ID."

@@ -7,115 +7,141 @@ resource "google_workflows_workflow" "process_documents" {
 main:
   params: [event]
   steps:
-    - decode_pubsub_message:
+    - init:
         assign:
           - base64: $${base64.decode(event.data.message.data)}
           - decoded_json_message: $${json.decode(text.decode(base64))}
           - batch_id: $${decoded_json_message.batch_id}
+          - ocr_result: ""
+          - extract_properties_result: ""
     - log_decoded_json_message:
         call: sys.log
         args:
           text: $${decoded_json_message}
-    - extract_pdf_first_page:
-        call: http.post
-        args:
-          url: ${var.extract_pdf_first_page_cloud_function_url}
-          body:
-            google_cloud_storage:
-              input:
-                bucket: ${var.google_cloud_storage_documents_bucket}
-                folder: $${batch_id}
-              output:
-                bucket: ${google_storage_bucket.process_documents_workflow.name}
-                folder: $${batch_id + "/extract-first-page"}
-          auth:
-              type: OIDC
-              audience: ${var.extract_pdf_first_page_cloud_function_url}
-    - batch_classifier:
-        call: googleapis.documentai.v1.projects.locations.processors.batchProcess
-        args:
-          name: ${var.documents_classifier_processor_id}
-          location: ${var.documents_classifier_processor_location}
-          body:
-            inputDocuments:
-              gcsPrefix: 
-                gcsUriPrefix: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/extract-first-page"}
-            documentOutputConfig:
-              gcsOutputConfig:
-                gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/batch-classifier"}
-                fieldMask: entities
-            skipHumanReview: true
-        result: batch_classifier_resp
-    - log_batch_classifier_resp:
-        call: sys.log
-        args:
-          text: $${batch_classifier_resp}
-    - classify_documents:
-        call: http.post
-        args:
-          url: ${var.classify_documents_cloud_function_url}
-          body: $${batch_classifier_resp}
-          auth:
-              type: OIDC
-              audience: ${var.classify_documents_cloud_function_url}
-        result: classify_documents_resp
-    - log_classify_documents_resp:
-        call: sys.log
-        args:
-          text: $${classify_documents_resp}
-    - assign_cde_processors_shared_vars:
-        assign:
-          - postprocess_lrs_resp: ""
-          - general_processor_resp: ""
-    - cde_processors:
+    - process_documents:
         parallel:
-          shared: [postprocess_lrs_resp, general_processor_resp]
+          shared: [ocr_result, extract_properties_result]
           branches:
-            - lrs_processor:
+            - ocr:
                 steps:
-                  - lrs_processor_call:
+                  - batch_ocr:
                       call: googleapis.documentai.v1.projects.locations.processors.batchProcess
                       args:
-                        name: ${var.lrs_documents_cde_processor_id}
-                        location: ${var.lrs_documents_cde_processor_location}
+                        name: ${var.ocr_processor_id}
+                        location: ${var.ocr_processor_location}
                         body:
                           inputDocuments:
-                            gcsDocuments:
-                              documents: $${classify_documents_resp.body.lrs}
+                            gcsPrefix:
+                              gcsUriPrefix: $${"${data.google_storage_bucket.documents.url}" + "/" + batch_id}
                           documentOutputConfig:
                             gcsOutputConfig:
-                              gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/lrs-processor"}
-                              fieldMask: entities
+                              gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/ocr"}
                           skipHumanReview: true
-                      result: lrs_processor_resp
-                  - postprocess_lrs:
+                      result: ocr_result
+            - extract_properties:
+                steps:
+                  - extract_pdf_first_page:
                       call: http.post
                       args:
-                        url: ${var.postprocess_lrs_cloud_function_url}
-                        body: $${lrs_processor_resp}
+                        url: ${var.extract_pdf_first_page_cloud_function_url}
+                        body:
+                          google_cloud_storage:
+                            input:
+                              bucket: ${var.google_cloud_storage_documents_bucket}
+                              folder: $${batch_id}
+                            output:
+                              bucket: ${google_storage_bucket.process_documents_workflow.name}
+                              folder: $${batch_id + "/extract-first-page"}
                         auth:
-                            type: OIDC
-                            audience: ${var.postprocess_lrs_cloud_function_url}
-                      result: postprocess_lrs_resp
-            - general_processor:
-                steps:
-                  - general_processor_call:
+                          type: OIDC
+                          audience: ${var.extract_pdf_first_page_cloud_function_url}
+                  - batch_classifier:
                       call: googleapis.documentai.v1.projects.locations.processors.batchProcess
                       args:
-                        name: ${var.general_documents_cde_processor_id}
-                        location: ${var.general_documents_cde_processor_location}
+                        name: ${var.documents_classifier_processor_id}
+                        location: ${var.documents_classifier_processor_location}
                         body:
                           inputDocuments:
-                            gcsDocuments:
-                              documents: $${classify_documents_resp.body.general}
+                            gcsPrefix:
+                              gcsUriPrefix: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/extract-first-page"}
                           documentOutputConfig:
                             gcsOutputConfig:
-                              gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/general-processor"}
+                              gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/batch-classifier"}
                               fieldMask: entities
                           skipHumanReview: true
-                      result: general_processor_resp
+                      result: batch_classifier_resp
+                  - log_batch_classifier_resp:
+                      call: sys.log
+                      args:
+                        text: $${batch_classifier_resp}
+                  - classify_documents:
+                      call: http.post
+                      args:
+                        url: ${var.classify_documents_cloud_function_url}
+                        body: $${batch_classifier_resp}
+                        auth:
+                          type: OIDC
+                          audience: ${var.classify_documents_cloud_function_url}
+                      result: classify_documents_resp
+                  - log_classify_documents_resp:
+                      call: sys.log
+                      args:
+                        text: $${classify_documents_resp}
+                  - assign_cde_processors_shared_vars:
+                      assign:
+                        - postprocess_lrs_resp: ""
+                        - general_processor_resp: ""
+                  - cde_processors:
+                      parallel:
+                        shared: [postprocess_lrs_resp, general_processor_resp]
+                        branches:
+                          - lrs_processor:
+                              steps:
+                                - lrs_processor_call:
+                                    call: googleapis.documentai.v1.projects.locations.processors.batchProcess
+                                    args:
+                                      name: ${var.lrs_documents_cde_processor_id}
+                                      location: ${var.lrs_documents_cde_processor_location}
+                                      body:
+                                        inputDocuments:
+                                          gcsDocuments:
+                                            documents: $${classify_documents_resp.body.lrs}
+                                        documentOutputConfig:
+                                          gcsOutputConfig:
+                                            gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/lrs-processor"}
+                                            fieldMask: entities
+                                        skipHumanReview: true
+                                    result: lrs_processor_resp
+                                - postprocess_lrs:
+                                    call: http.post
+                                    args:
+                                      url: ${var.postprocess_lrs_cloud_function_url}
+                                      body: $${lrs_processor_resp}
+                                      auth:
+                                        type: OIDC
+                                        audience: ${var.postprocess_lrs_cloud_function_url}
+                                    result: postprocess_lrs_resp
+                          - general_processor:
+                              steps:
+                                - general_processor_call:
+                                    call: googleapis.documentai.v1.projects.locations.processors.batchProcess
+                                    args:
+                                      name: ${var.general_documents_cde_processor_id}
+                                      location: ${var.general_documents_cde_processor_location}
+                                      body:
+                                        inputDocuments:
+                                          gcsDocuments:
+                                            documents: $${classify_documents_resp.body.general}
+                                        documentOutputConfig:
+                                          gcsOutputConfig:
+                                            gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/general-processor"}
+                                            fieldMask: entities
+                                        skipHumanReview: true
+                                    result: general_processor_resp
+
     - returnOutput:
-        return: $${postprocess_lrs_resp}
+        return: $${ocr_result}
+
 EOF
 
   depends_on = [
