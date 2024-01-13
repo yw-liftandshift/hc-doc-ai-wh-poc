@@ -2,6 +2,7 @@ locals {
   process_documents_workflow_sa_roles = [
     "roles/documentai.apiUser",
     "roles/logging.logWriter",
+    "roles/run.invoker",
     "roles/serviceusage.serviceUsageConsumer",
     "roles/workflows.invoker"
   ]

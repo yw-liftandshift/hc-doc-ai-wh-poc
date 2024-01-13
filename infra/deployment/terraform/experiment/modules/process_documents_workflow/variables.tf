@@ -8,6 +8,16 @@ variable "documents_classifier_processor_location" {
   description = "Documents Classifier Document AI processor location."
 }
 
+variable "extract_pdf_first_page_cloud_function_sa_email" {
+  type        = string
+  description = "Extract PDF Cloud Function Service Account email address."
+}
+
+variable "extract_pdf_first_page_cloud_function_url" {
+  type        = string
+  description = "Extract PDF First Page Cloud Function URL."
+}
+
 variable "google_cloud_storage_documents_bucket" {
   type        = string
   description = "Google Cloud Storage bucket where documents are stored at."

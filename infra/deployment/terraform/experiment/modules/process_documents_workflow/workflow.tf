@@ -16,6 +16,21 @@ main:
         call: sys.log
         args:
           text: $${decoded_json_message}
+    - extract_pdf_first_page:
+        call: http.post
+        args:
+          url: ${var.extract_pdf_first_page_cloud_function_url}
+          body:
+            google_cloud_storage:
+              input:
+                bucket: ${var.google_cloud_storage_documents_bucket}
+                folder: $${batch_id}
+              output:
+                bucket: ${google_storage_bucket.process_documents_workflow.name}
+                folder: $${batch_id + "/extract-first-page"}
+          auth:
+              type: OIDC
+              audience: ${var.extract_pdf_first_page_cloud_function_url}
     - classify_documents:
         call: googleapis.documentai.v1.projects.locations.processors.batchProcess
         args:
@@ -24,7 +39,7 @@ main:
           body:
             inputDocuments:
               gcsPrefix: 
-                gcsUriPrefix: $${"${data.google_storage_bucket.documents.url}" + "/" + batch_id}
+                gcsUriPrefix: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/extract-first-page"}
             documentOutputConfig:
               gcsOutputConfig:
                 gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/classify-documents"}
@@ -34,10 +49,11 @@ main:
         return: $${classify_documents_resp}
 EOF
 
-depends_on = [
-  google_storage_bucket_iam_member.documents_bucket_process_documents_workflow_sa,
-  google_storage_bucket_iam_member.process_documents_workflow_process_documents_workflow_sa
-]
+  depends_on = [
+    google_storage_bucket_iam_member.documents_bucket_extract_pdf_first_page_cloud_function_sa,
+    google_storage_bucket_iam_member.process_documents_workflow_extract_pdf_first_page_cloud_function_sa,
+    google_storage_bucket_iam_member.process_documents_workflow_process_documents_workflow_sa
+  ]
 }
 
 resource "google_eventarc_trigger" "process_documents_workflow" {

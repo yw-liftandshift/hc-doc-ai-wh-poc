@@ -59,13 +59,22 @@ module "backend" {
   process_documents_workflow_pubsub_topic_name = module.pubsub.process_documents_workflow_topic_name
 }
 
+module "extract_pdf_first_page_cloud_function" {
+  source = "./modules/extract_pdf_first_page_cloud_function"
+
+  extract_pdf_first_page_cloud_function_sa_email = module.iam.extract_pdf_first_page_cloud_function_sa_email
+  vpc_access_connector_northamerica_northeast1   = module.network.vpc_access_connector_northamerica_northeast1_id
+}
+
 module "process_documents_workflow" {
   source = "./modules/process_documents_workflow"
 
-  documents_classifier_processor_id            = var.documents_classifier_processor_id
-  documents_classifier_processor_location      = var.documents_classifier_processor_location
-  google_cloud_storage_documents_bucket        = module.backend.google_cloud_storage_documents_bucket
-  process_documents_workflow_sa_email          = module.iam.process_documents_workflow_sa_email
-  process_documents_workflow_pubsub_topic_id   = module.pubsub.process_documents_workflow_topic_id
-  process_documents_workflow_pubsub_topic_name = module.pubsub.process_documents_workflow_topic_name
+  documents_classifier_processor_id              = var.documents_classifier_processor_id
+  documents_classifier_processor_location        = var.documents_classifier_processor_location
+  extract_pdf_first_page_cloud_function_sa_email = module.iam.extract_pdf_first_page_cloud_function_sa_email
+  extract_pdf_first_page_cloud_function_url      = module.extract_pdf_first_page_cloud_function.url
+  google_cloud_storage_documents_bucket          = module.backend.google_cloud_storage_documents_bucket
+  process_documents_workflow_sa_email            = module.iam.process_documents_workflow_sa_email
+  process_documents_workflow_pubsub_topic_id     = module.pubsub.process_documents_workflow_topic_id
+  process_documents_workflow_pubsub_topic_name   = module.pubsub.process_documents_workflow_topic_name
 }

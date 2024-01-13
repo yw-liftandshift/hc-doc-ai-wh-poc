@@ -1,5 +1,6 @@
 locals {
   enable_apis = [
+    "cloudfunctions.googleapis.com",
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
     "sqladmin.googleapis.com",

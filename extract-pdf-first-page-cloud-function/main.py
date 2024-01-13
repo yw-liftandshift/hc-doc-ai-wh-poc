@@ -11,13 +11,23 @@ storage_client = storage.Client(project=config.GOOGLE_CLOUD_PROJECT_ID)
 
 @functions_framework.http
 def main(request):
-    input_google_cloud_storage_bucket = request.json["google_cloud_storage"]["bucket"]
+    google_cloud_storage_input_bucket = request.json["google_cloud_storage"]["input"][
+        "bucket"
+    ]
+    google_cloud_storage_input_folder = request.json["google_cloud_storage"]["input"][
+        "folder"
+    ]
 
-    input_google_cloud_storage_folder = request.json["google_cloud_storage"]["folder"]
+    google_cloud_storage_output_bucket = request.json["google_cloud_storage"]["output"][
+        "bucket"
+    ]
+    google_cloud_storage_output_folder = request.json["google_cloud_storage"]["output"][
+        "folder"
+    ]
 
     blobs = storage_client.list_blobs(
-        bucket_or_name=input_google_cloud_storage_bucket,
-        prefix=f"{input_google_cloud_storage_folder}/",
+        bucket_or_name=google_cloud_storage_input_bucket,
+        prefix=f"{google_cloud_storage_input_folder}/",
         delimiter="/",
     )
 
@@ -31,10 +41,10 @@ def main(request):
 
         blob_file_name = blob.name.split("/")[-1]
 
-        blob_name = f"{config.GOOGLE_CLOUD_STORAGE_OUTPUT_FOLDER}/{blob_file_name}"
+        blob_name = f"{google_cloud_storage_output_folder}/{blob_file_name}"
 
         output_bucket = storage_client.bucket(
-            bucket_name=config.GOOGLE_CLOUD_STORAGE_OUTPUT_BUCKET
+            bucket_name=google_cloud_storage_output_bucket
         )
         output_blob = output_bucket.blob(blob_name)
         output_blob.upload_from_file(pdf_first_page, content_type="application/pdf")
