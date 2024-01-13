@@ -15,7 +15,7 @@ storage_client = storage.Client(project=config.GOOGLE_CLOUD_PROJECT_ID)
 def main(request):
     lrs_processor_batch_response = request.json
 
-    extracted_properties = []
+    extracted_properties = {}
 
     for individual_process_status in lrs_processor_batch_response["metadata"][
         "individualProcessStatuses"
@@ -35,13 +35,11 @@ def main(request):
 
         for blob in blobs:
             if blob.name.endswith(".json"):
-                properties = {}
-
                 gcs_uri = individual_process_status["inputGcsSource"]
 
-                original_file_name = gcs_uri.split("/")[-1]
+                blob_file_name = gcs_uri.split("/")[-1]
 
-                properties["original_file_name"] = original_file_name
+                extracted_properties[blob_file_name] = {}
 
                 document_ai_classifier_response = json.loads(blob.download_as_string())
 
@@ -51,31 +49,45 @@ def main(request):
                     entity_type = entity["type"]
 
                     if entity_type == "barcode_number":
-                        properties["barcode_number"] = entity["mentionText"]
+                        extracted_properties[blob_file_name]["barcode_number"] = entity[
+                            "mentionText"
+                        ]
                     elif entity_type == "classification_code":
-                        properties["classification_code"] = entity["mentionText"]
+                        extracted_properties[blob_file_name][
+                            "classification_code"
+                        ] = entity["mentionText"]
                     elif entity_type == "classification_level":
-                        properties["classification_level"] = entity["mentionText"]
+                        extracted_properties[blob_file_name][
+                            "classification_level"
+                        ] = entity["mentionText"]
                     elif entity_type == "file_number":
-                        properties["file_number"] = entity["mentionText"]
-                        properties["new_file_name"] = entity["mentionText"]
+                        extracted_properties[blob_file_name]["file_number"] = entity[
+                            "mentionText"
+                        ]
+                        extracted_properties[blob_file_name]["new_file_name"] = entity[
+                            "mentionText"
+                        ]
                     elif entity_type == "file_title":
-                        properties["file_title"] = entity["mentionText"]
-                        original_file_name_extension = pathlib.Path(
-                            original_file_name
-                        ).suffix
-                        properties[
-                            "file_title"
-                        ] = f"{properties['file_title']}{original_file_name_extension}"
+                        extracted_properties[blob_file_name]["file_title"] = entity[
+                            "mentionText"
+                        ]
+
+                        blob_name_extension = pathlib.Path(blob_file_name).suffix
+
+                        extracted_properties[blob_file_name][
+                            "display_name"
+                        ] = f"{extracted_properties[blob_file_name]['file_title']}{blob_name_extension}"
                     elif entity_type == "org_code":
-                        properties["org_code"] = entity["mentionText"]
+                        extracted_properties[blob_file_name]["org_code"] = entity[
+                            "mentionText"
+                        ]
                     elif entity_type == "volume":
-                        properties["volume"] = entity["mentionText"]
+                        extracted_properties[blob_file_name]["volume"] = entity[
+                            "mentionText"
+                        ]
                     else:
                         raise ValueError(
                             f"Unexpected entity type {entity_type} in blob {blob.name}"
                         )
-
-                extracted_properties.append(properties)
 
     return extracted_properties

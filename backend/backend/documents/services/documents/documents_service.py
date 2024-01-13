@@ -1,6 +1,7 @@
 import io
 import json
-from typing import Optional
+import mimetypes
+import uuid
 from sqlalchemy.orm.exc import NoResultFound
 from google.cloud import pubsub_v1, storage
 from backend.db import db
@@ -65,32 +66,37 @@ class DocumentsService:
         batch_id: str,
         file_name: str,
         file_obj: io.BytesIO,
-        content_type: Optional[str],
+        content_type: str,
     ) -> Document:
         try:
             batch = db.session.get_one(Batch, batch_id)
         except NoResultFound:
             raise NotFoundException(f"Batch {batch_id} not found")
 
-        google_cloud_storage_blob_name = f"{batch_id}/{file_name}"
+        document = Document(
+            id=uuid.uuid4(),
+            batch_id=batch_id,
+            display_name=file_name,
+            content_type=content_type,
+        )
 
         google_cloud_storage_bucket = self.__storage_client.bucket(
-            batch.google_cloud_storage_bucket_name
+            bucket_name=batch.google_cloud_storage_bucket_name
         )
 
         google_cloud_storage_blob = google_cloud_storage_bucket.blob(
-            google_cloud_storage_blob_name
+            blob_name=self.__make_blob_name(document=document)
         )
 
         google_cloud_storage_blob.upload_from_file(file_obj, content_type=content_type)
-
-        document = Document(
-            batch_id=batch_id,
-            google_cloud_storage_blob_name=google_cloud_storage_blob_name,
-        )
 
         db.session.add(document)
 
         db.session.commit()
 
         return document
+
+    def __make_blob_name(self, document: Document) -> str:
+        extension = mimetypes.guess_extension(type=document.content_type)
+
+        return f"{document.batch_id}/{document.id}{extension}"
