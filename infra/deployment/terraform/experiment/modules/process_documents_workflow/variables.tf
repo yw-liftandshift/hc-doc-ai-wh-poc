@@ -8,6 +8,26 @@ variable "documents_classifier_processor_location" {
   description = "Documents Classifier Document AI processor location."
 }
 
+variable "lrs_documents_cde_processor_id" {
+  type        = string
+  description = "LRS Documents Document AI CDE processor ID."
+}
+
+variable "lrs_documents_cde_processor_location" {
+  type        = string
+  description = "LRS Documents Document AI CDE processor location."
+}
+
+variable "general_documents_cde_processor_id" {
+  type        = string
+  description = "General Documents Document AI CDE processor ID."
+}
+
+variable "general_documents_cde_processor_location" {
+  type        = string
+  description = "General Documents Document AI CDE processor location."
+}
+
 variable "classify_documents_cloud_function_sa_email" {
   type        = string
   description = "Classify Documents Cloud Function Service Account email address."

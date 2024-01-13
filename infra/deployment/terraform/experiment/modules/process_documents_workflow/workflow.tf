@@ -46,6 +46,10 @@ main:
                 fieldMask: entities
             skipHumanReview: true
         result: batch_classifier_resp
+    - log_batch_classifier_resp:
+        call: sys.log
+        args:
+          text: $${batch_classifier_resp}
     - classify_documents:
         call: http.post
         args:
@@ -55,8 +59,54 @@ main:
               type: OIDC
               audience: ${var.classify_documents_cloud_function_url}
         result: classify_documents_resp
+    - log_classify_documents_resp:
+        call: sys.log
+        args:
+          text: $${classify_documents_resp}
+    - assign_cde_processors_shared_vars:
+        assign:
+          - lrs_processor_resp: ""
+          - general_processor_resp: ""
+    - cde_processors:
+        parallel:
+          shared: [lrs_processor_resp, general_processor_resp]
+          branches:
+            - lrs_processor:
+                steps:
+                  - lrs_processor_call:
+                      call: googleapis.documentai.v1.projects.locations.processors.batchProcess
+                      args:
+                        name: ${var.lrs_documents_cde_processor_id}
+                        location: ${var.lrs_documents_cde_processor_location}
+                        body:
+                          inputDocuments:
+                            gcsDocuments:
+                              documents: $${classify_documents_resp.body.lrs}
+                          documentOutputConfig:
+                            gcsOutputConfig:
+                              gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/lrs-processor"}
+                              fieldMask: entities
+                          skipHumanReview: true
+                      result: lrs_processor_resp
+            - general_processor:
+                steps:
+                  - general_processor_call:
+                      call: googleapis.documentai.v1.projects.locations.processors.batchProcess
+                      args:
+                        name: ${var.general_documents_cde_processor_id}
+                        location: ${var.general_documents_cde_processor_location}
+                        body:
+                          inputDocuments:
+                            gcsDocuments:
+                              documents: $${classify_documents_resp.body.general}
+                          documentOutputConfig:
+                            gcsOutputConfig:
+                              gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/general-processor"}
+                              fieldMask: entities
+                          skipHumanReview: true
+                      result: general_processor_resp
     - returnOutput:
-        return: $${classify_documents_resp}
+        return: $${lrs_processor_resp}
 EOF
 
   depends_on = [

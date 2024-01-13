@@ -78,6 +78,10 @@ module "process_documents_workflow" {
 
   documents_classifier_processor_id              = var.documents_classifier_processor_id
   documents_classifier_processor_location        = var.documents_classifier_processor_location
+  lrs_documents_cde_processor_id                 = var.lrs_documents_cde_processor_id
+  lrs_documents_cde_processor_location           = var.lrs_documents_cde_processor_location
+  general_documents_cde_processor_id             = var.general_documents_cde_processor_id
+  general_documents_cde_processor_location       = var.general_documents_cde_processor_location
   extract_pdf_first_page_cloud_function_sa_email = module.iam.extract_pdf_first_page_cloud_function_sa_email
   extract_pdf_first_page_cloud_function_url      = module.extract_pdf_first_page_cloud_function.url
   classify_documents_cloud_function_sa_email     = module.iam.classify_documents_cloud_function_sa_email

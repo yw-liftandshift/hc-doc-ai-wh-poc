@@ -1,5 +1,6 @@
 import json
 import logging
+import mimetypes
 import sys
 import functions_framework
 from google.cloud import storage
@@ -41,11 +42,16 @@ def main(request):
 
                 max_confidence_entity = max(entities, key=lambda e: e["confidence"])
 
-                input_gcs_source = individual_process_status["inputGcsSource"]
+                gcs_uri = individual_process_status["inputGcsSource"]
+
+                gcs_document = {
+                    "gcsUri": gcs_uri,
+                    "mimeType": mimetypes.guess_type(gcs_uri)[0],
+                }
 
                 if max_confidence_entity["type"] == "lrs_documents_type":
-                    lrs_documents.append(input_gcs_source)
+                    lrs_documents.append(gcs_document)
                 else:
-                    general_documents.append(input_gcs_source)
+                    general_documents.append(gcs_document)
 
     return {"lrs": lrs_documents, "general": general_documents}
