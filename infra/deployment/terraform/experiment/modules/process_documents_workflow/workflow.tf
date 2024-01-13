@@ -43,6 +43,7 @@ main:
             documentOutputConfig:
               gcsOutputConfig:
                 gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/classify-documents"}
+                fieldMask: entities
             skipHumanReview: true
         result: classify_documents_resp
     - returnOutput:
