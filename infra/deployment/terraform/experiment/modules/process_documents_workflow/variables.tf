@@ -8,9 +8,19 @@ variable "documents_classifier_processor_location" {
   description = "Documents Classifier Document AI processor location."
 }
 
+variable "classify_documents_cloud_function_sa_email" {
+  type        = string
+  description = "Classify Documents Cloud Function Service Account email address."
+}
+
+variable "classify_documents_cloud_function_url" {
+  type        = string
+  description = "Classify Documents Cloud Function URL."
+}
+
 variable "extract_pdf_first_page_cloud_function_sa_email" {
   type        = string
-  description = "Extract PDF Cloud Function Service Account email address."
+  description = "Extract PDF First Page Cloud Function Service Account email address."
 }
 
 variable "extract_pdf_first_page_cloud_function_url" {

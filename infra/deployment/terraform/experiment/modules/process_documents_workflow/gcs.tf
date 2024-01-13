@@ -30,3 +30,9 @@ resource "google_storage_bucket_iam_member" "process_documents_workflow_extract_
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${var.extract_pdf_first_page_cloud_function_sa_email}"
 }
+
+resource "google_storage_bucket_iam_member" "process_documents_workflow_classify_documents_cloud_function_sa" {
+  bucket = google_storage_bucket.process_documents_workflow.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${var.classify_documents_cloud_function_sa_email}"
+}

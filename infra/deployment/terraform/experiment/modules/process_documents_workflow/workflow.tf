@@ -31,7 +31,7 @@ main:
           auth:
               type: OIDC
               audience: ${var.extract_pdf_first_page_cloud_function_url}
-    - classify_documents:
+    - batch_classifier:
         call: googleapis.documentai.v1.projects.locations.processors.batchProcess
         args:
           name: ${var.documents_classifier_processor_id}
@@ -42,18 +42,28 @@ main:
                 gcsUriPrefix: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/extract-first-page"}
             documentOutputConfig:
               gcsOutputConfig:
-                gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/classify-documents"}
+                gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/batch-classifier"}
                 fieldMask: entities
             skipHumanReview: true
+        result: batch_classifier_resp
+    - classify_documents:
+        call: http.post
+        args:
+          url: ${var.classify_documents_cloud_function_url}
+          body: $${batch_classifier_resp}
+          auth:
+              type: OIDC
+              audience: ${var.classify_documents_cloud_function_url}
         result: classify_documents_resp
     - returnOutput:
         return: $${classify_documents_resp}
 EOF
 
   depends_on = [
-    google_storage_bucket_iam_member.documents_bucket_extract_pdf_first_page_cloud_function_sa,
+    google_storage_bucket_iam_member.process_documents_workflow_process_documents_workflow_sa,
     google_storage_bucket_iam_member.process_documents_workflow_extract_pdf_first_page_cloud_function_sa,
-    google_storage_bucket_iam_member.process_documents_workflow_process_documents_workflow_sa
+    google_storage_bucket_iam_member.documents_bucket_extract_pdf_first_page_cloud_function_sa,
+    google_storage_bucket_iam_member.process_documents_workflow_classify_documents_cloud_function_sa,
   ]
 }
 
