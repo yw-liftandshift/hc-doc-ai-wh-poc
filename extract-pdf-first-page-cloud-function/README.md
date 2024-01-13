@@ -1,0 +1,1 @@
+# Health Canada - DocAI Warehouse POC - Extract PDF First Page Cloud Function
