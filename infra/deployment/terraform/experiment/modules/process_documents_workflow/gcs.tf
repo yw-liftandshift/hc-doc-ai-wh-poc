@@ -36,3 +36,9 @@ resource "google_storage_bucket_iam_member" "process_documents_workflow_classify
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${var.classify_documents_cloud_function_sa_email}"
 }
+
+resource "google_storage_bucket_iam_member" "process_documents_workflow_postprocess_lrs_cloud_function_sa" {
+  bucket = google_storage_bucket.process_documents_workflow.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${var.postprocess_lrs_cloud_function_sa_email}"
+}

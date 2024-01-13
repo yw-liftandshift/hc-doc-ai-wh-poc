@@ -73,6 +73,13 @@ module "classify_documents_cloud_function" {
   vpc_access_connector_northamerica_northeast1 = module.network.vpc_access_connector_northamerica_northeast1_id
 }
 
+module "postprocess_lrs_cloud_function" {
+  source = "./modules/postprocess_lrs_cloud_function"
+
+  postprocess_lrs_cloud_function_sa_email      = module.iam.postprocess_lrs_cloud_function_sa_email
+  vpc_access_connector_northamerica_northeast1 = module.network.vpc_access_connector_northamerica_northeast1_id
+}
+
 module "process_documents_workflow" {
   source = "./modules/process_documents_workflow"
 
@@ -86,6 +93,8 @@ module "process_documents_workflow" {
   extract_pdf_first_page_cloud_function_url      = module.extract_pdf_first_page_cloud_function.url
   classify_documents_cloud_function_sa_email     = module.iam.classify_documents_cloud_function_sa_email
   classify_documents_cloud_function_url          = module.classify_documents_cloud_function.url
+  postprocess_lrs_cloud_function_sa_email        = module.iam.postprocess_lrs_cloud_function_sa_email
+  postprocess_lrs_cloud_function_url             = module.postprocess_lrs_cloud_function.url
   google_cloud_storage_documents_bucket          = module.backend.google_cloud_storage_documents_bucket
   process_documents_workflow_sa_email            = module.iam.process_documents_workflow_sa_email
   process_documents_workflow_pubsub_topic_id     = module.pubsub.process_documents_workflow_topic_id

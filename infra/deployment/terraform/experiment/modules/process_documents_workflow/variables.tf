@@ -28,6 +28,16 @@ variable "general_documents_cde_processor_location" {
   description = "General Documents Document AI CDE processor location."
 }
 
+variable "extract_pdf_first_page_cloud_function_sa_email" {
+  type        = string
+  description = "Extract PDF First Page Cloud Function Service Account email address."
+}
+
+variable "extract_pdf_first_page_cloud_function_url" {
+  type        = string
+  description = "Extract PDF First Page Cloud Function URL."
+}
+
 variable "classify_documents_cloud_function_sa_email" {
   type        = string
   description = "Classify Documents Cloud Function Service Account email address."
@@ -38,14 +48,14 @@ variable "classify_documents_cloud_function_url" {
   description = "Classify Documents Cloud Function URL."
 }
 
-variable "extract_pdf_first_page_cloud_function_sa_email" {
+variable "postprocess_lrs_cloud_function_sa_email" {
   type        = string
-  description = "Extract PDF First Page Cloud Function Service Account email address."
+  description = "Postprocess LRS Cloud Function Service Account email address."
 }
 
-variable "extract_pdf_first_page_cloud_function_url" {
+variable "postprocess_lrs_cloud_function_url" {
   type        = string
-  description = "Extract PDF First Page Cloud Function URL."
+  description = "Postprocess LRS Cloud Function URL."
 }
 
 variable "google_cloud_storage_documents_bucket" {

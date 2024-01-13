@@ -65,11 +65,11 @@ main:
           text: $${classify_documents_resp}
     - assign_cde_processors_shared_vars:
         assign:
-          - lrs_processor_resp: ""
+          - postprocess_lrs_resp: ""
           - general_processor_resp: ""
     - cde_processors:
         parallel:
-          shared: [lrs_processor_resp, general_processor_resp]
+          shared: [postprocess_lrs_resp, general_processor_resp]
           branches:
             - lrs_processor:
                 steps:
@@ -88,6 +88,15 @@ main:
                               fieldMask: entities
                           skipHumanReview: true
                       result: lrs_processor_resp
+                  - postprocess_lrs:
+                      call: http.post
+                      args:
+                        url: ${var.postprocess_lrs_cloud_function_url}
+                        body: $${lrs_processor_resp}
+                        auth:
+                            type: OIDC
+                            audience: ${var.postprocess_lrs_cloud_function_url}
+                      result: postprocess_lrs_resp
             - general_processor:
                 steps:
                   - general_processor_call:
@@ -106,7 +115,7 @@ main:
                           skipHumanReview: true
                       result: general_processor_resp
     - returnOutput:
-        return: $${lrs_processor_resp}
+        return: $${postprocess_lrs_resp}
 EOF
 
   depends_on = [
@@ -114,6 +123,7 @@ EOF
     google_storage_bucket_iam_member.process_documents_workflow_extract_pdf_first_page_cloud_function_sa,
     google_storage_bucket_iam_member.documents_bucket_extract_pdf_first_page_cloud_function_sa,
     google_storage_bucket_iam_member.process_documents_workflow_classify_documents_cloud_function_sa,
+    google_storage_bucket_iam_member.process_documents_workflow_postprocess_lrs_cloud_function_sa,
   ]
 }
 
