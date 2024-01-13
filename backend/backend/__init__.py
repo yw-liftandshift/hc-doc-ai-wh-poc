@@ -1,7 +1,8 @@
 import logging
 import sys
+import flask_migrate
 from flask import Flask
-from google.cloud import storage
+from google.cloud import pubsub_v1, storage
 
 
 from .health_check.blueprints import health_check_blueprint
@@ -25,9 +26,17 @@ def create_app():
 
     setup_database(app=app)
 
-    storage_client = storage.Client(project=config.GOOGLE_CLOUD_PROJECT)
+    pubsub_publisher_client = pubsub_v1.PublisherClient()
 
-    app.documents_service = DocumentsService(storage_client=storage_client)
+    storage_client = storage.Client(project=config.GOOGLE_CLOUD_PROJECT_ID)
+
+    app.documents_service = DocumentsService(
+        project_id=config.GOOGLE_CLOUD_PROJECT_ID,
+        pubsub_publisher_client=pubsub_publisher_client,
+        process_documents_workflow_pubsub_topic=config.GOOGLE_CLOUD_PROCESS_DOCUMENTS_WORKFLOW_PUBSUB_TOPIC,
+        storage_client=storage_client,
+        google_cloud_storage_documents_bucket=config.GOOGLE_CLOUD_STORAGE_DOCUMENTS_BUCKET,
+    )
 
     app.register_blueprint(blueprint=health_check_blueprint)
 
@@ -41,6 +50,7 @@ def create_app():
 def setup_database(app: Flask):
     with app.app_context():
         db.create_all()
+        flask_migrate.upgrade()
 
 
 def setup_app():

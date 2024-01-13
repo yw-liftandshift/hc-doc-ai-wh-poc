@@ -1,3 +1,10 @@
+resource "google_pubsub_topic_iam_member" "process_documents_workflow_pubsub_topic_backend_sa" {
+  topic  = var.process_documents_workflow_pubsub_topic_name
+  role   = "roles/pubsub.publisher"
+  member = "serviceAccount:${var.backend_sa_email}"
+}
+
+
 resource "google_cloud_run_v2_service" "backend" {
   name     = "backend"
   location = "northamerica-northeast1"
@@ -26,11 +33,15 @@ resource "google_cloud_run_v2_service" "backend" {
       }
 
       env {
-        name  = "GOOGLE_CLOUD_PROJECT"
+        name  = "GOOGLE_CLOUD_PROJECT_ID"
         value = data.google_project.project.project_id
       }
       env {
-        name  = "GOOGLE_CLOUD_STORAGE_BUCKET_DOCUMENTS"
+        name  = "GOOGLE_CLOUD_PROCESS_DOCUMENTS_WORKFLOW_PUBSUB_TOPIC"
+        value = var.process_documents_workflow_pubsub_topic_name
+      }
+      env {
+        name  = "GOOGLE_CLOUD_STORAGE_DOCUMENTS_BUCKET"
         value = google_storage_bucket.documents.name
       }
       env {

@@ -1,8 +1,10 @@
 locals {
   enable_apis = [
+    "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
     "sqladmin.googleapis.com",
-    "vpcaccess.googleapis.com"
+    "vpcaccess.googleapis.com",
+    "workflows.googleapis.com"
   ]
 }
 

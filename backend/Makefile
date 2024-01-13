@@ -2,7 +2,10 @@ export:
 	poetry export -f requirements.txt --output requirements.txt
 
 flask-db-init:
-	poetry run flask db init
+	FLASK_APP=backend poetry run flask db init
+
+flask-db-migrate:
+	FLASK_APP=backend poetry run flask db migrate -m "$(MESSAGE)"
 
 format:
 	poetry run black .

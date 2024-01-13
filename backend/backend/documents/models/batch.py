@@ -3,7 +3,7 @@ import uuid
 from dataclasses import dataclass
 from enum import StrEnum, auto
 
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, String
 from sqlalchemy.dialects.postgresql import UUID, ENUM
 from sqlalchemy.sql.functions import now
 
@@ -26,4 +26,5 @@ class Batch(db.Model):
         ENUM(str(BatchStatus.CREATED), str(BatchStatus.PROCESSING), name="status"),
         default=BatchStatus.CREATED,
     )
+    google_cloud_storage_bucket_name = db.Column(String, nullable=False)
     created_at = db.Column(DateTime(timezone=True), server_default=now())

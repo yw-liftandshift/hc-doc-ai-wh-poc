@@ -1,8 +1,7 @@
 import datetime
-import uuid
 from dataclasses import dataclass
 
-from sqlalchemy import ForeignKey, DateTime, String
+from sqlalchemy import ForeignKey, DateTime, String, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql.functions import now
 
@@ -16,9 +15,8 @@ class Document(db.Model):
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
-    id = db.Column(UUID, primary_key=True, default=uuid.uuid4())
+    id = db.Column(UUID, primary_key=True, server_default=text("gen_random_uuid()"))
     batch_id = db.Column(ForeignKey("batch.id"))
-    google_cloud_storage_bucket_name = db.Column(String, nullable=False)
     google_cloud_storage_blob_name = db.Column(String, nullable=False)
     created_at = db.Column(DateTime(timezone=True), server_default=now())
     updated_at = db.Column(DateTime(timezone=True), onupdate=now())

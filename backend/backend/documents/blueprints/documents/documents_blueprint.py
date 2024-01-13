@@ -1,7 +1,6 @@
 import dataclasses
 from http import HTTPStatus
 from flask import Blueprint, current_app, request
-from backend.config import config
 
 documents_blueprint = Blueprint("documents", __name__, url_prefix="/documents")
 
@@ -32,7 +31,6 @@ def create_document(batch_id: str):
 
     document = current_app.documents_service.create_document(
         batch_id=batch_id,
-        google_cloud_storage_bucket_name=config.GOOGLE_CLOUD_STORAGE_BUCKET_DOCUMENTS,
         file_name=file.filename,
         file_obj=file.stream,
         content_type=file.content_type,
