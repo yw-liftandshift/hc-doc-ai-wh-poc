@@ -1,0 +1,51 @@
+import json
+import logging
+import sys
+import functions_framework
+from google.cloud import storage
+from classify_documents_cloud_function import config
+
+logging.basicConfig(stream=sys.stdout, level=config.LOG_LEVEL)
+
+storage_client = storage.Client(project=config.GOOGLE_CLOUD_PROJECT_ID)
+
+
+@functions_framework.http
+def main(request):
+    document_ai_classifier_batch_response = request.json
+
+    lrs_documents = []
+    general_documents = []
+
+    for individual_process_status in document_ai_classifier_batch_response["metadata"][
+        "individualProcessStatuses"
+    ]:
+        output_gcs_destination = individual_process_status["outputGcsDestination"]
+
+        output_gcs_destination_split = output_gcs_destination.split("/", 3)
+
+        bucket_name, folder_name = (
+            output_gcs_destination_split[2],
+            output_gcs_destination_split[3],
+        )
+
+        blobs = storage_client.list_blobs(
+            bucket_or_name=bucket_name, prefix=folder_name
+        )
+
+        for blob in blobs:
+            if blob.name.endswith(".json"):
+                document_ai_classifier_response = json.loads(blob.download_as_string())
+
+                entities = document_ai_classifier_response["entities"]
+
+                max_confidence_entity = max(entities, key=lambda e: e["confidence"])
+
+                input_gcs_source = individual_process_status["inputGcsSource"]
+
+                if max_confidence_entity["type"] == "lrs_documents_type":
+                    lrs_documents.append(input_gcs_source)
+                else:
+                    general_documents.append(input_gcs_source)
+
+    return {"lrs": lrs_documents, "general": general_documents}
