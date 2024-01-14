@@ -43,6 +43,14 @@ def main(request):
                 document_ai_classifier_response = json.loads(blob.download_as_string())
 
                 extracted_properties[blob_file_name][
+                    "gcs_uri"
+                ] = gcs_uri
+
+                extracted_properties[blob_file_name][
+                    "content_type"
+                ] = blob.content_type
+
+                extracted_properties[blob_file_name][
                     "text"
                 ] = document_ai_classifier_response["text"]
 

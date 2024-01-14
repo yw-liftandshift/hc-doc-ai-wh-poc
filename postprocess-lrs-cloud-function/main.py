@@ -64,19 +64,16 @@ def main(request):
                         extracted_properties[blob_file_name]["file_number"] = entity[
                             "mentionText"
                         ]
-                        extracted_properties[blob_file_name]["new_file_name"] = entity[
-                            "mentionText"
-                        ]
-                    elif entity_type == "file_title":
-                        extracted_properties[blob_file_name]["file_title"] = entity[
-                            "mentionText"
-                        ]
 
                         blob_name_extension = pathlib.Path(blob_file_name).suffix
 
                         extracted_properties[blob_file_name][
                             "display_name"
-                        ] = f"{extracted_properties[blob_file_name]['file_title']}{blob_name_extension}"
+                        ] = f"{extracted_properties[blob_file_name]['file_number']}{blob_name_extension}"
+                    elif entity_type == "file_title":
+                        extracted_properties[blob_file_name]["file_title"] = entity[
+                            "mentionText"
+                        ]
                     elif entity_type == "org_code":
                         extracted_properties[blob_file_name]["org_code"] = entity[
                             "mentionText"
