@@ -68,6 +68,16 @@ variable "postprocess_lrs_cloud_function_url" {
   description = "Postprocess LRS Cloud Function URL."
 }
 
+variable "postprocess_ocr_cloud_function_sa_email" {
+  type        = string
+  description = "Postprocess OCR Cloud Function Service Account email address."
+}
+
+variable "postprocess_ocr_cloud_function_url" {
+  type        = string
+  description = "Postprocess OCR Cloud Function URL."
+}
+
 variable "google_cloud_storage_documents_bucket" {
   type        = string
   description = "Google Cloud Storage bucket where documents are stored at."

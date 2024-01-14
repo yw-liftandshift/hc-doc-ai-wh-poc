@@ -13,14 +13,15 @@ main:
           - decoded_json_message: $${json.decode(text.decode(base64))}
           - batch_id: $${decoded_json_message.batch_id}
           - ocr_result: ""
-          - extract_properties_result: ""
+          - lrs_result: ""
+          - general_result: ""
     - log_decoded_json_message:
         call: sys.log
         args:
           text: $${decoded_json_message}
     - process_documents:
         parallel:
-          shared: [ocr_result, extract_properties_result]
+          shared: [ocr_result, lrs_result, general_result]
           branches:
             - ocr:
                 steps:
@@ -38,6 +39,15 @@ main:
                               gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/ocr"}
                               fieldMask: text
                           skipHumanReview: true
+                      result: ocr_processor_resp
+                  - postprocess_ocr:
+                      call: http.post
+                      args:
+                        url: ${var.postprocess_ocr_cloud_function_url}
+                        body: $${ocr_processor_resp}
+                        auth:
+                          type: OIDC
+                          audience: ${var.postprocess_ocr_cloud_function_url}
                       result: ocr_result
             - extract_properties:
                 steps:
@@ -88,13 +98,9 @@ main:
                       call: sys.log
                       args:
                         text: $${classify_documents_resp}
-                  - assign_cde_processors_shared_vars:
-                      assign:
-                        - postprocess_lrs_resp: ""
-                        - general_processor_resp: ""
                   - cde_processors:
                       parallel:
-                        shared: [postprocess_lrs_resp, general_processor_resp]
+                        shared: [lrs_result, general_result]
                         branches:
                           - lrs_processor:
                               steps:
@@ -121,7 +127,7 @@ main:
                                       auth:
                                         type: OIDC
                                         audience: ${var.postprocess_lrs_cloud_function_url}
-                                    result: postprocess_lrs_resp
+                                    result: lrs_result
                           - general_processor:
                               steps:
                                 - general_processor_call:
@@ -138,10 +144,12 @@ main:
                                             gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/general-processor"}
                                             fieldMask: entities
                                         skipHumanReview: true
-                                    result: general_processor_resp
-
+                                    result: general_result
+    - merge_results:
+        assign:
+          - merged_results: $${map.merge_nested(ocr_result.body, lrs_result.body)}
     - returnOutput:
-        return: $${ocr_result}
+        return: $${merged_results}
 
 EOF
 
@@ -151,6 +159,7 @@ EOF
     google_storage_bucket_iam_member.documents_bucket_extract_pdf_first_page_cloud_function_sa,
     google_storage_bucket_iam_member.process_documents_workflow_classify_documents_cloud_function_sa,
     google_storage_bucket_iam_member.process_documents_workflow_postprocess_lrs_cloud_function_sa,
+    google_storage_bucket_iam_member.process_documents_workflow_postprocess_ocr_cloud_function_sa,
   ]
 }
 

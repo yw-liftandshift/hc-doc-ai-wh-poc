@@ -42,3 +42,9 @@ resource "google_storage_bucket_iam_member" "process_documents_workflow_postproc
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${var.postprocess_lrs_cloud_function_sa_email}"
 }
+
+resource "google_storage_bucket_iam_member" "process_documents_workflow_postprocess_ocr_cloud_function_sa" {
+  bucket = google_storage_bucket.process_documents_workflow.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${var.postprocess_ocr_cloud_function_sa_email}"
+}
