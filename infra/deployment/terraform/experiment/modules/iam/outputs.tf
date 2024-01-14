@@ -18,6 +18,10 @@ output "postprocess_ocr_cloud_function_sa_email" {
   value = google_service_account.postprocess_ocr_cloud_function.email
 }
 
+output "load_process_documents_result_cloud_function_sa_email" {
+  value = google_service_account.load_process_documents_result_cloud_function.email
+}
+
 output "process_documents_workflow_sa_email" {
   value = google_service_account.process_documents_workflow.email
 }

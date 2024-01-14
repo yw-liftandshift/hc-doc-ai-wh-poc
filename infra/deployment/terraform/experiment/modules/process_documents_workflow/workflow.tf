@@ -148,6 +148,14 @@ main:
     - merge_results:
         assign:
           - merged_results: $${map.merge_nested(ocr_result.body, lrs_result.body)}
+    - load_process_documents_result:
+        call: http.post
+        args:
+          url: ${var.load_process_documents_result_cloud_function_url}
+          body: $${merged_results}
+          auth:
+            type: OIDC
+            audience: ${var.load_process_documents_result_cloud_function_url}
     - returnOutput:
         return: $${merged_results}
 
