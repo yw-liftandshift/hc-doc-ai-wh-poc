@@ -24,6 +24,20 @@ class DocumentWarehouseProperties:
         self.date = date
         self.display_name = None #not a part of DocumentWarehouse schema, contains display name
     
+    def __eq__(self, other):
+        if not isinstance(other, DocumentWarehouseProperties):
+            return False
+        return (
+            self.barcode_number == other.barcode_number
+            and self.classification_code == other.classification_code
+            and self.classification_level == other.classification_level
+            and self.file_number == other.file_number
+            and self.file_title == other.file_title
+            and self.org_code == other.org_code
+            and self.volume == other.volume
+            and self.date == other.date
+            and self.display_name == other.display_name
+        )
     '''
     Returns:
     props : list
@@ -38,7 +52,6 @@ class DocumentWarehouseProperties:
                 prop.text_values.values = value if isinstance(value, list) else [value]
                 props.append(prop)
         return props
-
 
 def process_document_ocr(project_id: str, location: str, processor_id: str, raw_document: documentai.RawDocument) -> documentai.Document:
     '''
