@@ -1,19 +1,22 @@
 from unittest.mock import Mock
 from google.cloud import documentai_v1 as documentai
 import proto.marshal.collections.repeated
+import pytest
 
 
 
 from api_call_utils import DocumentWarehouseProperties
 from postprocessing import (
     DocumentType,
+    get_document_type,
     build_documents_warehouse_properties_from_entities,
 )
 
 
 def test_get_document_type():
-    assert DocumentType.LRS_DOCUMENTS_TYPE == DocumentType["LRS_DOCUMENTS_TYPE"]
-    assert DocumentType.GENERAL_DOCUMENTS_TYPE == DocumentType["GENERAL_DOCUMENTS_TYPE"]
+    assert DocumentType.LRS_DOCUMENTS_TYPE == get_document_type("LRS_DOCUMENTS_TYPE")
+    assert DocumentType.GENERAL_DOCUMENTS_TYPE == get_document_type("GENERAL_DOCUMENTS_TYPE")
+    assert None == get_document_type("UNKNOWN_TYPE")
 
 
 def test_build_documents_warehouse_properties_from_entities():
@@ -76,6 +79,140 @@ def test_build_documents_warehouse_properties_from_entities_general_document_typ
     documentWarehousePropertiesExpected.volume = volume
     documentWarehousePropertiesExpected.display_name = 'ATT_V_FN_test'
     documentWarehousePropertiesExpected.date = printed_date
+    
+    entities = Mock(spec=proto.marshal.collections.repeated.RepeatedComposite)
+
+    items_ = [
+        ('file_no', file_number),
+        ('full_title', file_title),
+        ('volume', volume),
+        ('printed_date', printed_date),
+        ('company_name', company_name),
+        ('address', address),
+    ]
+    mocked_entities = [Mock(spec=documentai.Document.Entity) for _ in range(len(items_))]
+
+    for i, (type_, mention_text) in enumerate(items_):
+        mocked_entities[i].type_ = type_
+        mocked_entities[i].mention_text = mention_text
+        if (type_ == 'printed_date'):
+            mocked_entities[i].normalized_value = Mock(spec=documentai.Document.Entity.NormalizedValue)
+            mocked_entities[i].normalized_value.text = printed_date
+
+    entities.pb = mocked_entities
+
+    documentWarehousePropertiesActual = build_documents_warehouse_properties_from_entities(
+        entities, display_name, DocumentType.GENERAL_DOCUMENTS_TYPE
+    )
+
+    assert documentWarehousePropertiesExpected == documentWarehousePropertiesActual
+
+@pytest.mark.parametrize("volume, output", [("XXVII", "27"),("I of IV", "1 OF 4"), ("1 of 2", "1 of 2")])
+def test_build_documents_warehouse_properties_from_entities_general_volume(volume, output):
+    file_number = "9999-B888A-7777"
+    file_title = "Drug Research"
+    printed_date = "01/01/2022"
+    company_name = "Some Pharm Company"
+    address = "123 Main St, Anytown, Canada"
+    display_name = "test"
+
+    documentWarehousePropertiesExpected = DocumentWarehouseProperties()
+    documentWarehousePropertiesExpected.file_number = [file_number]
+    documentWarehousePropertiesExpected.file_title = 'Drug Research - Some Pharm Company - 123 Main St, Anytown, Canada'
+    documentWarehousePropertiesExpected.volume = output
+    documentWarehousePropertiesExpected.display_name = 'ATT_V_FN_test'
+    documentWarehousePropertiesExpected.date = printed_date
+    
+    entities = Mock(spec=proto.marshal.collections.repeated.RepeatedComposite)
+
+    items_ = [
+        ('file_no', file_number),
+        ('full_title', file_title),
+        ('volume', volume),
+        ('printed_date', printed_date),
+        ('company_name', company_name),
+        ('address', address),
+    ]
+    mocked_entities = [Mock(spec=documentai.Document.Entity) for _ in range(len(items_))]
+
+    for i, (type_, mention_text) in enumerate(items_):
+        mocked_entities[i].type_ = type_
+        mocked_entities[i].mention_text = mention_text
+        if (type_ == 'printed_date'):
+            mocked_entities[i].normalized_value = Mock(spec=documentai.Document.Entity.NormalizedValue)
+            mocked_entities[i].normalized_value.text = printed_date
+
+    entities.pb = mocked_entities
+
+    documentWarehousePropertiesActual = build_documents_warehouse_properties_from_entities(
+        entities, display_name, DocumentType.GENERAL_DOCUMENTS_TYPE
+    )
+
+    assert documentWarehousePropertiesExpected == documentWarehousePropertiesActual
+
+@pytest.mark.parametrize("file_title, output", [(None, " - Some Pharm Company - 123 Main St, Anytown, Canada"),
+                                                ("", " - Some Pharm Company - 123 Main St, Anytown, Canada"),
+                                                ("Drug Research Some Pharm Company", "Drug Research Some Pharm Company - 123 Main St, Anytown, Canada")])
+def test_build_documents_warehouse_properties_from_entities_general_file_title(file_title, output):
+    file_number = "9999-B888A-7777"
+    volume = "1"
+    printed_date = "01/01/2022"
+    company_name = "Some Pharm Company"
+    address = "123 Main St, Anytown, Canada"
+    display_name = "test"
+
+    documentWarehousePropertiesExpected = DocumentWarehouseProperties()
+    documentWarehousePropertiesExpected.file_number = [file_number]
+    documentWarehousePropertiesExpected.file_title = output
+    documentWarehousePropertiesExpected.volume = volume
+    documentWarehousePropertiesExpected.display_name = 'ATT_V_FN_test'
+    documentWarehousePropertiesExpected.date = printed_date
+    
+    entities = Mock(spec=proto.marshal.collections.repeated.RepeatedComposite)
+
+    items_ = [
+        ('file_no', file_number),
+        ('full_title', file_title),
+        ('volume', volume),
+        ('printed_date', printed_date),
+        ('company_name', company_name),
+        ('address', address),
+    ]
+    mocked_entities = [Mock(spec=documentai.Document.Entity) for _ in range(len(items_))]
+
+    for i, (type_, mention_text) in enumerate(items_):
+        mocked_entities[i].type_ = type_
+        mocked_entities[i].mention_text = mention_text
+        if (type_ == 'printed_date'):
+            mocked_entities[i].normalized_value = Mock(spec=documentai.Document.Entity.NormalizedValue)
+            mocked_entities[i].normalized_value.text = printed_date
+
+    entities.pb = mocked_entities
+
+    documentWarehousePropertiesActual = build_documents_warehouse_properties_from_entities(
+        entities, display_name, DocumentType.GENERAL_DOCUMENTS_TYPE
+    )
+
+    assert documentWarehousePropertiesExpected == documentWarehousePropertiesActual
+
+@pytest.mark.parametrize("date, output", [("1999", "1999-00-00"),
+                                          ("1999-05", "1999-05-00"),
+                                          ("1999-05-07", "1999-05-07")])
+def test_build_documents_warehouse_properties_from_entities_general_date(date, output):
+    file_number = "9999-B888A-7777"
+    file_title = "Drug Research"
+    volume = "1"
+    printed_date = date
+    company_name = "Some Pharm Company"
+    address = "123 Main St, Anytown, Canada"
+    display_name = "test"
+
+    documentWarehousePropertiesExpected = DocumentWarehouseProperties()
+    documentWarehousePropertiesExpected.file_number = [file_number]
+    documentWarehousePropertiesExpected.file_title = 'Drug Research - Some Pharm Company - 123 Main St, Anytown, Canada'
+    documentWarehousePropertiesExpected.volume = volume
+    documentWarehousePropertiesExpected.display_name = 'ATT_V_FN_test'
+    documentWarehousePropertiesExpected.date = output
     
     entities = Mock(spec=proto.marshal.collections.repeated.RepeatedComposite)
 
