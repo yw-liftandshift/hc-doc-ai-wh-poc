@@ -1,8 +1,8 @@
 import re
 from enum import Enum, auto
-from cf_config import DocumentWarehouseProperties
-from postprocessing.filename_flags import FilenameFlags
-from postprocessing.roman_to_arabic import roman_to_arabic, is_roman_number
+from api_call_utils import DocumentWarehouseProperties
+from filename_flags import FilenameFlags
+from roman_to_arabic import roman_to_arabic, is_roman_number
 
 
 class DocumentType(Enum):

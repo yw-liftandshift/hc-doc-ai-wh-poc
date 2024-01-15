@@ -3,12 +3,41 @@ This file has all the necessary api calls code which are required during
 the complete process
 '''
 # importing libraries
-from cf_config import env_var
 from google.cloud import documentai_v1 as documentai
 from google.cloud import contentwarehouse
 from google.api_core.client_options import ClientOptions
-from cf_config import DocumentWarehouseProperties
 from google.cloud import storage
+
+class DocumentWarehouseProperties:
+    '''
+    This class contains the properties of DocAI Warehouse
+    '''
+    def __init__(self, file_title = None, file_number = None, barcode_number = None, org_code=None, date=None, classification_code=None, classification_level=None, volume=None):
+        
+        self.barcode_number = barcode_number
+        self.classification_code = classification_code
+        self.classification_level = classification_level
+        self.file_number = file_number
+        self.file_title = file_title
+        self.org_code = org_code
+        self.volume = volume
+        self.date = date
+        self.display_name = None #not a part of DocumentWarehouse schema, contains display name
+    
+    '''
+    Returns:
+    props : list
+            List of properties to be set in DocumentWarehouse
+    '''
+    def to_documentai_property(self):
+        props = []
+        for field, value in vars(self).items():
+            if value is not None and field != 'display_name':
+                prop = contentwarehouse.Property()
+                prop.name = field
+                prop.text_values.values = value if isinstance(value, list) else [value]
+                props.append(prop)
+        return props
 
 
 def process_document_ocr(project_id: str, location: str, processor_id: str, raw_document: documentai.RawDocument) -> documentai.Document:
@@ -101,7 +130,8 @@ def doc_warehouse_creation(project_number: str,
                            doc: documentai.Document,
                            schema_id: str,
                            gcs_input_uri: str,
-                           documentProperties: DocumentWarehouseProperties
+                           documentProperties: DocumentWarehouseProperties,
+                           service_account_user_id: str
                            ):
     '''
     This function is used to initialize and set properties for DocAI Warehouse.
@@ -139,7 +169,7 @@ def doc_warehouse_creation(project_number: str,
     load_request.document = document
     request_metadata = contentwarehouse.RequestMetadata()
     request_metadata.user_info = contentwarehouse.UserInfo()
-    request_metadata.user_info.id = env_var["sa_user"]
+    request_metadata.user_info.id = service_account_user_id
     load_request.request_metadata = request_metadata
     document_client = contentwarehouse.DocumentServiceClient()
     document_client.create_document(request=load_request)
