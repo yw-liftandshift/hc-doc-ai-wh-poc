@@ -1,8 +1,8 @@
 import io
 import json
 import uuid
+import sqlalchemy
 from typing import List, Optional
-from sqlalchemy import select
 from sqlalchemy.orm.exc import NoResultFound
 from google.cloud import bigquery, pubsub_v1, storage
 from backend.db import db
@@ -101,8 +101,61 @@ class DocumentsService:
 
         return document
 
-    def list_documents(self) -> List[Document]:
-        return db.session.scalars(select(Document))
+    def list_documents(
+        self,
+        batch_id: Optional[str],
+        barcode_number: Optional[str],
+        classification_code: Optional[str],
+        classification_level: Optional[str],
+        display_name: Optional[str],
+        file_number: Optional[str],
+        file_title: Optional[str],
+        org_code: Optional[str],
+        text: Optional[str],
+        volume: Optional[str],
+    ) -> List[Document]:
+        query = sqlalchemy.select(Document)
+
+        if batch_id is not None:
+            query = query.where(Document.batch_id == batch_id)
+
+        if barcode_number is not None:
+            query = query.where(Document.barcode_number == barcode_number)
+
+        if classification_code is not None:
+            query = query.where(Document.classification_code == classification_code)
+
+        if classification_level is not None:
+            query = query.where(Document.classification_level == classification_level)
+
+        if display_name is not None:
+            query = query.where(Document.display_name == display_name)
+
+        if file_number is not None:
+            query = query.where(Document.file_number.contains([file_number]))
+
+        if file_title is not None:
+            query = query.where(Document.file_title == file_title)
+
+        if org_code is not None:
+            query = query.where(Document.org_code == org_code)
+
+        if text is not None:
+            text_search_ids = []
+
+            bigquery_documents_text_search_query_results = self.__bigquery_client.query_and_wait(
+                f"SELECT ID FROM `{self.__bigquery_documents_table}` WHERE SEARCH(text, {json.dumps(text)})"
+            )
+
+            for row in bigquery_documents_text_search_query_results:
+                text_search_ids.append(row["ID"])
+
+            query = query.filter(Document.id.in_(text_search_ids))
+
+        if volume is not None:
+            query = query.where(Document.volume == volume)
+
+        return db.session.scalars(query)
 
     def update_document(
         self,

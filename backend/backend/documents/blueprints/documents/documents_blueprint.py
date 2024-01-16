@@ -41,7 +41,18 @@ def create_document(batch_id: str):
 
 @documents_blueprint.get("/")
 def list_documents():
-    documents = current_app.documents_service.list_documents()
+    documents = current_app.documents_service.list_documents(
+        batch_id=request.args.get("batch_id"),
+        barcode_number=request.args.get("barcode_number"),
+        classification_code=request.args.get("classification_code"),
+        classification_level=request.args.get("classification_level"),
+        display_name=request.args.get("display_name"),
+        file_number=request.args.get("file_number"),
+        file_title=request.args.get("file_title"),
+        org_code=request.args.get("org_code"),
+        text=request.args.get("text"),
+        volume=request.args.get("volume"),
+    )
 
     return [dataclasses.asdict(document) for document in documents]
 
