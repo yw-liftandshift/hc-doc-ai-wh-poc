@@ -2,6 +2,8 @@ import io
 import json
 import mimetypes
 import uuid
+from typing import List
+from sqlalchemy import select
 from sqlalchemy.orm.exc import NoResultFound
 from google.cloud import pubsub_v1, storage
 from backend.db import db
@@ -95,6 +97,9 @@ class DocumentsService:
         db.session.commit()
 
         return document
+
+    def list_documents(self) -> List[Document]:
+        return db.session.scalars(select(Document))
 
     def __make_blob_name(self, document: Document) -> str:
         extension = mimetypes.guess_extension(type=document.content_type)

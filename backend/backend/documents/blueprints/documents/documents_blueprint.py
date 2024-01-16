@@ -37,3 +37,10 @@ def create_document(batch_id: str):
     )
 
     return dataclasses.asdict(document), HTTPStatus.CREATED
+
+
+@documents_blueprint.get("/")
+def list_documents():
+    documents = current_app.documents_service.list_documents()
+
+    return [dataclasses.asdict(document) for document in documents]
