@@ -1,8 +1,8 @@
 import re
 from enum import Enum, auto
-from cf_config import DocumentWarehouseProperties
-from postprocessing.filename_flags import FilenameFlags
-from postprocessing.roman_to_arabic import roman_to_arabic, is_roman_number
+from api_call_utils import DocumentWarehouseProperties
+from filename_flags import FilenameFlags
+from roman_to_arabic import roman_to_arabic, is_roman_number
 
 
 class DocumentType(Enum):
@@ -45,26 +45,26 @@ def build_documents_warehouse_properties_from_entities(entities, blob_name, docu
 
 
 def process_lrs_documents(entities, blob_name):
-    documentWarehouseProperties = DocumentWarehouseProperties()
+    document_warehouse_properties = DocumentWarehouseProperties()
     for item in entities.pb:
         if (item.type_ == "file_number"):
-            documentWarehouseProperties.file_number = item.mention_text
+            document_warehouse_properties.file_number = item.mention_text
         elif (item.type_ == "barcode_number"):
-            documentWarehouseProperties.barcode_number = item.mention_text
+            document_warehouse_properties.barcode_number = item.mention_text
         elif (item.type_ == "classification_code"):
-            documentWarehouseProperties.classification_code = item.mention_text
+            document_warehouse_properties.classification_code = item.mention_text
         elif (item.type_ == "classification_level"):
-            documentWarehouseProperties.classification_level = item.mention_text
+            document_warehouse_properties.classification_level = item.mention_text
         elif (item.type_ == "file_title"):
-            documentWarehouseProperties.file_title = item.mention_text
+            document_warehouse_properties.file_title = item.mention_text
         elif (item.type_ == "volume"):
-            documentWarehouseProperties.volume = item.mention_text
+            document_warehouse_properties.volume = item.mention_text
         elif (item.type_ == "org_code"):
-            documentWarehouseProperties.org_code = item.mention_text
+            document_warehouse_properties.org_code = item.mention_text
 
-    documentWarehouseProperties.display_name = blob_name
+    document_warehouse_properties.display_name = blob_name
 
-    return documentWarehouseProperties
+    return document_warehouse_properties
 
 
 def process_general_documents(entities, blob_name):

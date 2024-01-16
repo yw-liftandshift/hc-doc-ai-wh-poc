@@ -1,6 +1,6 @@
 import pytest
 
-from src.postprocessing.filename_flags import FilenameFlags
+from filename_flags import FilenameFlags
 
 
 @pytest.mark.parametrize(

@@ -6,15 +6,28 @@ ocr extraction -> entity extraction -> result upload to DocAI Warehouse.
 import logging
 import google.cloud.contentwarehouse_v1.types
 import google.cloud.logging
-from cf_config import env_var
+import os
 from api_call_utils import doc_warehouse_creation, get_file_from_cloud_storage_as_raw_document, process_document_ocr, process_document_and_extract_entities
-from postprocessing.postprocessing import build_documents_warehouse_properties_from_entities, get_document_type, DocumentType
+from postprocessing import build_documents_warehouse_properties_from_entities, get_document_type, DocumentType
 
 # Setting up logging
 # Instantiates a client
 client = google.cloud.logging.Client()
 client.setup_logging()
 logging.basicConfig(level=logging.DEBUG)
+
+'''Defining variables which will be initialized from terraform script'''
+env_var = {"project_id" : os.environ["project_id"],
+           "project_number" : os.environ["project_number"],
+           "location" : os.environ["location"],
+           "processor_id" : os.environ["processor_id"],
+           "processor_id_cde_lrs_type" : os.environ["processor_id_cde_lrs_type"],
+           "processor_id_cde_classifier_type_type" : os.environ["processor_id_cde_classifier_type_type"],
+           "processor_id_cde_general_type_type" : os.environ["processor_id_cde_general_type_type"],
+           "file_number_confidence_threshold" : os.environ["file_number_confidence_threshold"],
+           "input_mime_type" : os.environ["input_mime_type"],
+           "schema_id" : os.environ["schema_id"],
+           "sa_user" : os.environ["sa_user"]}
 
 def main(event, context):
     '''
@@ -67,7 +80,8 @@ def main(event, context):
                                 doc,
                                 env_var["schema_id"],
                                 gcs_input_uri,
-                                document_warehouse_properties
+                                document_warehouse_properties,
+                                env_var["sa_user"]
                                 )
     except:
         raise
