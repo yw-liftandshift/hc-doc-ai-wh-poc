@@ -1,5 +1,6 @@
 locals {
   backend_sa_roles = [
+    "roles/bigquery.user"
   ]
 }
 

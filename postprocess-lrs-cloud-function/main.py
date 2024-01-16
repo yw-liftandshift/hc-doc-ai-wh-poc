@@ -41,6 +41,8 @@ def main(request):
 
                 extracted_properties[blob_file_name] = {}
 
+                extracted_properties[blob_file_name]["file_number"] = []
+
                 document_ai_classifier_response = json.loads(blob.download_as_string())
 
                 entities = document_ai_classifier_response["entities"]
@@ -61,15 +63,18 @@ def main(request):
                             "classification_level"
                         ] = entity["mentionText"]
                     elif entity_type == "file_number":
-                        extracted_properties[blob_file_name]["file_number"] = entity[
-                            "mentionText"
-                        ]
+                        extracted_properties[blob_file_name]["file_number"].append(
+                            entity["mentionText"]
+                        )
 
-                        blob_name_extension = pathlib.Path(blob_file_name).suffix
+                        if not hasattr(
+                            extracted_properties[blob_file_name], "display_name"
+                        ):
+                            blob_name_extension = pathlib.Path(blob_file_name).suffix
 
-                        extracted_properties[blob_file_name][
-                            "display_name"
-                        ] = f"{extracted_properties[blob_file_name]['file_number']}{blob_name_extension}"
+                            extracted_properties[blob_file_name][
+                                "display_name"
+                            ] = f"{extracted_properties[blob_file_name]['file_number']}{blob_name_extension}"
                     elif entity_type == "file_title":
                         extracted_properties[blob_file_name]["file_title"] = entity[
                             "mentionText"
