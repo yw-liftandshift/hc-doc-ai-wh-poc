@@ -12,6 +12,16 @@ def create_batch():
     return dataclasses.asdict(batch), HTTPStatus.CREATED
 
 
+@documents_blueprint.patch("/batch/<batch_id>")
+def update_batch(batch_id: str):
+    batch = current_app.documents_service.update_batch(
+        batch_id=batch_id,
+        status=request.json["status"],
+    )
+
+    return dataclasses.asdict(batch)
+
+
 @documents_blueprint.post("/batch/<batch_id>/process")
 def process_batch(batch_id: str):
     batch = current_app.documents_service.process_batch(batch_id=batch_id)

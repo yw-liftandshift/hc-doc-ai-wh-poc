@@ -172,6 +172,15 @@ main:
                     auth:
                       type: OIDC
                       audience: ${var.backend_url}
+    - update_batch:
+        call: http.patch
+        args:
+          url: $${"${var.backend_url}" + "/documents/batch/" + batch_id}
+          body:
+            status: 'processed'
+          auth:
+            type: OIDC
+            audience: ${var.backend_url}
     - returnOutput:
         return: $${merged_results}
 EOF

@@ -12,7 +12,9 @@ from backend.db import db
 
 class BatchStatus(StrEnum):
     CREATED = auto()
+    ERROR = auto()
     PROCESSING = auto()
+    PROCESSED = auto()
 
 
 @dataclass
@@ -23,7 +25,13 @@ class Batch(db.Model):
 
     id = db.Column(UUID, primary_key=True, default=uuid.uuid4())
     status = db.Column(
-        ENUM(str(BatchStatus.CREATED), str(BatchStatus.PROCESSING), name="status"),
+        ENUM(
+            str(BatchStatus.CREATED),
+            str(BatchStatus.ERROR),
+            str(BatchStatus.PROCESSING),
+            str(BatchStatus.PROCESSED),
+            name="status",
+        ),
         default=BatchStatus.CREATED,
     )
     google_cloud_storage_bucket_name = db.Column(String, nullable=False)

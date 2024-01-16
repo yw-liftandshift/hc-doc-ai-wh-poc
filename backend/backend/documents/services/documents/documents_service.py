@@ -45,6 +45,19 @@ class DocumentsService:
 
         return batch
 
+    def update_batch(self, batch_id: str, status: Optional[BatchStatus]) -> Batch:
+        try:
+            batch = db.session.get_one(Batch, batch_id)
+        except NoResultFound:
+            raise NotFoundException(f"Batch {batch_id} not found")
+
+        if status is not None:
+            batch.status = BatchStatus.PROCESSING
+
+        db.session.commit()
+
+        return batch
+
     def process_batch(self, batch_id: str) -> Batch:
         try:
             batch = db.session.get_one(Batch, batch_id)
