@@ -37,6 +37,10 @@ resource "google_cloud_run_v2_service" "backend" {
         value = data.google_project.project.project_id
       }
       env {
+        name  = "GOOGLE_CLOUD_BIGQUERY_DOCUMENTS_TABLE"
+        value = google_bigquery_table.documents.table_id
+      }
+      env {
         name  = "GOOGLE_CLOUD_PROCESS_DOCUMENTS_WORKFLOW_PUBSUB_TOPIC"
         value = var.process_documents_workflow_pubsub_topic_name
       }
@@ -87,6 +91,7 @@ resource "google_cloud_run_v2_service" "backend" {
 
   depends_on = [
     google_artifact_registry_repository_iam_member.backend_repository_backend_sa,
+    google_bigquery_dataset_iam_member.backend_backend_sa,
     google_secret_manager_secret_iam_member.backend_user_password_backend_sa,
     google_storage_bucket_iam_member.documents_backend_sa
   ]

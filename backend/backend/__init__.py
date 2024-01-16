@@ -2,8 +2,7 @@ import logging
 import sys
 import flask_migrate
 from flask import Flask
-from google.cloud import pubsub_v1, storage
-
+from google.cloud import bigquery, pubsub_v1, storage
 
 from .health_check.blueprints import health_check_blueprint
 from .documents.models import *
@@ -26,12 +25,16 @@ def create_app():
 
     setup_database(app=app)
 
+    bigquery_client = bigquery.Client()
+
     pubsub_publisher_client = pubsub_v1.PublisherClient()
 
     storage_client = storage.Client(project=config.GOOGLE_CLOUD_PROJECT_ID)
 
     app.documents_service = DocumentsService(
         project_id=config.GOOGLE_CLOUD_PROJECT_ID,
+        bigquery_client=bigquery_client,
+        bigquery_documents_table=config.GOOGLE_CLOUD_BIGQUERY_DOCUMENTS_TABLE,
         pubsub_publisher_client=pubsub_publisher_client,
         process_documents_workflow_pubsub_topic=config.GOOGLE_CLOUD_PROCESS_DOCUMENTS_WORKFLOW_PUBSUB_TOPIC,
         storage_client=storage_client,

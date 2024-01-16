@@ -5,7 +5,7 @@ import uuid
 from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.orm.exc import NoResultFound
-from google.cloud import pubsub_v1, storage
+from google.cloud import bigquery, pubsub_v1, storage
 from backend.db import db
 from backend.exceptions import NotFoundException
 from backend.documents.models import Batch, BatchStatus, Document
@@ -15,11 +15,15 @@ class DocumentsService:
     def __init__(
         self,
         project_id: str,
+        bigquery_client: bigquery.Client,
+        bigquery_documents_table: str,
         pubsub_publisher_client: pubsub_v1.PublisherClient,
         process_documents_workflow_pubsub_topic: str,
         storage_client: storage.Client,
         google_cloud_storage_documents_bucket: str,
     ):
+        self.__bigquery_client = bigquery_client
+        self.__bigquery_documents_table = bigquery_documents_table
         self.__pubsub_publisher_client = pubsub_publisher_client
         self.__process_documents_workflow_pubsub_topic_path = (
             self.__pubsub_publisher_client.topic_path(
@@ -111,6 +115,7 @@ class DocumentsService:
         file_number: Optional[List[str]],
         file_title: Optional[str],
         org_code: Optional[str],
+        text: Optional[str],
         volume: Optional[str],
     ) -> Document:
         try:
@@ -138,6 +143,44 @@ class DocumentsService:
 
         if org_code is not None:
             document.org_code = org_code
+
+        if text is not None:
+            bigquery_text = json.dumps(text)
+
+            bigquery_documents_exists_query_results = self.__bigquery_client.query_and_wait(
+                f"SELECT 1 FROM `{self.__bigquery_documents_table}` WHERE ID = '{document.id}'"
+            )
+
+            if bigquery_documents_exists_query_results.total_rows == 0:
+                bigquery_insert_row_errors = self.__bigquery_client.insert_rows_json(
+                    table=self.__bigquery_documents_table,
+                    json_rows=[{"id": str(document.id), "text": bigquery_text}],
+                )
+
+                if len(bigquery_insert_row_errors) > 0:
+                    raise Exception(
+                        f"Error inserting into BigQuery Table {self.__bigquery_documents_table}. {bigquery_insert_row_errors}"
+                    )
+            else:
+                query_text = f"""
+                    UPDATE `{self.__bigquery_documents_table}`
+                    SET text = {bigquery_text}
+                    WHERE id = '{document.id}'
+                    """
+
+                query_job = self.__bigquery_client.query(query_text)
+
+                query_job.result()
+
+                if query_job.num_dml_affected_rows is None:
+                    raise Exception(
+                        f"Document {document.id} not found in BigQuery Table {self.__bigquery_documents_table}"
+                    )
+
+                if query_job.num_dml_affected_rows != 1:
+                    raise Exception(
+                        f"num_dml_affected_rows should be 1, found {query_job.num_dml_affected_rows}. BigQuery Table {self.__bigquery_documents_table}, Document ID {document.id}"
+                    )
 
         if volume is not None:
             document.volume = volume

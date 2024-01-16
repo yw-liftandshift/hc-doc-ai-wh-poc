@@ -57,6 +57,7 @@ def update_document(document_id: str):
         file_number=request.json["file_number"],
         file_title=request.json["file_title"],
         org_code=request.json["org_code"],
+        text=request.json["text"],
         volume=request.json["volume"],
     )
 
