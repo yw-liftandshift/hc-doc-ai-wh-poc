@@ -43,6 +43,11 @@ variable "extract_pdf_first_page_cloud_function_sa_email" {
   description = "Extract PDF First Page Cloud Function Service Account email address."
 }
 
+variable "backend_url" {
+  type        = string
+  description = "Backend URL."
+}
+
 variable "extract_pdf_first_page_cloud_function_url" {
   type        = string
   description = "Extract PDF First Page Cloud Function URL."

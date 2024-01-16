@@ -1,6 +1,5 @@
 import json
 import logging
-import mimetypes
 import sys
 import functions_framework
 from google.cloud import storage
@@ -44,9 +43,20 @@ def main(request):
 
                 gcs_uri = individual_process_status["inputGcsSource"]
 
+                gcs_uri_split = gcs_uri.split("/", 3)
+
+                gcs_uri_bucket_name, gcs_uri_blob_name = (
+                    gcs_uri_split[2],
+                    gcs_uri_split[3],
+                )
+
+                gcs_uri_blob = storage_client.bucket(
+                    bucket_name=gcs_uri_bucket_name
+                ).get_blob(gcs_uri_blob_name)
+
                 gcs_document = {
                     "gcsUri": gcs_uri,
-                    "mimeType": mimetypes.guess_type(gcs_uri)[0],
+                    "mimeType": gcs_uri_blob.content_type,
                 }
 
                 if max_confidence_entity["type"] == "lrs_documents_type":

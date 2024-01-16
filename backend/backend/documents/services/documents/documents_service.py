@@ -1,6 +1,5 @@
 import io
 import json
-import mimetypes
 import uuid
 from typing import List, Optional
 from sqlalchemy import select
@@ -190,6 +189,4 @@ class DocumentsService:
         return document
 
     def __make_blob_name(self, document: Document) -> str:
-        extension = mimetypes.guess_extension(type=document.content_type)
-
-        return f"{document.batch_id}/{document.id}{extension}"
+        return f"{document.batch_id}/{document.id}"

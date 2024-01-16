@@ -12,9 +12,9 @@ main:
           - base64: $${base64.decode(event.data.message.data)}
           - decoded_json_message: $${json.decode(text.decode(base64))}
           - batch_id: $${decoded_json_message.batch_id}
-          - ocr_result: ""
-          - lrs_result: ""
-          - general_result: ""
+          - ocr_result: {}
+          - lrs_result: {}
+          - general_result: {}
     - log_decoded_json_message:
         call: sys.log
         args:
@@ -104,50 +104,74 @@ main:
                         branches:
                           - lrs_processor:
                               steps:
-                                - lrs_processor_call:
-                                    call: googleapis.documentai.v1.projects.locations.processors.batchProcess
-                                    args:
-                                      name: ${var.lrs_documents_cde_processor_id}
-                                      location: ${var.lrs_documents_cde_processor_location}
-                                      body:
-                                        inputDocuments:
-                                          gcsDocuments:
-                                            documents: $${classify_documents_resp.body.lrs}
-                                        documentOutputConfig:
-                                          gcsOutputConfig:
-                                            gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/lrs-processor"}
-                                            fieldMask: entities
-                                        skipHumanReview: true
-                                    result: lrs_processor_resp
-                                - postprocess_lrs:
-                                    call: http.post
-                                    args:
-                                      url: ${var.postprocess_lrs_cloud_function_url}
-                                      body: $${lrs_processor_resp}
-                                      auth:
-                                        type: OIDC
-                                        audience: ${var.postprocess_lrs_cloud_function_url}
-                                    result: lrs_result
+                                - lrs_processor_switch:
+                                    switch:
+                                      - condition: "$${len(classify_documents_resp.body.lrs) > 0}"
+                                        steps:
+                                          - lrs_processor_call:
+                                              call: googleapis.documentai.v1.projects.locations.processors.batchProcess
+                                              args:
+                                                name: ${var.lrs_documents_cde_processor_id}
+                                                location: ${var.lrs_documents_cde_processor_location}
+                                                body:
+                                                  inputDocuments:
+                                                    gcsDocuments:
+                                                      documents: $${classify_documents_resp.body.lrs}
+                                                  documentOutputConfig:
+                                                    gcsOutputConfig:
+                                                      gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/lrs-processor"}
+                                                      fieldMask: entities
+                                                  skipHumanReview: true
+                                              result: lrs_processor_resp
+                                          - postprocess_lrs:
+                                              call: http.post
+                                              args:
+                                                url: ${var.postprocess_lrs_cloud_function_url}
+                                                body: $${lrs_processor_resp}
+                                                auth:
+                                                  type: OIDC
+                                                  audience: ${var.postprocess_lrs_cloud_function_url}
+                                              result: lrs_result
                           - general_processor:
                               steps:
-                                - general_processor_call:
-                                    call: googleapis.documentai.v1.projects.locations.processors.batchProcess
-                                    args:
-                                      name: ${var.general_documents_cde_processor_id}
-                                      location: ${var.general_documents_cde_processor_location}
-                                      body:
-                                        inputDocuments:
-                                          gcsDocuments:
-                                            documents: $${classify_documents_resp.body.general}
-                                        documentOutputConfig:
-                                          gcsOutputConfig:
-                                            gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/general-processor"}
-                                            fieldMask: entities
-                                        skipHumanReview: true
-                                    result: general_result
+                                - general_processor_switch:
+                                    switch:
+                                      - condition: "$${len(classify_documents_resp.body.general) > 0}"
+                                        steps:
+                                          - general_processor_call:
+                                              call: googleapis.documentai.v1.projects.locations.processors.batchProcess
+                                              args:
+                                                name: ${var.general_documents_cde_processor_id}
+                                                location: ${var.general_documents_cde_processor_location}
+                                                body:
+                                                  inputDocuments:
+                                                    gcsDocuments:
+                                                      documents: $${classify_documents_resp.body.general}
+                                                  documentOutputConfig:
+                                                    gcsOutputConfig:
+                                                      gcsUri: $${"${google_storage_bucket.process_documents_workflow.url}" + "/" + batch_id + "/general-processor"}
+                                                      fieldMask: entities
+                                                  skipHumanReview: true
+                                              result: general_result
+
     - merge_results:
         assign:
           - merged_results: $${map.merge_nested(ocr_result.body, lrs_result.body)}
+    - update_documents:
+        parallel:
+          shared: [merged_results]
+          for:
+            value: document_id
+            in: $${keys(merged_results)}
+            steps:
+              - update_document:
+                  call: http.patch
+                  args:
+                    url: $${"${var.backend_url}" + "/documents/" + document_id}
+                    body: $${merged_results[document_id]}
+                    auth:
+                      type: OIDC
+                      audience: ${var.backend_url}
     - load_process_documents_result:
         call: http.post
         args:
@@ -158,7 +182,6 @@ main:
             audience: ${var.load_process_documents_result_cloud_function_url}
     - returnOutput:
         return: $${merged_results}
-
 EOF
 
   depends_on = [

@@ -105,6 +105,7 @@ module "process_documents_workflow" {
   lrs_documents_cde_processor_location             = var.lrs_documents_cde_processor_location
   general_documents_cde_processor_id               = var.general_documents_cde_processor_id
   general_documents_cde_processor_location         = var.general_documents_cde_processor_location
+  backend_url                                      = module.backend.cloud_run_service_url
   extract_pdf_first_page_cloud_function_sa_email   = module.iam.extract_pdf_first_page_cloud_function_sa_email
   extract_pdf_first_page_cloud_function_url        = module.extract_pdf_first_page_cloud_function.url
   classify_documents_cloud_function_sa_email       = module.iam.classify_documents_cloud_function_sa_email
