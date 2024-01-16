@@ -74,7 +74,7 @@ def main(request):
 
                             extracted_properties[blob_file_name][
                                 "display_name"
-                            ] = f"{extracted_properties[blob_file_name]['file_number']}{blob_name_extension}"
+                            ] = f"{entity['mentionText']}{blob_name_extension}"
                     elif entity_type == "file_title":
                         extracted_properties[blob_file_name]["file_title"] = entity[
                             "mentionText"
