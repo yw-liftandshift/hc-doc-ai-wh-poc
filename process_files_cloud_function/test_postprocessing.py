@@ -29,15 +29,15 @@ def test_build_documents_warehouse_properties_from_entities():
     org_code = "4"
     display_name = "test"
 
-    documentWarehousePropertiesExpected = DocumentWarehouseProperties()
-    documentWarehousePropertiesExpected.file_number = file_number
-    documentWarehousePropertiesExpected.barcode_number = barcode_number
-    documentWarehousePropertiesExpected.classification_code = classification_code
-    documentWarehousePropertiesExpected.classification_level = classification_level
-    documentWarehousePropertiesExpected.file_title = file_title
-    documentWarehousePropertiesExpected.volume = volume
-    documentWarehousePropertiesExpected.org_code = org_code
-    documentWarehousePropertiesExpected.display_name = display_name
+    document_warehouse_properties_expected = DocumentWarehouseProperties()
+    document_warehouse_properties_expected.file_number = file_number
+    document_warehouse_properties_expected.barcode_number = barcode_number
+    document_warehouse_properties_expected.classification_code = classification_code
+    document_warehouse_properties_expected.classification_level = classification_level
+    document_warehouse_properties_expected.file_title = file_title
+    document_warehouse_properties_expected.volume = volume
+    document_warehouse_properties_expected.org_code = org_code
+    document_warehouse_properties_expected.display_name = display_name
     
     entities = Mock(spec=proto.marshal.collections.repeated.RepeatedComposite)
 
@@ -58,11 +58,11 @@ def test_build_documents_warehouse_properties_from_entities():
 
     entities.pb = mocked_entities
 
-    documentWarehousePropertiesActual = build_documents_warehouse_properties_from_entities(
+    document_warehouse_properties_actual = build_documents_warehouse_properties_from_entities(
         entities, display_name, DocumentType.LRS_DOCUMENTS_TYPE
     )
 
-    assert documentWarehousePropertiesExpected == documentWarehousePropertiesActual
+    assert document_warehouse_properties_expected == document_warehouse_properties_actual
 
 def test_build_documents_warehouse_properties_from_entities_general_document_type():
     file_number = "9999-B888A-7777"
@@ -73,12 +73,12 @@ def test_build_documents_warehouse_properties_from_entities_general_document_typ
     address = "123 Main St, Anytown, Canada"
     display_name = "test"
 
-    documentWarehousePropertiesExpected = DocumentWarehouseProperties()
-    documentWarehousePropertiesExpected.file_number = [file_number]
-    documentWarehousePropertiesExpected.file_title = 'Drug Research - Some Pharm Company - 123 Main St, Anytown, Canada'
-    documentWarehousePropertiesExpected.volume = volume
-    documentWarehousePropertiesExpected.display_name = 'ATT_V_FN_test'
-    documentWarehousePropertiesExpected.date = printed_date
+    document_warehouse_properties_expected = DocumentWarehouseProperties()
+    document_warehouse_properties_expected.file_number = [file_number]
+    document_warehouse_properties_expected.file_title = 'Drug Research - Some Pharm Company - 123 Main St, Anytown, Canada'
+    document_warehouse_properties_expected.volume = volume
+    document_warehouse_properties_expected.display_name = 'ATT_V_FN_test'
+    document_warehouse_properties_expected.date = printed_date
     
     entities = Mock(spec=proto.marshal.collections.repeated.RepeatedComposite)
 
@@ -101,11 +101,11 @@ def test_build_documents_warehouse_properties_from_entities_general_document_typ
 
     entities.pb = mocked_entities
 
-    documentWarehousePropertiesActual = build_documents_warehouse_properties_from_entities(
+    document_warehouse_properties_actual = build_documents_warehouse_properties_from_entities(
         entities, display_name, DocumentType.GENERAL_DOCUMENTS_TYPE
     )
 
-    assert documentWarehousePropertiesExpected == documentWarehousePropertiesActual
+    assert document_warehouse_properties_expected == document_warehouse_properties_actual
 
 @pytest.mark.parametrize("volume, output", [("XXVII", "27"),("I of IV", "1 OF 4"), ("1 of 2", "1 of 2")])
 def test_build_documents_warehouse_properties_from_entities_general_volume(volume, output):
@@ -116,12 +116,12 @@ def test_build_documents_warehouse_properties_from_entities_general_volume(volum
     address = "123 Main St, Anytown, Canada"
     display_name = "test"
 
-    documentWarehousePropertiesExpected = DocumentWarehouseProperties()
-    documentWarehousePropertiesExpected.file_number = [file_number]
-    documentWarehousePropertiesExpected.file_title = 'Drug Research - Some Pharm Company - 123 Main St, Anytown, Canada'
-    documentWarehousePropertiesExpected.volume = output
-    documentWarehousePropertiesExpected.display_name = 'ATT_V_FN_test'
-    documentWarehousePropertiesExpected.date = printed_date
+    document_warehouse_properties_expected = DocumentWarehouseProperties()
+    document_warehouse_properties_expected.file_number = [file_number]
+    document_warehouse_properties_expected.file_title = 'Drug Research - Some Pharm Company - 123 Main St, Anytown, Canada'
+    document_warehouse_properties_expected.volume = output
+    document_warehouse_properties_expected.display_name = 'ATT_V_FN_test'
+    document_warehouse_properties_expected.date = printed_date
     
     entities = Mock(spec=proto.marshal.collections.repeated.RepeatedComposite)
 
@@ -144,11 +144,11 @@ def test_build_documents_warehouse_properties_from_entities_general_volume(volum
 
     entities.pb = mocked_entities
 
-    documentWarehousePropertiesActual = build_documents_warehouse_properties_from_entities(
+    document_warehouse_properties_actual = build_documents_warehouse_properties_from_entities(
         entities, display_name, DocumentType.GENERAL_DOCUMENTS_TYPE
     )
 
-    assert documentWarehousePropertiesExpected == documentWarehousePropertiesActual
+    assert document_warehouse_properties_expected == document_warehouse_properties_actual
 
 @pytest.mark.parametrize("file_title, output", [(None, " - Some Pharm Company - 123 Main St, Anytown, Canada"),
                                                 ("", " - Some Pharm Company - 123 Main St, Anytown, Canada"),
@@ -161,12 +161,12 @@ def test_build_documents_warehouse_properties_from_entities_general_file_title(f
     address = "123 Main St, Anytown, Canada"
     display_name = "test"
 
-    documentWarehousePropertiesExpected = DocumentWarehouseProperties()
-    documentWarehousePropertiesExpected.file_number = [file_number]
-    documentWarehousePropertiesExpected.file_title = output
-    documentWarehousePropertiesExpected.volume = volume
-    documentWarehousePropertiesExpected.display_name = 'ATT_V_FN_test'
-    documentWarehousePropertiesExpected.date = printed_date
+    document_warehouse_properties_expected = DocumentWarehouseProperties()
+    document_warehouse_properties_expected.file_number = [file_number]
+    document_warehouse_properties_expected.file_title = output
+    document_warehouse_properties_expected.volume = volume
+    document_warehouse_properties_expected.display_name = 'ATT_V_FN_test'
+    document_warehouse_properties_expected.date = printed_date
     
     entities = Mock(spec=proto.marshal.collections.repeated.RepeatedComposite)
 
@@ -189,11 +189,11 @@ def test_build_documents_warehouse_properties_from_entities_general_file_title(f
 
     entities.pb = mocked_entities
 
-    documentWarehousePropertiesActual = build_documents_warehouse_properties_from_entities(
+    document_warehouse_properties_actual = build_documents_warehouse_properties_from_entities(
         entities, display_name, DocumentType.GENERAL_DOCUMENTS_TYPE
     )
 
-    assert documentWarehousePropertiesExpected == documentWarehousePropertiesActual
+    assert document_warehouse_properties_expected == document_warehouse_properties_actual
 
 @pytest.mark.parametrize("date, output", [("1999", "1999-00-00"),
                                           ("1999-05", "1999-05-00"),
@@ -207,12 +207,12 @@ def test_build_documents_warehouse_properties_from_entities_general_date(date, o
     address = "123 Main St, Anytown, Canada"
     display_name = "test"
 
-    documentWarehousePropertiesExpected = DocumentWarehouseProperties()
-    documentWarehousePropertiesExpected.file_number = [file_number]
-    documentWarehousePropertiesExpected.file_title = 'Drug Research - Some Pharm Company - 123 Main St, Anytown, Canada'
-    documentWarehousePropertiesExpected.volume = volume
-    documentWarehousePropertiesExpected.display_name = 'ATT_V_FN_test'
-    documentWarehousePropertiesExpected.date = output
+    document_warehouse_properties_expected = DocumentWarehouseProperties()
+    document_warehouse_properties_expected.file_number = [file_number]
+    document_warehouse_properties_expected.file_title = 'Drug Research - Some Pharm Company - 123 Main St, Anytown, Canada'
+    document_warehouse_properties_expected.volume = volume
+    document_warehouse_properties_expected.display_name = 'ATT_V_FN_test'
+    document_warehouse_properties_expected.date = output
     
     entities = Mock(spec=proto.marshal.collections.repeated.RepeatedComposite)
 
@@ -235,9 +235,9 @@ def test_build_documents_warehouse_properties_from_entities_general_date(date, o
 
     entities.pb = mocked_entities
 
-    documentWarehousePropertiesActual = build_documents_warehouse_properties_from_entities(
+    document_warehouse_properties_actual = build_documents_warehouse_properties_from_entities(
         entities, display_name, DocumentType.GENERAL_DOCUMENTS_TYPE
     )
 
-    assert documentWarehousePropertiesExpected == documentWarehousePropertiesActual
+    assert document_warehouse_properties_expected == document_warehouse_properties_actual
     

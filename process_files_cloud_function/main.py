@@ -17,17 +17,17 @@ client.setup_logging()
 logging.basicConfig(level=logging.DEBUG)
 
 '''Defining variables which will be initialized from terraform script'''
-env_var = {"project_id" : os.environ.get("project_id", ""),
-           "project_number" : os.environ.get("project_number", ""),
-           "location" : os.environ.get("location", ""),
-           "processor_id" : os.environ.get("processor_id", ""),
-           "processor_id_cde_lrs_type" : os.environ.get("processor_id_cde_lrs_type", ""),
-           "processor_id_cde_classifier_type_type" : os.environ.get("processor_id_cde_classifier_type_type", ""),
-           "processor_id_cde_general_type_type" : os.environ.get("processor_id_cde_general_type_type", ""),
-           "file_number_confidence_threshold" : os.environ.get("file_number_confidence_threshold", "0.7"),
-           "input_mime_type" : os.environ.get("input_mime_type", ""),
-           "schema_id" : os.environ.get("schema_id", ""),
-           "sa_user" : os.environ.get("sa_user", "")}
+env_var = {"project_id" : os.environ["project_id"],
+           "project_number" : os.environ["project_number"],
+           "location" : os.environ["location"],
+           "processor_id" : os.environ["processor_id"],
+           "processor_id_cde_lrs_type" : os.environ["processor_id_cde_lrs_type"],
+           "processor_id_cde_classifier_type_type" : os.environ["processor_id_cde_classifier_type_type"],
+           "processor_id_cde_general_type_type" : os.environ["processor_id_cde_general_type_type"],
+           "file_number_confidence_threshold" : os.environ["file_number_confidence_threshold"],
+           "input_mime_type" : os.environ["input_mime_type"],
+           "schema_id" : os.environ["schema_id"],
+           "sa_user" : os.environ["sa_user"]}
 
 def main(event, context):
     '''
