@@ -2,7 +2,7 @@ import io
 import json
 import mimetypes
 import uuid
-from typing import List
+from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.orm.exc import NoResultFound
 from google.cloud import pubsub_v1, storage
@@ -42,7 +42,7 @@ class DocumentsService:
 
         return batch
 
-    def process_batch(self, batch_id: str):
+    def process_batch(self, batch_id: str) -> Batch:
         try:
             batch = db.session.get_one(Batch, batch_id)
         except NoResultFound:
@@ -100,6 +100,51 @@ class DocumentsService:
 
     def list_documents(self) -> List[Document]:
         return db.session.scalars(select(Document))
+
+    def update_document(
+        self,
+        document_id: str,
+        barcode_number: Optional[str],
+        classification_code: Optional[str],
+        classification_level: Optional[str],
+        display_name: Optional[str],
+        file_number: Optional[List[str]],
+        file_title: Optional[str],
+        org_code: Optional[str],
+        volume: Optional[str],
+    ) -> Document:
+        try:
+            document = db.session.get_one(Document, document_id)
+        except NoResultFound:
+            raise NotFoundException(f"Document {document_id} not found")
+
+        if barcode_number is not None:
+            document.barcode_number = barcode_number
+
+        if classification_code is not None:
+            document.classification_code = classification_code
+
+        if classification_level is not None:
+            document.classification_level = classification_level
+
+        if display_name is not None:
+            document.display_name = display_name
+
+        if file_number is not None:
+            document.file_number = file_number
+
+        if file_title is not None:
+            document.file_title = file_title
+
+        if org_code is not None:
+            document.org_code = org_code
+
+        if volume is not None:
+            document.volume = volume
+
+        db.session.commit()
+
+        return document
 
     def __make_blob_name(self, document: Document) -> str:
         extension = mimetypes.guess_extension(type=document.content_type)

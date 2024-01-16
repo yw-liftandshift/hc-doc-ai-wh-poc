@@ -44,3 +44,20 @@ def list_documents():
     documents = current_app.documents_service.list_documents()
 
     return [dataclasses.asdict(document) for document in documents]
+
+
+@documents_blueprint.patch("/<document_id>")
+def update_document(document_id: str):
+    document = current_app.documents_service.update_document(
+        document_id=document_id,
+        barcode_number=request.json["barcode_number"],
+        classification_code=request.json["classification_code"],
+        classification_level=request.json["classification_level"],
+        display_name=request.json["display_name"],
+        file_number=request.json["file_number"],
+        file_title=request.json["file_title"],
+        org_code=request.json["org_code"],
+        volume=request.json["volume"],
+    )
+
+    return dataclasses.asdict(document)
