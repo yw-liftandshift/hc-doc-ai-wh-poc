@@ -85,6 +85,15 @@ def list_documents():
     return document_schema.dump(documents, many=True)
 
 
+@documents_blueprint.get("/<document_id>")
+def get_document(document_id: uuid.UUID):
+    documents = current_app.documents_service.get_document(document_id=document_id)
+
+    current_app.logger.info(documents)
+
+    return document_schema.dump(documents)
+
+
 @documents_blueprint.patch("/<document_id>")
 def update_document(document_id: str):
     document = current_app.documents_service.update_document(

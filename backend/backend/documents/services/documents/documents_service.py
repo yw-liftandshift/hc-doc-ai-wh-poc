@@ -46,7 +46,7 @@ class DocumentsService:
 
         return batch
 
-    def get_batch(self, batch_id: str) -> Optional[None]:
+    def get_batch(self, batch_id: str) -> Optional[Batch]:
         try:
             batch = Batch.query.get(batch_id)
 
@@ -125,6 +125,14 @@ class DocumentsService:
         db.session.commit()
 
         return document
+
+    def get_document(self, document_id: str) -> Optional[Document]:
+        try:
+            batch = Document.query.get(document_id)
+
+            return batch
+        except NoResultFound:
+            return
 
     def list_documents(
         self,
