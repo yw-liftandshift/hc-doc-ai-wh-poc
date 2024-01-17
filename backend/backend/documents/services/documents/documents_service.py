@@ -203,9 +203,9 @@ class DocumentsService:
         text: Optional[str],
         volume: Optional[str],
     ) -> Document:
-        try:
-            document = db.session.get_one(Document, document_id)
-        except NoResultFound:
+        document = Document.query.filter_by(id=document_id).one_or_none()
+
+        if not document:
             raise NotFoundException(f"Document {document_id} not found")
 
         if barcode_number:

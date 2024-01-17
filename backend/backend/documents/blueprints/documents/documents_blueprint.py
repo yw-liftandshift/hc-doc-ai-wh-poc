@@ -1,6 +1,11 @@
+import io
+import mimetypes
+import pathlib
+import os.path
 import uuid
 from http import HTTPStatus
 from flask import Blueprint, current_app, request
+from stream_unzip import stream_unzip
 
 from backend.documents.schemas import batch_schema, document_schema
 
@@ -55,14 +60,50 @@ def create_document(batch_id: str):
 
     file = request.files["file"]
 
-    document = current_app.documents_service.create_document(
-        batch_id=batch_id,
-        file_name=file.filename,
-        file_obj=file.stream,
-        content_type=file.content_type,
-    )
+    if file.content_type == "application/pdf":
+        documents = [
+            current_app.documents_service.create_document(
+                batch_id=batch_id,
+                file_name=file.filename,
+                file_obj=file.stream,
+                content_type=file.content_type,
+            )
+        ]
+    elif file.content_type == "application/zip":
+        documents = []
 
-    return document_schema.dump(document), HTTPStatus.CREATED
+        for file_name, file_size, unzipped_chunks in stream_unzip(file.stream):
+            file_name = file_name.decode("utf-8")
+
+            file_extension = pathlib.Path(file_name).suffix
+
+            if file_extension != ".pdf":
+                raise ValueError(
+                    f"Unexpected content type in {file_name}. Must be one of {['application/pdf']}"
+                )
+
+            chunks = []
+            for chunk in unzipped_chunks:
+                chunks.append(chunk)
+
+            # Test if file and not folder
+            if file_name == os.path.basename(file_name):
+                with io.BytesIO(b"".join(chunks)) as file_content:
+                    document = current_app.documents_service.create_document(
+                        batch_id=batch_id,
+                        file_name=file_name,
+                        file_obj=file_content,
+                        content_type="application/pdf",
+                    )
+
+                    documents.append(document)
+
+    else:
+        raise ValueError(
+            f"Unexpected content type {file.content_type}. Must be one of {['application/pdf']}"
+        )
+
+    return document_schema.dump(documents, many=True), HTTPStatus.CREATED
 
 
 @documents_blueprint.get("/")
