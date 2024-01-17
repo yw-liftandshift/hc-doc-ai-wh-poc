@@ -1,3 +1,4 @@
+import uuid
 from http import HTTPStatus
 from flask import Blueprint, current_app, request
 
@@ -13,19 +14,33 @@ def create_batch():
     return batch_schema.dump(batch), HTTPStatus.CREATED
 
 
+@documents_blueprint.post("/batch/<batch_id>/process")
+def process_batch(batch_id: str):
+    batch = current_app.documents_service.process_batch(batch_id=batch_id)
+
+    return batch_schema.dump(batch)
+
+
+@documents_blueprint.get("/batch")
+def list_batch():
+    batch = current_app.documents_service.list_batch()
+
+    return batch_schema.dump(batch, many=True)
+
+
+@documents_blueprint.get("/batch/<batch_id>")
+def get_batch(batch_id: uuid.UUID):
+    batch = current_app.documents_service.get_batch(batch_id=batch_id)
+
+    return batch_schema.dump(batch)
+
+
 @documents_blueprint.patch("/batch/<batch_id>")
 def update_batch(batch_id: str):
     batch = current_app.documents_service.update_batch(
         batch_id=batch_id,
         status=request.json["status"],
     )
-
-    return batch_schema.dump(batch)
-
-
-@documents_blueprint.post("/batch/<batch_id>/process")
-def process_batch(batch_id: str):
-    batch = current_app.documents_service.process_batch(batch_id=batch_id)
 
     return batch_schema.dump(batch)
 

@@ -46,6 +46,17 @@ class DocumentsService:
 
         return batch
 
+    def get_batch(self, batch_id: str) -> Optional[None]:
+        try:
+            batch = Batch.query.get(batch_id)
+
+            return batch
+        except NoResultFound:
+            return
+
+    def list_batch(self) -> List[Batch]:
+        return Batch.query.all()
+
     def update_batch(self, batch_id: str, status: Optional[BatchStatus]) -> Batch:
         try:
             batch = db.session.get_one(Batch, batch_id)
