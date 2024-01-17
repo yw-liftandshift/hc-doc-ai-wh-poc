@@ -63,7 +63,7 @@ class DocumentsService:
         except NoResultFound:
             raise NotFoundException(f"Batch {batch_id} not found")
 
-        if status is not None:
+        if status:
             batch.status = status
 
         db.session.commit()
@@ -128,9 +128,9 @@ class DocumentsService:
 
     def get_document(self, document_id: str) -> Optional[Document]:
         try:
-            batch = Document.query.get(document_id)
+            document = Document.query.get(document_id)
 
-            return batch
+            return document
         except NoResultFound:
             return
 
@@ -149,31 +149,31 @@ class DocumentsService:
     ) -> List[Document]:
         query = Document.query
 
-        if batch_id is not None:
+        if batch_id:
             query = query.filter_by(batch_id=batch_id)
 
-        if barcode_number is not None:
+        if barcode_number:
             query = query.filter_by(barcode_number=barcode_number)
 
-        if classification_code is not None:
+        if classification_code:
             query = query.filter_by(classification_code=classification_code)
 
-        if classification_level is not None:
+        if classification_level:
             query = query.filter_by(classification_level=classification_level)
 
-        if display_name is not None:
+        if display_name:
             query = query.filter_by(display_name=display_name)
 
-        if file_number is not None:
+        if file_number:
             query = query.filter(Document.file_number.contains([file_number]))
 
-        if file_title is not None:
+        if file_title:
             query = query.filter_by(file_title=file_title)
 
-        if org_code is not None:
+        if org_code:
             query = query.filter_by(org_code=org_code)
 
-        if text is not None:
+        if text:
             text_search_ids = []
 
             bigquery_documents_text_search_query_results = self.__bigquery_client.query_and_wait(
@@ -185,7 +185,7 @@ class DocumentsService:
 
             query = query.filter(Document.id.in_(text_search_ids))
 
-        if volume is not None:
+        if volume:
             query = query.filter_by(volume=volume)
 
         return query.all()
@@ -208,28 +208,28 @@ class DocumentsService:
         except NoResultFound:
             raise NotFoundException(f"Document {document_id} not found")
 
-        if barcode_number is not None:
+        if barcode_number:
             document.barcode_number = barcode_number
 
-        if classification_code is not None:
+        if classification_code:
             document.classification_code = classification_code
 
-        if classification_level is not None:
+        if classification_level:
             document.classification_level = classification_level
 
-        if display_name is not None:
+        if display_name:
             document.display_name = display_name
 
-        if file_number is not None:
+        if file_number:
             document.file_number = file_number
 
-        if file_title is not None:
+        if file_title:
             document.file_title = file_title
 
-        if org_code is not None:
+        if org_code:
             document.org_code = org_code
 
-        if text is not None:
+        if text:
             bigquery_text = json.dumps(text)
 
             bigquery_documents_exists_query_results = self.__bigquery_client.query_and_wait(
@@ -267,12 +267,19 @@ class DocumentsService:
                         f"num_dml_affected_rows should be 1, found {query_job.num_dml_affected_rows}. BigQuery Table {self.__bigquery_documents_table}, Document ID {document.id}"
                     )
 
-        if volume is not None:
+        if volume:
             document.volume = volume
 
         db.session.commit()
 
         return document
+
+    def delete_document(self, document_id: str) -> None:
+        document = Document.query.filter_by(id=document_id).one_or_none()
+
+        if document:
+            db.session.delete(document)
+            db.session.commit()
 
     def __make_blob_name(self, document: Document) -> str:
         return f"{document.batch.id}/{document.id}"
