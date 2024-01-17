@@ -1,6 +1,7 @@
-import dataclasses
 from http import HTTPStatus
 from flask import Blueprint, current_app, request
+
+from backend.documents.schemas import batch_schema, document_schema
 
 documents_blueprint = Blueprint("documents", __name__, url_prefix="/documents")
 
@@ -9,7 +10,7 @@ documents_blueprint = Blueprint("documents", __name__, url_prefix="/documents")
 def create_batch():
     batch = current_app.documents_service.create_batch()
 
-    return dataclasses.asdict(batch), HTTPStatus.CREATED
+    return batch_schema.dump(batch), HTTPStatus.CREATED
 
 
 @documents_blueprint.patch("/batch/<batch_id>")
@@ -19,14 +20,14 @@ def update_batch(batch_id: str):
         status=request.json["status"],
     )
 
-    return dataclasses.asdict(batch)
+    return batch_schema.dump(batch)
 
 
 @documents_blueprint.post("/batch/<batch_id>/process")
 def process_batch(batch_id: str):
     batch = current_app.documents_service.process_batch(batch_id=batch_id)
 
-    return dataclasses.asdict(batch)
+    return batch_schema.dump(batch)
 
 
 @documents_blueprint.post("/batch/<batch_id>/documents")
@@ -46,7 +47,7 @@ def create_document(batch_id: str):
         content_type=file.content_type,
     )
 
-    return dataclasses.asdict(document), HTTPStatus.CREATED
+    return document_schema.dump(document), HTTPStatus.CREATED
 
 
 @documents_blueprint.get("/")
@@ -64,7 +65,9 @@ def list_documents():
         volume=request.args.get("volume"),
     )
 
-    return [dataclasses.asdict(document) for document in documents]
+    current_app.logger.info(documents)
+
+    return document_schema.dump(documents, many=True)
 
 
 @documents_blueprint.patch("/<document_id>")
@@ -82,4 +85,4 @@ def update_document(document_id: str):
         volume=request.json["volume"],
     )
 
-    return dataclasses.asdict(document)
+    return document_schema.dump(document)

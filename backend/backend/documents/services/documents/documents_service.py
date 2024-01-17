@@ -1,13 +1,14 @@
 import io
 import json
 import uuid
-import sqlalchemy
 from typing import List, Optional
-from sqlalchemy.orm.exc import NoResultFound
+
 from google.cloud import bigquery, pubsub_v1, storage
+from sqlalchemy.orm.exc import NoResultFound
+
 from backend.db import db
-from backend.exceptions import NotFoundException
 from backend.documents.models import Batch, BatchStatus, Document
+from backend.exceptions import NotFoundException
 
 
 class DocumentsService:
@@ -52,7 +53,7 @@ class DocumentsService:
             raise NotFoundException(f"Batch {batch_id} not found")
 
         if status is not None:
-            batch.status = BatchStatus.PROCESSING
+            batch.status = status
 
         db.session.commit()
 
@@ -93,13 +94,13 @@ class DocumentsService:
 
         document = Document(
             id=uuid.uuid4(),
-            batch_id=batch_id,
+            batch=batch,
             display_name=file_name,
             content_type=content_type,
         )
 
         google_cloud_storage_bucket = self.__storage_client.bucket(
-            bucket_name=batch.google_cloud_storage_bucket_name
+            bucket_name=document.batch.google_cloud_storage_bucket_name
         )
 
         google_cloud_storage_blob = google_cloud_storage_bucket.blob(
@@ -127,31 +128,31 @@ class DocumentsService:
         text: Optional[str],
         volume: Optional[str],
     ) -> List[Document]:
-        query = sqlalchemy.select(Document)
+        query = Document.query
 
         if batch_id is not None:
-            query = query.where(Document.batch_id == batch_id)
+            query = query.filter_by(batch_id=batch_id)
 
         if barcode_number is not None:
-            query = query.where(Document.barcode_number == barcode_number)
+            query = query.filter_by(barcode_number=barcode_number)
 
         if classification_code is not None:
-            query = query.where(Document.classification_code == classification_code)
+            query = query.filter_by(classification_code=classification_code)
 
         if classification_level is not None:
-            query = query.where(Document.classification_level == classification_level)
+            query = query.filter_by(classification_level=classification_level)
 
         if display_name is not None:
-            query = query.where(Document.display_name == display_name)
+            query = query.filter_by(display_name=display_name)
 
         if file_number is not None:
-            query = query.where(Document.file_number.contains([file_number]))
+            query = query.filter(Document.file_number.contains([file_number]))
 
         if file_title is not None:
-            query = query.where(Document.file_title == file_title)
+            query = query.filter_by(file_title=file_title)
 
         if org_code is not None:
-            query = query.where(Document.org_code == org_code)
+            query = query.filter_by(org_code=org_code)
 
         if text is not None:
             text_search_ids = []
@@ -166,9 +167,9 @@ class DocumentsService:
             query = query.filter(Document.id.in_(text_search_ids))
 
         if volume is not None:
-            query = query.where(Document.volume == volume)
+            query = query.filter_by(volume=volume)
 
-        return db.session.scalars(query)
+        return query.all()
 
     def update_document(
         self,
@@ -255,4 +256,4 @@ class DocumentsService:
         return document
 
     def __make_blob_name(self, document: Document) -> str:
-        return f"{document.batch_id}/{document.id}"
+        return f"{document.batch.id}/{document.id}"

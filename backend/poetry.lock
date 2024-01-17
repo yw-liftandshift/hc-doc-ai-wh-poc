@@ -860,6 +860,48 @@ files = [
 ]
 
 [[package]]
+name = "marshmallow"
+version = "3.20.2"
+description = "A lightweight library for converting complex datatypes to and from native Python datatypes."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "marshmallow-3.20.2-py3-none-any.whl", hash = "sha256:c21d4b98fee747c130e6bc8f45c4b3199ea66bc00c12ee1f639f0aeca034d5e9"},
+    {file = "marshmallow-3.20.2.tar.gz", hash = "sha256:4c1daff273513dc5eb24b219a8035559dc573c8f322558ef85f5438ddd1236dd"},
+]
+
+[package.dependencies]
+packaging = ">=17.0"
+
+[package.extras]
+dev = ["pre-commit (>=2.4,<4.0)", "pytest", "pytz", "simplejson", "tox"]
+docs = ["alabaster (==0.7.15)", "autodocsumm (==0.2.12)", "sphinx (==7.2.6)", "sphinx-issues (==3.0.1)", "sphinx-version-warning (==1.1.2)"]
+lint = ["pre-commit (>=2.4,<4.0)"]
+tests = ["pytest", "pytz", "simplejson"]
+
+[[package]]
+name = "marshmallow-sqlalchemy"
+version = "0.30.0"
+description = "SQLAlchemy integration with the marshmallow (de)serialization library"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "marshmallow-sqlalchemy-0.30.0.tar.gz", hash = "sha256:29ad0a4fd1b4a1e52dcb07f9673d284a6b0795141916cc2169d4ee9a5d007347"},
+    {file = "marshmallow_sqlalchemy-0.30.0-py2.py3-none-any.whl", hash = "sha256:808c1e95bf72f4491ad2f3498e73116b33074d7dcef79f0e6997d0d37d648ac7"},
+]
+
+[package.dependencies]
+marshmallow = ">=3.0.0"
+packaging = ">=21.3"
+SQLAlchemy = ">=1.4.40,<3.0"
+
+[package.extras]
+dev = ["flake8 (==7.0.0)", "flake8-bugbear (==23.12.2)", "pre-commit (==3.6.0)", "pytest", "pytest-lazy-fixture (>=0.6.2)", "tox"]
+docs = ["alabaster (==0.7.13)", "sphinx (==7.2.6)", "sphinx-issues (==3.0.1)"]
+lint = ["flake8 (==7.0.0)", "flake8-bugbear (==23.12.2)", "pre-commit (==3.6.0)"]
+tests = ["pytest", "pytest-lazy-fixture (>=0.6.2)"]
+
+[[package]]
 name = "mypy-extensions"
 version = "1.0.0"
 description = "Type system extensions for programs checked with the mypy type checker."
@@ -1332,4 +1374,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "397bb3bc1f6a58c2522a89e73cd055a4a33f99266c48164aaf3ef932b7147a02"
+content-hash = "d846447f2110434251879b6cf9b3c96db442ab4ab5899fdc8ff620df27959519"

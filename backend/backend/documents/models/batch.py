@@ -1,10 +1,10 @@
 import datetime
 import uuid
-from dataclasses import dataclass
 from enum import StrEnum, auto
+from typing import List
 
-from sqlalchemy import DateTime, String
-from sqlalchemy.dialects.postgresql import UUID, ENUM
+from sqlalchemy import Enum, text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.functions import now
 
 from backend.db import db
@@ -17,15 +17,14 @@ class BatchStatus(StrEnum):
     PROCESSED = auto()
 
 
-@dataclass
 class Batch(db.Model):
-    id: str
-    status: BatchStatus
-    created_at: datetime.datetime
-
-    id = db.Column(UUID, primary_key=True, default=uuid.uuid4())
-    status = db.Column(
-        ENUM(
+    id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, server_default=text("gen_random_uuid()")
+    )
+    documents: Mapped[List["Document"]] = relationship(back_populates="batch")
+    google_cloud_storage_bucket_name: Mapped[str] = mapped_column()
+    status: Mapped[BatchStatus] = mapped_column(
+        Enum(
             str(BatchStatus.CREATED),
             str(BatchStatus.ERROR),
             str(BatchStatus.PROCESSING),
@@ -34,5 +33,4 @@ class Batch(db.Model):
         ),
         default=BatchStatus.CREATED,
     )
-    google_cloud_storage_bucket_name = db.Column(String, nullable=False)
-    created_at = db.Column(DateTime(timezone=True), server_default=now())
+    created_at: Mapped[datetime.datetime] = mapped_column(server_default=now())
