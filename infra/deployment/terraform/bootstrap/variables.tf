@@ -55,7 +55,7 @@ variable "branch_name" {
 }
 
 variable "ocr_processor_name" {
-  type = string 
+  type = string
 }
 
 variable "cde_lrs_type_processor_name" {
