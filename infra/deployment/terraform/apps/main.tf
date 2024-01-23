@@ -1,3 +1,12 @@
+provider "google" {
+  project = var.project_id
+  region  = var.region
+}
+
+provider "google-beta" {
+  project = var.project_id
+  region  = var.region
+}
 locals {
   alerting_emails_list = split(",", var.alerting_emails)
 }

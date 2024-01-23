@@ -69,3 +69,13 @@ variable "cde_general_type_processor_name" {
 variable "cde_classifier_type_processor_name" {
   type = string
 }
+
+variable "application_kms_crypto_key" {
+  type        = string
+  description = "The application KMS key ID."
+}
+
+variable "hc_cloud_function_service_account_email" {
+  type        = string
+  description = "Email of the Service Account used to run the HC Cloud Function."
+}
