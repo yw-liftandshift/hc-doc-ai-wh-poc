@@ -12,8 +12,8 @@ module "hc_cloud_function" {
   source = "./modules/hc_cloud_function"
 
   region                                  = var.region
-  application_kms_crypto_key              = module.project.application_kms_crypto_key
-  hc_cloud_function_service_account_email = module.iam.hc_cloud_function_service_account_email
+  application_kms_crypto_key              = var.application_kms_crypto_key
+  hc_cloud_function_service_account_email = var.hc_cloud_function_service_account_email
   dw_ui_service_account_email             = var.dw_ui_service_account_email
   schema_id                               = var.schema_id
   doc_ai_location                         = var.doc_ai_location

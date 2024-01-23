@@ -78,5 +78,7 @@ resource "google_cloudbuild_trigger" "deploy_on_repo_push" {
     _CDE_LRS_TYPE_PROCESSOR_NAME        = var.cde_lrs_type_processor_name
     _CDE_GENERAL_TYPE_PROCESSOR_NAME    = var.cde_general_type_processor_name
     _CDE_CLASSIFIER_TYPE_PROCESSOR_NAME = var.cde_classifier_type_processor_name
+    _APPLICATION_KMS_CRYPTO_KEY         = module.project.application_kms_crypto_key
+    _HC_CLOUD_FUNCTION_SERVICE_ACCOUNT_EMAIL = module.iam.hc_cloud_function_service_account_email
   }
 }

@@ -23,3 +23,5 @@ steps:
       - "TF_VAR_cde_lrs_type_processor_name=${_CDE_LRS_TYPE_PROCESSOR_NAME}"
       - "TF_VAR_cde_general_type_processor_name=${_CDE_GENERAL_TYPE_PROCESSOR_NAME}"
       - "TF_VAR_cde_classifier_type_processor_name=${_CDE_CLASSIFIER_TYPE_PROCESSOR_NAME}"
+      - "TF_VAR_application_kms_crypto_key=${_APPLICATION_KMS_CRYPTO_KEY}"
+      - "TF_VAR_hc_cloud_function_service_account_email=${_HC_CLOUD_FUNCTION_SERVICE_ACCOUNT_EMAIL}"
