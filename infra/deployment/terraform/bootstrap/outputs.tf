@@ -2,10 +2,6 @@ output "doc_ai_warehouse_provisioning_link" {
   value = "https://console.cloud.google.com/ai/docai-warehouse?project=${var.project_id}"
 }
 
-output "input_pdf_bucket" {
-  value = module.hc_cloud_function.input_pdf_bucket
-}
-
 output "tfstate_bucket" {
   value = module.project.tfstate_bucket
 }

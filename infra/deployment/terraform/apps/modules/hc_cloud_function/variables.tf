@@ -2,7 +2,6 @@ variable "region" {
   type        = string
   description = "The default region in which the resources will be created."
 }
-
 variable "application_kms_crypto_key" {
   type        = string
   description = "The application KMS key ID."
