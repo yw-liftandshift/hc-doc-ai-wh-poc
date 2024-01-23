@@ -52,7 +52,7 @@ resource "google_secret_manager_secret_version" "tfvars" {
 resource "google_cloudbuild_trigger" "deploy_on_repo_push" {
   name        = "deploy"
   description = "Build and deploy cf ${var.sourcerepo_name}/${var.branch_name} push"
-  # location    = "northamerica-northeast1"
+  location    = "northamerica-northeast1"
 
   trigger_template {
     repo_name   = var.sourcerepo_name
