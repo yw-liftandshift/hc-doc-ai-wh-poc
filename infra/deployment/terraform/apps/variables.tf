@@ -40,7 +40,7 @@ variable "users_group_email" {
 }
 
 variable "alerting_emails" {
-  type        = list(string)
+  type        = string
   description = "Email addresses that will receive monitoring alerts."
 }
 

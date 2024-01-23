@@ -1,7 +1,11 @@
+locals {
+  alerting_emails_list = split(",", var.alerting_emails)
+}
+
 module "monitoring" {
   source = "./modules/monitoring"
 
-  alerting_emails = var.alerting_emails
+  alerting_emails = local.alerting_emails_list
 }
 
 module "hc_cloud_function" {
