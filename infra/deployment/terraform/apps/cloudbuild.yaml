@@ -1,7 +1,7 @@
 steps:
   - name: "hashicorp/terraform"
     id: terraform-apply
-    dir: infra/deployment/terraform/bootstrap
+    dir: infra/deployment/terraform/apps
     script: |
       terraform init -backend-config=bucket=$TFSTATE_BUCKET
 
