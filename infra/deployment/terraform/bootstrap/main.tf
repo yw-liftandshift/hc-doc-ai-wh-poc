@@ -53,7 +53,7 @@ resource "google_cloudbuild_trigger" "deploy_on_repo_push" {
   count       = var.use_tag_to_deploy ? 0 : 1
   name        = "deploy"
   description = "Build and deploy project ${var.sourcerepo_name}/${var.branch_name} push"
-  # location    = "northamerica-northeast1"
+  location    = "northamerica-northeast1"
 
   trigger_template {
     repo_name   = var.sourcerepo_name
@@ -88,7 +88,7 @@ resource "google_cloudbuild_trigger" "deploy_on_tag" {
   count       = var.use_tag_to_deploy ? 1 : 0
   name        = "tag-deploy"
   description = "Build and deploy project on ${var.sourcerepo_name} tag"
-  # location    = "northamerica-northeast1"
+  location    = "northamerica-northeast1"
 
   trigger_template {
     repo_name = var.sourcerepo_name
