@@ -8,6 +8,16 @@ variable "region" {
   description = "The default region in which the resources will be created."
 }
 
+variable "use_tag_to_deploy" {
+  type        = bool
+  description = "Enable deployment by tagging a commit tagging a commit"
+}
+
+variable "tag_name" {
+  type        = string
+  description = "Tag to deploy to demo environmnet"
+}
+
 variable "doc_ai_location" {
   type        = string
   description = "The Doc AI processors location. Valid values are 'us' and 'eu'."
@@ -56,16 +66,20 @@ variable "branch_name" {
 
 variable "ocr_processor_name" {
   type = string
+  description = "ID of the OCR DocAI processor"
 }
 
 variable "cde_lrs_type_processor_name" {
   type = string
+  description = "ID of the custom extractor for LRS type documents"
 }
 
 variable "cde_general_type_processor_name" {
   type = string
+  description = "ID of the custom extractor for general type documents"
 }
 
 variable "cde_classifier_type_processor_name" {
   type = string
+  description = "ID of custom classifier"
 }
