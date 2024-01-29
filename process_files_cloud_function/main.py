@@ -13,9 +13,8 @@ from postprocessing import build_documents_warehouse_properties_from_entities, g
 # Setting up logging
 # Instantiates a client
 client = google.cloud.logging.Client()
-client.setup_logging()
-logging.basicConfig(level=logging.DEBUG)
-
+client.setup_logging(log_level=logging.DEBUG)
+logger = client.logger("TEST")
 '''Defining variables which will be initialized from terraform script'''
 env_var = {"project_id" : os.environ["project_id"],
            "project_number" : os.environ["project_number"],
@@ -58,14 +57,14 @@ def main(event, context):
             sorted(entities, key=lambda x: x.confidence, reverse=True)[0].type_)
 
         document_class = extract_file_type_from_entities(process_document_and_extract_entities(
-            env_var["project_id"], env_var["location"], env_var["processor_id_cde_classifier_type_type"], raw_document))
+            env_var["project_id"], env_var["location"], env_var["processor_id_cde_classifier_type_type"], raw_document, gcs_input_uri))
 
         logging.debug(document_class)
 
         entities_extractor_processor_id = env_var["processor_id_cde_lrs_type"] if document_class == DocumentType.LRS_DOCUMENTS_TYPE else env_var["processor_id_cde_general_type_type"]
 
         entities = process_document_and_extract_entities(
-            env_var["project_id"], env_var["location"], entities_extractor_processor_id, raw_document)
+            env_var["project_id"], env_var["location"], entities_extractor_processor_id, raw_document, gcs_input_uri)
     except:
         raise
 

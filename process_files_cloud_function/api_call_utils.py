@@ -7,6 +7,8 @@ from google.cloud import documentai_v1 as documentai
 from google.cloud import contentwarehouse
 from google.api_core.client_options import ClientOptions
 from google.cloud import storage
+import google.cloud.logging
+import logging
 
 class DocumentWarehouseProperties:
     '''
@@ -192,6 +194,7 @@ def process_document_and_extract_entities(
     location: str,
     processor_id: str,
     raw_document: documentai.RawDocument,
+    gcs_input_uri: str
 ) -> documentai.Document:
     '''
     This function is used to invoke the CDE processor and return entities.
@@ -236,10 +239,37 @@ def process_document_and_extract_entities(
         process_options=process_options,
     )
 
+
+    processor_result = client.get_processor(name=name)
+    processor_version_result = client.get_processor_version(name=processor_result.default_processor_version)
+
+
     result = client.process_document(request=request)
 
+    __logEntries(result.document.entities, file_name = gcs_input_uri, model_version = processor_version_result.name, model_name = processor_version_result.display_name)
     # We are interested only in entities
     return result.document.entities
+
+def __logEntries(recognized_entities, file_name = None, model_name = None, model_version = None):
+    '''
+    This function is used to log the entries.
+    '''
+    client = google.cloud.logging.Client()
+    client.setup_logging(log_level=logging.DEBUG)
+    logger = client.logger(name="recognition_result")
+
+    entities = {}
+    for item in recognized_entities.pb:
+        entities[item.type_] = {"value": item.mention_text, "confidence": item.confidence}
+    
+    data = {}
+    data["entities"] = entities
+    data["filename"] = file_name
+    data["model_name"] = model_name
+    data["model_version"] = model_version
+
+    logger.log_struct(data)
+
 
 def get_file_from_cloud_storage_as_raw_document(bucket_name: str, object_name: str, mime_type="application/pdf") -> documentai.RawDocument:
     '''
