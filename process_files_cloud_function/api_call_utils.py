@@ -259,8 +259,14 @@ def __logEntries(recognized_entities, file_name = None, model_name = None, model
     logger = client.logger(name="recognition_result")
 
     entities = {}
+    file_no_list = []
     for item in recognized_entities.pb:
-        entities[item.type_] = {"value": item.mention_text, "confidence": item.confidence}
+        # Can be multiple file no
+        if item.type_ == "file_no":
+            file_no_list.append({"value": item.mention_text, "confidence": item.confidence})
+            entities[item.type_] = file_no_list
+        else:
+            entities[item.type_] = {"value": item.mention_text, "confidence": item.confidence}
     
     data = {}
     data["entities"] = entities
