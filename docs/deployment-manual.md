@@ -74,6 +74,7 @@
    ![Create CSR 6](./images/create-csr-7.png "Create CSR 7")
 1. Go to Cloud Storage -> Settings and check that the `Cloud Storage Service Account` was created.
    ![Check GCS SA](./images/check-gcs-sa.png "Create GCS SA")
+1. Make sure you are using the google account in your Organization's domain
 1. [Create Document AI processors](https://cloud.google.com/document-ai/docs/processors-list)
    ![Create custom Processor](./images/create-custom-processor.png "Create custom processor")
    ![Create custom Processor](./images/create-custom-processor1.png "Create custom processor")
@@ -85,6 +86,7 @@
 1. Run `terraform apply`.
 
 ## Processor importing
+1. Make sure you are using the google account in your Organization's domain 
 1. To import processor you need to go to `Manage versions` tab, press `Import` button and select the project, processor and version you want to import.
 ![Processor importing](./images/import-processor.png "Processor importing")
 ![Processor importing1](./images/import-processor1.png "Processor importing1")
