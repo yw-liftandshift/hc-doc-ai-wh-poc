@@ -15,7 +15,7 @@ resource "google_logging_project_sink" "recognition_result_logs_bucket" {
 
 resource "google_logging_project_bucket_config" "recognition_result_logs_bucket" {
     project        = data.google_project.project.project_id
-    location       = ver.region
+    location       = var.region
     retention_days = 30
     bucket_id      = local.logs_buccket_id
 }
