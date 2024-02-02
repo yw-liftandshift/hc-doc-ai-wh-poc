@@ -63,6 +63,6 @@ resource "google_cloudfunctions_function" "hc" {
     input_mime_type                       = "application/pdf"
     schema_id                             = "projects/${data.google_project.project.number}/locations/${var.doc_ai_location}/documentSchemas/${var.schema_id}"
     sa_user                               = "user:${var.dw_ui_service_account_email}"
-    log_id                                = local.logs_buccket_id
+    log_id                                = local.log_buccket_id
   }
 }
