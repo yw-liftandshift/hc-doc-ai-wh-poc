@@ -14,10 +14,11 @@ resource "google_logging_project_sink" "recognition_result_logs_bucket" {
 }
 
 resource "google_logging_project_bucket_config" "recognition_result_logs_bucket" {
-    project        = data.google_project.project.project_id
-    location       = var.region
-    retention_days = 30
-    bucket_id      = local.logs_buccket_id
+    project         = data.google_project.project.project_id
+    location        = var.region
+    retention_days  = 30
+    bucket_id       = local.logs_buccket_id
+    enable_analytics = true
 }
 
 resource "google_logging_log_view" "logging_log_view" {
