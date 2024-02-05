@@ -19,6 +19,7 @@ logging.basicConfig(level=logging.DEBUG)
 '''Defining variables which will be initialized from terraform script'''
 env_var = {"project_id" : os.environ["project_id"],
            "project_number" : os.environ["project_number"],
+           "log_id": os.environ["log_id"],
            "location" : os.environ["location"],
            "processor_id" : os.environ["processor_id"],
            "processor_id_cde_lrs_type" : os.environ["processor_id_cde_lrs_type"],
@@ -56,22 +57,32 @@ def main(event, context):
     try:
         def extract_file_type_from_entities(entities): return get_document_type(
             sorted(entities, key=lambda x: x.confidence, reverse=True)[0].type_)
+        
+        classification_entities, classification_model_info =  process_document_and_extract_entities(
+            env_var["project_id"], env_var["location"], env_var["processor_id_cde_classifier_type_type"], raw_document)
 
-        document_class = extract_file_type_from_entities(process_document_and_extract_entities(
-            env_var["project_id"], env_var["location"], env_var["processor_id_cde_classifier_type_type"], raw_document))
+        document_class = extract_file_type_from_entities(classification_entities)
+
+        __logEntries(classification_entities, file_name=gcs_input_uri,
+                     model_version=classification_model_info.name,
+                     model_name=classification_model_info.display_name)
 
         logging.debug(document_class)
 
         entities_extractor_processor_id = env_var["processor_id_cde_lrs_type"] if document_class == DocumentType.LRS_DOCUMENTS_TYPE else env_var["processor_id_cde_general_type_type"]
 
-        entities = process_document_and_extract_entities(
+        cde_entities, cde_model_info = process_document_and_extract_entities(
             env_var["project_id"], env_var["location"], entities_extractor_processor_id, raw_document)
+        
+        __logEntries(cde_entities, file_name=gcs_input_uri,
+                model_version=cde_model_info.name,
+                model_name=cde_model_info.display_name)
     except:
         raise
 
     # Post-Process the cde response
     document_warehouse_properties = build_documents_warehouse_properties_from_entities(
-        entities, blob_name, document_class)
+        cde_entities, blob_name, document_class)
 
     # Send the value_dict to warehouse api call to display the properties
     try:
@@ -87,3 +98,30 @@ def main(event, context):
         raise
 
     logging.info("process complete")
+
+
+def __logEntries(recognized_entities, file_name = None, model_name = None, model_version = None):
+    '''
+    This function is used to log the entries.
+    '''
+    recognition_output_client = google.cloud.logging.Client()
+    recognition_output_client.setup_logging(log_level=logging.DEBUG)
+    logger = recognition_output_client.logger(name=env_var["log_id"])
+
+    entities = {}
+    file_no_list = []
+    for item in recognized_entities.pb:
+        # Can be multiple file no
+        if item.type_ == "file_no":
+            file_no_list.append({"value": item.mention_text, "confidence": item.confidence})
+            entities[item.type_] = file_no_list
+        else:
+            entities[item.type_] = {"value": item.mention_text, "confidence": item.confidence}
+    
+    data = {}
+    data["entities"] = entities
+    data["filename"] = file_name
+    data["model_name"] = model_name
+    data["model_version"] = model_version
+
+    logger.log_struct(data)

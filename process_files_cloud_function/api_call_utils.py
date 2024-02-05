@@ -238,8 +238,11 @@ def process_document_and_extract_entities(
 
     result = client.process_document(request=request)
 
+    processor_result = client.get_processor(name=name)
+    processor_version_result = client.get_processor_version(name=processor_result.default_processor_version)
+
     # We are interested only in entities
-    return result.document.entities
+    return result.document.entities, processor_version_result
 
 def get_file_from_cloud_storage_as_raw_document(bucket_name: str, object_name: str, mime_type="application/pdf") -> documentai.RawDocument:
     '''
