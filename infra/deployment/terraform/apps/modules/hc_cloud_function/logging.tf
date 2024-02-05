@@ -6,7 +6,7 @@ locals {
 resource "google_logging_project_sink" "recognition_result_log_sink" {
   name = "${local.log_bucket_id}_sink"
 
-  destination = "logging.googleapis.com/projects/${data.google_project.project.project_id}/locations/global/buckets/${local.log_bucket_id}"
+  destination = "logging.googleapis.com/projects/${data.google_project.project.project_id}/locations/${var.region}/buckets/${local.log_bucket_id}"
 
   filter = local.filter
 
