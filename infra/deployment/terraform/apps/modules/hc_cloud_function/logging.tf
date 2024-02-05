@@ -1,6 +1,10 @@
 locals {
-  log_bucket_id = "recognition_output_log"
+  log_bucket_id = "recognition-output-log-${random_id.recognition_bucket_suffix.hex}"
   filter = "projects/${data.google_project.project.project_id}/logs/${local.log_bucket_id}"
+}
+
+resource "random_id" "recognition_bucket_suffix" {
+  byte_length = 2
 }
 
 resource "google_logging_project_sink" "recognition_result_log_sink" {
