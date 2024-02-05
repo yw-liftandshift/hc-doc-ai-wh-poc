@@ -45,10 +45,14 @@ resource "google_cloudfunctions_function" "hc" {
   source_archive_object = google_storage_bucket_object.cloud_function_code.name
   available_memory_mb   = 8192
   timeout               = 540
+  max_instances         = 30
 
   event_trigger {
     event_type = "google.storage.object.finalize"
     resource   = google_storage_bucket.input_pdf.name
+    failure_policy {
+      retry = true
+    }
   }
 
   environment_variables = {
