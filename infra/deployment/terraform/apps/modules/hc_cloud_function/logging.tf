@@ -1,5 +1,5 @@
 locals {
-  log_bucket_id = "recognition_result_log"
+  log_bucket_id = "recognition_output_log"
   filter = "projects/${data.google_project.project.project_id}/logs/${local.log_bucket_id}"
 }
 
