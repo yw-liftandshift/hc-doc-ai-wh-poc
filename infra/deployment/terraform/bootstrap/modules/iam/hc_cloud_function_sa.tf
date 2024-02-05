@@ -19,6 +19,7 @@ resource "google_project_iam_custom_role" "hc_cloud_function" {
     "documentai.processors.processBatch",
     "documentai.processors.processOnline",
     "resourcemanager.projects.get",
+    "logging.logEntries.create"
   ]
 }
 
