@@ -18,6 +18,10 @@ resource "google_project_iam_custom_role" "hc_cloud_function" {
     "documentai.processorVersions.processOnline",
     "documentai.processors.processBatch",
     "documentai.processors.processOnline",
+    "documentai.processors.get",
+    "documentai.processors.list",
+    "documentai.processorVersions.get",
+    "documentai.processorVersions.list",
     "resourcemanager.projects.get",
     "logging.logEntries.create"
   ]
