@@ -124,4 +124,33 @@ def __logEntries(recognized_entities, file_name = None, model_name = None, model
     data["model_name"] = model_name
     data["model_version"] = model_version
 
-    logger.log_struct(data)
+    from google.cloud import bigquery
+    import datetime
+    import json
+
+
+
+    # Construct a BigQuery client object.
+    bq_client = bigquery.Client()
+
+    current_timestamp = datetime.datetime.utcnow().isoformat("T") + "Z"
+
+    basic_raw = {"file_name": file_name,
+                 "model_name": model_name,
+                 "model_version":model_version,
+                 "timestamp":current_timestamp,
+                 "recognized_entities":json.dumps(entities)}
+
+    # for object_name, object_data in entities.items():
+    #     #create handling for file_no
+    #     basic_raw["value"] = object_data["value"] if isinstance(object_data["value"], list) else [object_data["value"]] if len(object_data["value"]) is not 0 else [] # object_data["value"]
+    #     basic_raw["confidence_score"] = object_data["confidence"]
+    #     basic_raw["field_name"] = object_name
+
+    errors = bq_client.insert_rows_json("hc-docai-warehouse-poc-003.recognition_results.recognition_results_json", [basic_raw])  # Make an API request.
+    if errors == []:
+        logger.log_text("New rows have been added.")
+    else:
+        logger.log_text("Encountered errors while inserting rows: {}".format(errors))
+
+    #logger.log_struct(data)
